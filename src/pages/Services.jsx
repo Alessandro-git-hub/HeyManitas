@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 // import { useNavigate } from 'react-router-dom';
-import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc, query, where } from 'firebase/firestore';
 import { db } from '../utils/firebase';
+import { useAuth } from '../contexts/AuthContext';
 import { getAllCategories, getCategoryInfo } from '../utils/serviceCategories';
 import WorkerNavigation from '../components/WorkerNavigation';
 import WorkerHeader from '../components/WorkerHeader';
@@ -9,6 +10,7 @@ import ServiceCard from '../components/ServiceCard';
 
 export default function Services() {
   // const navigate = useNavigate();
+  const { user } = useAuth();
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -30,57 +32,16 @@ export default function Services() {
   // Service categories
   const serviceCategories = getAllCategories();
 
-  // Test data - we'll use this initially
-  const testServices = useMemo(() => [
-    {
-      id: 'test-1',
-      name: 'Basic Plumbing Repair',
-      description: 'Fix leaky faucets, unclog drains, minor pipe repairs',
-      category: 'Plumbing',
-      basePrice: 75,
-      duration: '1-2 hours',
-      isActive: true,
-      createdAt: new Date('2025-01-20')
-    },
-    {
-      id: 'test-2', 
-      name: 'Electrical Installation',
-      description: 'Install light fixtures, outlets, switches, and basic wiring',
-      category: 'Electrical',
-      basePrice: 120,
-      duration: '2-3 hours',
-      isActive: true,
-      createdAt: new Date('2025-01-18')
-    },
-    {
-      id: 'test-3',
-      name: 'Home Deep Cleaning',
-      description: 'Complete house cleaning including bathrooms, kitchen, and all rooms',
-      category: 'Cleaning',
-      basePrice: 150,
-      duration: '4-6 hours',
-      isActive: true,
-      createdAt: new Date('2025-01-15')
-    },
-    {
-      id: 'test-4',
-      name: 'Furniture Assembly',
-      description: 'Assemble furniture, mount TVs, hang pictures and shelves',
-      category: 'Handyman',
-      basePrice: 60,
-      duration: '1-3 hours',
-      isActive: false,
-      createdAt: new Date('2025-01-10')
-    }
-  ], []);
-
   useEffect(() => {
     const fetchServices = async () => {
+      if (!user) return; // Don't fetch if no user
+      
       try {
         setLoading(true);
         
-        // Fetch services from Firestore
-        const querySnapshot = await getDocs(collection(db, 'services'));
+        // Fetch services from Firestore for the current user
+        const q = query(collection(db, 'services'), where('userId', '==', user.uid));
+        const querySnapshot = await getDocs(q);
         const servicesData = [];
         querySnapshot.forEach((doc) => {
           servicesData.push({ 
@@ -90,34 +51,19 @@ export default function Services() {
           });
         });
         
-        // If no services exist in Firestore, add test data
-        if (servicesData.length === 0) {
-          console.log('No services found in Firestore. Adding test data...');
-          const addPromises = testServices.map(async (service) => {
-            // eslint-disable-next-line no-unused-vars
-            const { id, ...serviceData } = service; // Remove the test id
-            const docRef = await addDoc(collection(db, 'services'), serviceData);
-            return { id: docRef.id, ...serviceData };
-          });
-          
-          const addedServices = await Promise.all(addPromises);
-          setServices(addedServices);
-        } else {
-          setServices(servicesData);
-        }
+        setServices(servicesData);
         
       } catch (error) {
         console.error('Error fetching services:', error);
         setFeedback({ message: 'Error loading services. Please try again.', type: 'error' });
-        // Fallback to test data if Firestore fails
-        setServices(testServices);
+        setServices([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchServices();
-  }, [testServices]);
+  }, [user]);
 
   const validateForm = () => {
     const errors = {};
@@ -181,6 +127,7 @@ export default function Services() {
         const serviceData = {
           ...formData,
           basePrice: parseFloat(formData.basePrice),
+          userId: user.uid, // Associate service with current user
           createdAt: new Date(),
           updatedAt: new Date()
         };

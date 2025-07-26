@@ -22,7 +22,7 @@ export default function Home() {
             {/* Primary CTAs */}
             <div className="flex flex-col sm:flex-row gap-4 mb-12">
               <button 
-                onClick={() => navigate('/worker')}
+                onClick={() => navigate('/login')}
                 className="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg"
               >
                 I'm a Professional
@@ -484,7 +484,7 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <button 
-              onClick={() => navigate('/worker')}
+              onClick={() => navigate('/signup')}
               className="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg"
             >
               I'm a Professional

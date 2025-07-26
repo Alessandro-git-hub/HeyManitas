@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../utils/firebase';
@@ -21,12 +21,51 @@ export default function WorkerDashboard() {
   // Job details modal state
   const [showJobDetails, setShowJobDetails] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
+  const [weeklyEarnings, setWeeklyEarnings] = useState(0);
 
   // Function to get today's date in YYYY-MM-DD format
   const getTodaysDate = () => {
     const today = new Date();
     return today.toISOString().split('T')[0];
   };
+
+  // Function to get start of current week (Monday)
+  const getStartOfWeek = useCallback(() => {
+    const today = new Date();
+    const dayOfWeek = today.getDay();
+    const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Sunday = 0, so we need 6 days back
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - daysToMonday);
+    monday.setHours(0, 0, 0, 0);
+    return monday;
+  }, []);
+
+  // Function to get end of current week (Sunday)
+  const getEndOfWeek = useCallback(() => {
+    const startOfWeek = getStartOfWeek();
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    endOfWeek.setHours(23, 59, 59, 999);
+    return endOfWeek;
+  }, [getStartOfWeek]);
+
+  // Function to calculate weekly earnings
+  const calculateWeeklyEarnings = useCallback((jobs) => {
+    const startOfWeek = getStartOfWeek();
+    const endOfWeek = getEndOfWeek();
+    
+    return jobs.reduce((total, job) => {
+      // Check if job has a scheduledDate within this week and is completed
+      if (job.scheduledDate && (job.status === 'Done' || job.status === 'Completed')) {
+        const jobDate = new Date(job.scheduledDate + 'T00:00:00');
+        if (jobDate >= startOfWeek && jobDate <= endOfWeek) {
+          const finalPrice = parseFloat(job.finalPrice) || 0;
+          return total + finalPrice;
+        }
+      }
+      return total;
+    }, 0);
+  }, [getStartOfWeek, getEndOfWeek]);
 
   // Function to get status styles
   const getStatusStyles = (status) => {
@@ -54,7 +93,7 @@ export default function WorkerDashboard() {
 
   const handleJobSuccess = (message) => {
     setFeedback({ message, type: 'success' });
-    // Refresh today's jobs count and recent jobs
+    // Refresh today's jobs count, recent jobs, and weekly earnings
     const refreshData = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, 'jobs'));
@@ -72,6 +111,10 @@ export default function WorkerDashboard() {
         
         setTodaysJobsCount(count);
         
+        // Calculate weekly earnings
+        const earnings = calculateWeeklyEarnings(allJobs);
+        setWeeklyEarnings(earnings);
+        
         // Sort jobs by creation date (most recent first) and take the first 3
         const sortedJobs = allJobs.sort((a, b) => {
           const aDate = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt || 0);
@@ -83,6 +126,7 @@ export default function WorkerDashboard() {
       } catch (error) {
         console.error('Error fetching jobs:', error);
         setTodaysJobsCount(0);
+        setWeeklyEarnings(0);
         setRecentJobs([]);
       }
     };
@@ -118,7 +162,7 @@ export default function WorkerDashboard() {
     }
   }, [feedback]);
 
-  // Fetch today's jobs count and recent jobs when component mounts
+  // Fetch today's jobs count, recent jobs, and weekly earnings when component mounts
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -137,6 +181,10 @@ export default function WorkerDashboard() {
         
         setTodaysJobsCount(count);
         
+        // Calculate weekly earnings
+        const earnings = calculateWeeklyEarnings(allJobs);
+        setWeeklyEarnings(earnings);
+        
         // Sort jobs by creation date (most recent first) and take the first 3
         const sortedJobs = allJobs.sort((a, b) => {
           const aDate = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt || 0);
@@ -148,12 +196,13 @@ export default function WorkerDashboard() {
       } catch (error) {
         console.error('Error fetching jobs:', error);
         setTodaysJobsCount(0);
+        setWeeklyEarnings(0);
         setRecentJobs([]);
       }
     };
 
     fetchData();
-  }, []);
+  }, [calculateWeeklyEarnings]);
 
   return (
     <div className="min-h-screen bg-light">
@@ -230,7 +279,7 @@ export default function WorkerDashboard() {
               </div>
               <div className="ml-4 md:ml-0">
                 <p className="text-sm text-gray-600">This Week</p>
-                <p className="text-2xl font-bold text-deep">€1,240</p>
+                <p className="text-2xl font-bold text-deep">€{weeklyEarnings.toFixed(2)}</p>
               </div>
             </div>
 

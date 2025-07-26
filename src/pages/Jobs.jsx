@@ -230,7 +230,7 @@ export default function Jobs() {
           emptyStateProps={{
             title: jobs.length === 0 ? 'No jobs yet' : 'No jobs match your filters',
             message: jobs.length === 0 
-              ? 'Start by adding your first job or use test data to get started.' 
+              ? 'Start by adding your first job to get started.' 
               : 'Try adjusting your filters to see more results.',
             showAddButton: jobs.length === 0,
             onAddClick: () => setShowForm(true),
