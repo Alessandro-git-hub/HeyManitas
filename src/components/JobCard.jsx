@@ -50,6 +50,22 @@ export default function JobCard({ job, onEdit, onDelete, onViewDetails }) {
       </div>
       
       <p className="text-gray-600 mb-4 text-sm leading-relaxed">{job.description}</p>
+
+      {/* Service Information */}
+      {job.serviceName && (
+        <div className="mb-3 p-2 bg-blue-50 rounded border border-blue-200">
+          <div className="flex justify-between items-center">
+            <span className="text-sm text-blue-700 font-medium">
+              🔧 {job.serviceName}
+            </span>
+            {job.finalPrice && (
+              <span className="text-sm text-blue-900 font-semibold">
+                €{job.finalPrice}
+              </span>
+            )}
+          </div>
+        </div>
+      )}
       
       {job.scheduledDate && (
         <div className="mb-3">

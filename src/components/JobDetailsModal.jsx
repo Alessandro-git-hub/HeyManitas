@@ -45,11 +45,6 @@ export default function JobDetailsModal({ isOpen, onClose, job }) {
     return time;
   };
 
-  const formatPrice = (price) => {
-    if (!price && price !== 0) return 'Not specified';
-    return `€${price}`;
-  };
-
   return (
     <div 
       className="fixed inset-0 flex items-center justify-center p-4 z-50"
@@ -106,15 +101,34 @@ export default function JobDetailsModal({ isOpen, onClose, job }) {
                 <p className="text-sm text-gray-600">Description</p>
                 <p className="font-medium text-gray-900">{job.description || 'No description provided'}</p>
               </div>
+              
+              {/* Service Information */}
+              {job.serviceName && (
+                <div className="bg-blue-50 p-3 rounded border border-blue-200">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-blue-600">Service</p>
+                      <p className="font-medium text-blue-900">{job.serviceName}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-blue-600">Base Price</p>
+                      <p className="font-medium text-blue-900">€{job.basePrice || 'Not specified'}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm text-gray-600">Service Type</p>
-                  <p className="font-medium text-gray-900">{job.serviceType || job.service || 'Not specified'}</p>
+                  <p className="text-sm text-gray-600">Final Price</p>
+                  <p className="font-medium text-gray-900 text-lg">€{job.finalPrice || job.price || 'Not specified'}</p>
                 </div>
-                <div>
-                  <p className="text-sm text-gray-600">Price</p>
-                  <p className="font-medium text-gray-900">{formatPrice(job.price)}</p>
-                </div>
+                {job.serviceName && (
+                  <div>
+                    <p className="text-sm text-gray-600">Service ID</p>
+                    <p className="font-medium text-gray-500 text-sm">{job.serviceId || 'Not specified'}</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
