@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../utils/firebase';
+import { useAuth } from '../contexts/AuthContext';
 import JobFormModal from '../components/JobFormModal';
 import JobDetailsModal from '../components/JobDetailsModal';
 import AddJobButton from '../components/AddJobButton';
@@ -11,6 +12,7 @@ import WorkerHeader from '../components/WorkerHeader';
 
 export default function WorkerDashboard() {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   // Form state for the modal
   const [showJobForm, setShowJobForm] = useState(false);
@@ -95,8 +97,12 @@ export default function WorkerDashboard() {
     setFeedback({ message, type: 'success' });
     // Refresh today's jobs count, recent jobs, and weekly earnings
     const refreshData = async () => {
+      if (!user) return; // Don't fetch if no user
+      
       try {
-        const querySnapshot = await getDocs(collection(db, 'jobs'));
+        // Fetch jobs from Firestore for the current user
+        const q = query(collection(db, 'jobs'), where('userId', '==', user.uid));
+        const querySnapshot = await getDocs(q);
         const todaysDate = getTodaysDate();
         let count = 0;
         const allJobs = [];
@@ -165,8 +171,12 @@ export default function WorkerDashboard() {
   // Fetch today's jobs count, recent jobs, and weekly earnings when component mounts
   useEffect(() => {
     const fetchData = async () => {
+      if (!user) return; // Don't fetch if no user
+      
       try {
-        const querySnapshot = await getDocs(collection(db, 'jobs'));
+        // Fetch jobs from Firestore for the current user
+        const q = query(collection(db, 'jobs'), where('userId', '==', user.uid));
+        const querySnapshot = await getDocs(q);
         const todaysDate = getTodaysDate();
         let count = 0;
         const allJobs = [];
@@ -202,7 +212,7 @@ export default function WorkerDashboard() {
     };
 
     fetchData();
-  }, [calculateWeeklyEarnings]);
+  }, [calculateWeeklyEarnings, user]);
 
   return (
     <div className="min-h-screen bg-light">
@@ -343,18 +353,30 @@ export default function WorkerDashboard() {
                     </div>
                   ))
                 ) : (
-                  <div className="text-center py-4">
-                    <p className="text-gray-500 text-sm">No jobs yet</p>
-                    <p className="text-gray-400 text-xs">Add your first job to see it here</p>
+                  <div className="text-center py-8">
+                    <div className="text-gray-400 mb-3">
+                      <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path 
+                          strokeLinecap="round" 
+                          strokeLinejoin="round" 
+                          strokeWidth={1.5} 
+                          d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" 
+                        />
+                      </svg>
+                    </div>
+                    <p className="text-gray-600 font-medium mb-1">No jobs yet</p>
+                    <p className="text-gray-400 text-sm">Add your first job to see it here</p>
                   </div>
                 )}
               </div>
-              <button 
-                onClick={() => navigate('/worker/jobs')}
-                className="mt-4 text-blue-800 text-sm hover:text-blue-900 cursor-pointer"
-              >
-                View all jobs →
-              </button>
+              {recentJobs.length > 0 && (
+                <button 
+                  onClick={() => navigate('/worker/jobs')}
+                  className="mt-4 text-blue-800 text-sm hover:text-blue-900 cursor-pointer"
+                >
+                  View all jobs →
+                </button>
+              )}
             </div>
 
             <div className="bg-white p-6 rounded-lg shadow-sm border">

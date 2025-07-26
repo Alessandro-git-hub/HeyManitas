@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { collection, addDoc, updateDoc, doc, getDocs } from 'firebase/firestore';
+import { collection, addDoc, updateDoc, doc, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../utils/firebase';
+import { useAuth } from '../contexts/AuthContext';
 import { getCategoryInfo } from '../utils/serviceCategories';
 
 export default function JobFormModal({ 
@@ -10,6 +11,7 @@ export default function JobFormModal({
   onSuccess,
   onError 
 }) {
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     client: '',
     description: '',
@@ -27,11 +29,13 @@ export default function JobFormModal({
 
   // Fetch available services from Firestore
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && user) {
       const fetchServices = async () => {
         setLoadingServices(true);
         try {
-          const querySnapshot = await getDocs(collection(db, 'services'));
+          // Fetch services from Firestore for the current user
+          const q = query(collection(db, 'services'), where('userId', '==', user.uid));
+          const querySnapshot = await getDocs(q);
           const servicesData = [];
           querySnapshot.forEach((doc) => {
             const service = { 
@@ -55,7 +59,7 @@ export default function JobFormModal({
       
       fetchServices();
     }
-  }, [isOpen]);
+  }, [isOpen, user]);
 
   // Initialize form data when modal opens or editing job changes
   useEffect(() => {
@@ -174,6 +178,7 @@ export default function JobFormModal({
         // Create new job
         await addDoc(collection(db, 'jobs'), {
           ...jobData,
+          userId: user.uid, // Associate job with current user
           createdAt: new Date(),
           updatedAt: new Date()
         });
@@ -282,6 +287,21 @@ export default function JobFormModal({
               {loadingServices && (
                 <p className="text-gray-500 text-sm mt-1">Loading services...</p>
               )}
+              {!loadingServices && availableServices.length === 0 && (
+                <p className="text-gray-500 text-sm mt-1">
+                  No services available. <button 
+                    type="button"
+                    onClick={() => {
+                      onClose();
+                      // Navigate to services page - you might want to pass this as a prop
+                      window.location.href = '/worker/services';
+                    }}
+                    className="text-blue-600 hover:text-blue-700 underline"
+                  >
+                    Create your first service
+                  </button>
+                </p>
+              )}
             </div>
 
             {formData.serviceId && (
@@ -378,7 +398,7 @@ export default function JobFormModal({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex-1 bg-blue-800 text-white py-2 px-4 rounded-lg hover:bg-blue-900 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 bg-blue-800 text-white py-2 px-4 rounded-lg hover:bg-blue-900 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 {isSubmitting ? 'Saving...' : (editingJob ? 'Update Job' : 'Add Job')}
               </button>
@@ -386,7 +406,7 @@ export default function JobFormModal({
                 type="button"
                 onClick={onClose}
                 disabled={isSubmitting}
-                className="flex-1 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors font-medium disabled:opacity-50"
+                className="flex-1 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors font-medium disabled:opacity-50 cursor-pointer"
               >
                 Cancel
               </button>

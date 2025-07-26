@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import React, { useState, useEffect, useCallback } from 'react';
+import { collection, getDocs, deleteDoc, doc, query, where } from 'firebase/firestore';
 import { db } from '../utils/firebase';
+import { useAuth } from '../contexts/AuthContext';
 import JobCard from '../components/JobCard';
 import JobFormModal from '../components/JobFormModal';
 import AddJobButton from '../components/AddJobButton';
@@ -12,6 +13,7 @@ import JobDetailsModal from '../components/JobDetailsModal';
 import { useJobFilters } from '../hooks/useJobFilters';
 
 export default function Jobs() {
+  const { user } = useAuth();
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -40,10 +42,14 @@ export default function Jobs() {
     toggleGroupCollapse
   } = useJobFilters();
 
-  const fetchJobs = async () => {
+  const fetchJobs = useCallback(async () => {
+    if (!user) return; // Don't fetch if no user
+    
     try {
       setLoading(true);
-      const querySnapshot = await getDocs(collection(db, 'jobs'));
+      // Fetch jobs from Firestore for the current user
+      const q = query(collection(db, 'jobs'), where('userId', '==', user.uid));
+      const querySnapshot = await getDocs(q);
       const jobsData = [];
       querySnapshot.forEach((doc) => {
         jobsData.push({
@@ -72,7 +78,7 @@ export default function Jobs() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   // Apply filters and sorting to jobs
   const filteredAndSortedJobs = applyFiltersAndSort(jobs);
@@ -132,7 +138,7 @@ export default function Jobs() {
 
   useEffect(() => {
     fetchJobs();
-  }, []);
+  }, [fetchJobs]);
 
   if (loading) {
     return (

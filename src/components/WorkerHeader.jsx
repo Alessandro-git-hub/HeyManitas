@@ -1,8 +1,22 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
-export default function WorkerHeader({ userName = 'Juan' }) {
+export default function WorkerHeader() {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
+
+  // Get user's display name, fallback to email or 'User'
+  const firstName = user?.firstName || user?.email?.split('@')[0] || 'User';
 
   return (
     <header className="bg-white shadow-sm border-b">
@@ -15,12 +29,16 @@ export default function WorkerHeader({ userName = 'Juan' }) {
             >
               SkillBooster
             </button>
-            <span className="text-xs md:text-sm text-gray-500 hidden sm:inline">Worker Dashboard</span>
           </div>
           <div className="flex items-center space-x-2 md:space-x-4 min-w-0">
-            <span className="text-xs md:text-sm text-gray-600 hidden md:inline">Welcome back, {userName}</span>
-            <span className="text-xs md:text-sm text-gray-600 md:hidden">{userName}</span>
-            <button className="text-xs md:text-sm text-gray-500 hover:text-gray-700 flex-shrink-0">Logout</button>
+            <span className="text-xs md:text-sm text-gray-600 hidden md:inline">Welcome back, {firstName}</span>
+            <span className="text-xs md:text-sm text-gray-600 md:hidden">{firstName}</span>
+            <button 
+              onClick={handleLogout}
+              className="text-xs md:text-sm text-gray-500 hover:text-gray-700 flex-shrink-0 cursor-pointer"
+            >
+              Logout
+            </button>
           </div>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import React from 'react';
 import JobCard from './JobCard';
+import EmptyState from './EmptyState';
 
 export default function JobsList({
   jobs,
@@ -23,23 +24,23 @@ export default function JobsList({
 
   if (jobs.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-        <div className="text-gray-400 mb-4">
+      <EmptyState
+        icon={
           <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0H8m8 0v2a2 2 0 01-2 2H10a2 2 0 01-2-2V6m8 0V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2"></path>
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeWidth={1.5} 
+              d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" 
+            />
           </svg>
-        </div>
-        <h3 className="text-lg font-medium text-gray-900 mb-2">{title}</h3>
-        <p className="text-gray-600 mb-4">{message}</p>
-        {showAddButton && onAddClick && (
-          <button
-            onClick={onAddClick}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            {addButtonText}
-          </button>
-        )}
-      </div>
+        }
+        title={title}
+        description={message}
+        buttonText={showAddButton ? addButtonText : null}
+        onButtonClick={showAddButton ? onAddClick : null}
+        showButton={showAddButton}
+      />
     );
   }
 

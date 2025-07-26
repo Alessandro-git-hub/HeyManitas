@@ -7,6 +7,7 @@ import { getAllCategories, getCategoryInfo } from '../utils/serviceCategories';
 import WorkerNavigation from '../components/WorkerNavigation';
 import WorkerHeader from '../components/WorkerHeader';
 import ServiceCard from '../components/ServiceCard';
+import EmptyState from '../components/EmptyState';
 
 export default function Services() {
   // const navigate = useNavigate();
@@ -305,21 +306,22 @@ export default function Services() {
             ))}
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-            <div className="text-gray-400 mb-4">
+          <EmptyState
+            icon={
               <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0H8m8 0v2a2 2 0 01-2 2H10a2 2 0 01-2-2V6m8 0V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2"></path>
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={1.5} 
+                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2-2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" 
+                />
               </svg>
-            </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No services yet</h3>
-            <p className="text-gray-600 mb-4">Start by adding your first service offering.</p>
-            <button
-              onClick={() => setShowForm(true)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Add Your First Service
-            </button>
-          </div>
+            }
+            title="No services yet"
+            description="Start by adding your first service offering."
+            buttonText="Add Your First Service"
+            onButtonClick={() => setShowForm(true)}
+          />
         )}
 
         {/* Service Form Modal */}
