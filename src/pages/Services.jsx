@@ -256,17 +256,39 @@ export default function Services() {
     setFormErrors({});
   };
 
-  const toggleServiceStatus = (serviceId) => {
-    const updatedServices = services.map(service =>
-      service.id === serviceId
-        ? { ...service, isActive: !service.isActive, updatedAt: new Date() }
-        : service
-    );
-    setServices(updatedServices);
-    setFeedback({ 
-      message: 'Service status updated successfully!', 
-      type: 'success' 
-    });
+  const toggleServiceStatus = async (serviceId) => {
+    try {
+      // Find the service to get its current status
+      const service = services.find(s => s.id === serviceId);
+      if (!service) return;
+
+      const newStatus = !service.isActive;
+      
+      // Update in Firestore
+      await updateDoc(doc(db, 'services', serviceId), {
+        isActive: newStatus,
+        updatedAt: new Date()
+      });
+
+      // Update local state
+      const updatedServices = services.map(service =>
+        service.id === serviceId
+          ? { ...service, isActive: newStatus, updatedAt: new Date() }
+          : service
+      );
+      setServices(updatedServices);
+      
+      setFeedback({ 
+        message: `Service ${newStatus ? 'activated' : 'deactivated'} successfully!`, 
+        type: 'success' 
+      });
+    } catch (error) {
+      console.error('Error updating service status:', error);
+      setFeedback({ 
+        message: 'Error updating service status. Please try again.', 
+        type: 'error' 
+      });
+    }
   };
 
   // Clear feedback after 5 seconds

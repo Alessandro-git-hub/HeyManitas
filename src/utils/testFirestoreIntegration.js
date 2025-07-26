@@ -71,3 +71,46 @@ export const testJobsIntegration = async () => {
     };
   }
 };
+
+export const testServiceActivationFlow = async () => {
+  try {
+    console.log('🔥 Testing service activation/deactivation flow...');
+    
+    // Step 1: Fetch all services (active and inactive)
+    const allServicesSnapshot = await getDocs(collection(db, 'services'));
+    const allServices = [];
+    allServicesSnapshot.forEach((doc) => {
+      allServices.push({ id: doc.id, ...doc.data() });
+    });
+    
+    console.log(`📋 Total services in database: ${allServices.length}`);
+    
+    // Step 2: Fetch only active services (like JobFormModal does)
+    const activeServices = allServices.filter(service => service.isActive);
+    console.log(`✅ Active services available for jobs: ${activeServices.length}`);
+    
+    // Step 3: Show breakdown
+    const inactiveServices = allServices.filter(service => !service.isActive);
+    console.log(`❌ Inactive services (not shown in job creation): ${inactiveServices.length}`);
+    
+    if (inactiveServices.length > 0) {
+      console.log('Inactive services:', inactiveServices.map(s => s.name));
+    }
+    
+    return {
+      success: true,
+      totalServices: allServices.length,
+      activeServices: activeServices.length,
+      inactiveServices: inactiveServices.length,
+      activeServiceNames: activeServices.map(s => s.name),
+      inactiveServiceNames: inactiveServices.map(s => s.name)
+    };
+    
+  } catch (error) {
+    console.error('❌ Service activation flow test failed:', error);
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+};
