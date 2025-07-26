@@ -2,14 +2,14 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { collection, getDocs, deleteDoc, doc, query, where } from 'firebase/firestore';
 import { db } from '../utils/firebase';
 import { useAuth } from '../contexts/AuthContext';
-import JobCard from '../components/JobCard';
-import JobFormModal from '../components/JobFormModal';
-import AddJobButton from '../components/AddJobButton';
-import WorkerNavigation from '../components/WorkerNavigation';
-import WorkerHeader from '../components/WorkerHeader';
-import JobFilters from '../components/JobFilters';
-import JobsList from '../components/JobsList';
-import JobDetailsModal from '../components/JobDetailsModal';
+import JobCard from '../components/job/JobCard';
+import JobFormModal from '../components/job/JobFormModal';
+import ActionButton from '../components/common/ActionButton';
+import WorkerNavigation from '../components/layout/WorkerNavigation';
+import WorkerHeader from '../components/layout/WorkerHeader';
+import JobFilters from '../components/job/JobFilters';
+import JobsList from '../components/job/JobsList';
+import JobDetailsModal from '../components/job/JobDetailsModal';
 import { useJobFilters } from '../hooks/useJobFilters';
 
 export default function Jobs() {
@@ -165,7 +165,9 @@ export default function Jobs() {
 
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-gray-900">My Jobs</h1>
-          <AddJobButton onClick={() => setShowForm(true)} />
+          <ActionButton onClick={() => setShowForm(true)}>
+            Add New Job
+          </ActionButton>
         </div>
 
         {/* Filter and Sort Controls */}

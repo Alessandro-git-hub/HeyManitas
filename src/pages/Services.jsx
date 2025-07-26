@@ -4,10 +4,10 @@ import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc, query, where } 
 import { db } from '../utils/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { getAllCategories, getCategoryInfo } from '../utils/serviceCategories';
-import WorkerNavigation from '../components/WorkerNavigation';
-import WorkerHeader from '../components/WorkerHeader';
-import ServiceCard from '../components/ServiceCard';
-import EmptyState from '../components/EmptyState';
+import WorkerNavigation from '../components/layout/WorkerNavigation';
+import WorkerHeader from '../components/layout/WorkerHeader';
+import ServiceCard from '../components/service/ServiceCard';
+import EmptyState from '../components/common/EmptyState';
 
 export default function Services() {
   // const navigate = useNavigate();

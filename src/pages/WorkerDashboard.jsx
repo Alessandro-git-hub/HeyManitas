@@ -3,12 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../utils/firebase';
 import { useAuth } from '../contexts/AuthContext';
-import JobFormModal from '../components/JobFormModal';
-import JobDetailsModal from '../components/JobDetailsModal';
-import AddJobButton from '../components/AddJobButton';
-import ActionButton from '../components/ActionButton';
-import WorkerNavigation from '../components/WorkerNavigation';
-import WorkerHeader from '../components/WorkerHeader';
+import JobFormModal from '../components/job/JobFormModal';
+import JobDetailsModal from '../components/job/JobDetailsModal';
+import ActionButton from '../components/common/ActionButton';
+import WorkerNavigation from '../components/layout/WorkerNavigation';
+import WorkerHeader from '../components/layout/WorkerHeader';
 
 export default function WorkerDashboard() {
   const navigate = useNavigate();
@@ -308,7 +307,9 @@ export default function WorkerDashboard() {
           <div className="bg-white p-6 rounded-lg shadow-sm border">
             <h3 className="text-lg font-semibold text-deep mb-4">Quick Actions</h3>
             <div className="flex flex-wrap gap-3">
-              <AddJobButton onClick={() => setShowJobForm(true)} />
+              <ActionButton onClick={() => setShowJobForm(true)}>
+                Add New Job
+              </ActionButton>
               <ActionButton variant="warning">
                 Create Quote
               </ActionButton>

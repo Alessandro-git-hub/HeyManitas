@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { collection, addDoc, updateDoc, doc, getDocs, query, where } from 'firebase/firestore';
-import { db } from '../utils/firebase';
-import { useAuth } from '../contexts/AuthContext';
-import { getCategoryInfo } from '../utils/serviceCategories';
+import { db } from '../../utils/firebase';
+import { useAuth } from '../../contexts/AuthContext';
+import { getCategoryInfo } from '../../utils/serviceCategories';
 
 export default function JobFormModal({ 
   isOpen, 

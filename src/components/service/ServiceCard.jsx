@@ -1,5 +1,5 @@
 import React from 'react';
-import { getCategoryInfo, getCategoryStyles } from '../utils/serviceCategories';
+import { getCategoryInfo, getCategoryStyles } from '../../utils/serviceCategories';
 
 export default function ServiceCard({ 
   service, 

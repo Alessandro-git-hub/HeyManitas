@@ -1,6 +1,6 @@
 import React from 'react';
 import JobCard from './JobCard';
-import EmptyState from './EmptyState';
+import EmptyState from '../common/EmptyState';
 
 export default function JobsList({
   jobs,
