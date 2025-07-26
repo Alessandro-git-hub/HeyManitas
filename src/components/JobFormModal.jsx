@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { collection, addDoc, updateDoc, doc } from 'firebase/firestore';
+import React, { useState, useEffect } from 'react';
+import { collection, addDoc, updateDoc, doc, getDocs } from 'firebase/firestore';
 import { db } from '../utils/firebase';
 
 export default function JobFormModal({ 
@@ -24,73 +24,37 @@ export default function JobFormModal({
   const [availableServices, setAvailableServices] = useState([]);
   const [loadingServices, setLoadingServices] = useState(false);
 
-  // Test services data (same as in Services.jsx for now)
-  const testServices = useMemo(() => [
-    {
-      id: 'test-1',
-      name: 'Basic Plumbing Repair',
-      description: 'Fix leaky faucets, unclog drains, minor pipe repairs',
-      category: 'Plumbing',
-      basePrice: 75,
-      duration: '1-2 hours',
-      isActive: true
-    },
-    {
-      id: 'test-2', 
-      name: 'Electrical Installation',
-      description: 'Install light fixtures, outlets, switches, and basic wiring',
-      category: 'Electrical',
-      basePrice: 120,
-      duration: '2-3 hours',
-      isActive: true
-    },
-    {
-      id: 'test-3',
-      name: 'Home Deep Cleaning',
-      description: 'Complete house cleaning including bathrooms, kitchen, and all rooms',
-      category: 'Cleaning',
-      basePrice: 150,
-      duration: '4-6 hours',
-      isActive: true
-    },
-    {
-      id: 'test-4',
-      name: 'Furniture Assembly',
-      description: 'Assemble furniture, mount TVs, hang pictures and shelves',
-      category: 'Handyman',
-      basePrice: 60,
-      duration: '1-3 hours',
-      isActive: false
-    }
-  ], []);
-
-  // Fetch available services (using test data for now)
+  // Fetch available services from Firestore
   useEffect(() => {
     if (isOpen) {
-      setLoadingServices(true);
-      // For now, use test data. Later we can fetch from Firestore
-      // const fetchServices = async () => {
-      //   try {
-      //     const querySnapshot = await getDocs(collection(db, 'services'));
-      //     const servicesData = [];
-      //     querySnapshot.forEach((doc) => {
-      //       const service = { id: doc.id, ...doc.data() };
-      //       if (service.isActive) {
-      //         servicesData.push(service);
-      //       }
-      //     });
-      //     setAvailableServices(servicesData);
-      //   } catch (error) {
-      //     console.error('Error fetching services:', error);
-      //   }
-      // };
+      const fetchServices = async () => {
+        setLoadingServices(true);
+        try {
+          const querySnapshot = await getDocs(collection(db, 'services'));
+          const servicesData = [];
+          querySnapshot.forEach((doc) => {
+            const service = { 
+              id: doc.id, 
+              ...doc.data(),
+              createdAt: doc.data().createdAt?.toDate() || new Date()
+            };
+            // Only include active services
+            if (service.isActive) {
+              servicesData.push(service);
+            }
+          });
+          setAvailableServices(servicesData);
+        } catch (error) {
+          console.error('Error fetching services:', error);
+          setAvailableServices([]);
+        } finally {
+          setLoadingServices(false);
+        }
+      };
       
-      // Use test data for now - only active services
-      const activeServices = testServices.filter(service => service.isActive);
-      setAvailableServices(activeServices);
-      setLoadingServices(false);
+      fetchServices();
     }
-  }, [isOpen, testServices]);
+  }, [isOpen]);
 
   // Initialize form data when modal opens or editing job changes
   useEffect(() => {

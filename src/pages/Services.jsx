@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 // import { useNavigate } from 'react-router-dom';
-// import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc } from 'firebase/firestore';
-// import { db } from '../utils/firebase';
+import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import { db } from '../utils/firebase';
 import WorkerNavigation from '../components/WorkerNavigation';
 import WorkerHeader from '../components/WorkerHeader';
 import ServiceCard from '../components/ServiceCard';
@@ -89,18 +89,39 @@ export default function Services() {
     const fetchServices = async () => {
       try {
         setLoading(true);
-        // For now, we'll use test data. Later we can fetch from Firestore
-        // const querySnapshot = await getDocs(collection(db, 'services'));
-        // const servicesData = [];
-        // querySnapshot.forEach((doc) => {
-        //   servicesData.push({ id: doc.id, ...doc.data() });
-        // });
         
-        // Use test data for now
-        setServices(testServices);
+        // Fetch services from Firestore
+        const querySnapshot = await getDocs(collection(db, 'services'));
+        const servicesData = [];
+        querySnapshot.forEach((doc) => {
+          servicesData.push({ 
+            id: doc.id, 
+            ...doc.data(),
+            createdAt: doc.data().createdAt?.toDate() || new Date()
+          });
+        });
+        
+        // If no services exist in Firestore, add test data
+        if (servicesData.length === 0) {
+          console.log('No services found in Firestore. Adding test data...');
+          const addPromises = testServices.map(async (service) => {
+            // eslint-disable-next-line no-unused-vars
+            const { id, ...serviceData } = service; // Remove the test id
+            const docRef = await addDoc(collection(db, 'services'), serviceData);
+            return { id: docRef.id, ...serviceData };
+          });
+          
+          const addedServices = await Promise.all(addPromises);
+          setServices(addedServices);
+        } else {
+          setServices(servicesData);
+        }
+        
       } catch (error) {
         console.error('Error fetching services:', error);
         setFeedback({ message: 'Error loading services. Please try again.', type: 'error' });
+        // Fallback to test data if Firestore fails
+        setServices(testServices);
       } finally {
         setLoading(false);
       }
@@ -149,23 +170,36 @@ export default function Services() {
     setIsSubmitting(true);
     try {
       if (editingService) {
-        // For now, just update local state. Later we can use Firestore
+        // Update existing service in Firestore
+        const serviceData = {
+          ...formData,
+          basePrice: parseFloat(formData.basePrice),
+          updatedAt: new Date()
+        };
+        
+        await updateDoc(doc(db, 'services', editingService.id), serviceData);
+        
+        // Update local state
         const updatedServices = services.map(service =>
           service.id === editingService.id
-            ? { ...service, ...formData, updatedAt: new Date() }
+            ? { ...service, ...serviceData }
             : service
         );
         setServices(updatedServices);
         setFeedback({ message: 'Service updated successfully!', type: 'success' });
       } else {
-        // Add new service to local state
-        const newService = {
-          id: `test-${Date.now()}`,
+        // Add new service to Firestore
+        const serviceData = {
           ...formData,
           basePrice: parseFloat(formData.basePrice),
           createdAt: new Date(),
           updatedAt: new Date()
         };
+        
+        const docRef = await addDoc(collection(db, 'services'), serviceData);
+        const newService = { id: docRef.id, ...serviceData };
+        
+        // Update local state
         setServices(prev => [newService, ...prev]);
         setFeedback({ message: 'Service added successfully!', type: 'success' });
       }
@@ -178,10 +212,14 @@ export default function Services() {
     }
   };
 
-  const handleDeleteService = (serviceId) => {
+  const handleDeleteService = async (serviceId) => {
     if (!window.confirm('Are you sure you want to delete this service?')) return;
     
     try {
+      // Delete from Firestore
+      await deleteDoc(doc(db, 'services', serviceId));
+      
+      // Update local state
       const updatedServices = services.filter(service => service.id !== serviceId);
       setServices(updatedServices);
       setFeedback({ message: 'Service deleted successfully!', type: 'success' });
