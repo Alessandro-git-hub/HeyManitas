@@ -1,0 +1,58 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,jsx,ts,tsx}"
+  ],
+  theme: {
+    extend: {
+      colors: {
+        // Core Palette with variations
+        primary: {
+          DEFAULT: '#1E3A8A',    // Deep Steel Blue
+          50: '#EFF6FF',
+          100: '#DBEAFE',
+          600: '#1E3A8A',
+          700: '#1E40AF',
+          800: '#1E3A8A',
+        },
+        accent: {
+          DEFAULT: '#F97316',    // Energetic Orange
+          50: '#FFF7ED',
+          100: '#FFEDD5',
+          600: '#F97316',
+          700: '#EA580C',
+        },
+        success: {
+          DEFAULT: '#10B981',    // Fresh Green
+          50: '#ECFDF5',
+          100: '#D1FAE5',
+          600: '#10B981',
+          700: '#047857',
+          800: '#065F46',
+        },
+        warning: {
+          DEFAULT: '#F59E0B',    // Warm Amber
+          50: '#FFFBEB',
+          100: '#FEF3C7',
+          600: '#F59E0B',
+          700: '#D97706',
+          800: '#92400E',
+        },
+        error: {
+          DEFAULT: '#EF4444',    // Alert Red
+          50: '#FEF2F2',
+          100: '#FEE2E2',
+          600: '#EF4444',
+          700: '#DC2626',
+        },
+        
+        // Neutral & Background
+        light: '#F9FAFB',        // Soft White
+        base: '#F3F4F6',         // Cool Gray
+        deep: '#1F2937',         // Charcoal Gray
+      },
+    },
+  },
+  plugins: [],
+}
