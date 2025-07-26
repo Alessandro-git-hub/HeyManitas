@@ -1,4 +1,5 @@
 import React from 'react';
+import { getCategoryInfo, getCategoryStyles } from '../utils/serviceCategories';
 
 export default function ServiceCard({ 
   service, 
@@ -7,6 +8,9 @@ export default function ServiceCard({
   onToggleStatus, 
   showActions = true 
 }) {
+  const categoryInfo = getCategoryInfo(service.category);
+  const categoryStyles = getCategoryStyles(service.category);
+
   return (
     <div className="bg-white rounded-lg shadow-sm border p-6">
       <div className="flex justify-between items-start mb-4">
@@ -14,9 +18,10 @@ export default function ServiceCard({
           <h3 className="text-lg font-semibold text-gray-900 mb-1">
             {service.name}
           </h3>
-          <p className="text-sm text-blue-600 bg-blue-50 px-2 py-1 rounded inline-block">
-            {service.category}
-          </p>
+          <div className={`text-sm px-3 py-1 rounded-full border inline-flex items-center gap-2 ${categoryStyles}`}>
+            <span className="text-base">{categoryInfo.icon}</span>
+            <span className="font-medium">{service.category}</span>
+          </div>
         </div>
         <div className="flex items-center space-x-2">
           <span className={`text-xs px-2 py-1 rounded-full ${

@@ -4,7 +4,6 @@ import Home from './pages/Home';
 import WorkerDashboard from './pages/WorkerDashboard';
 import Jobs from './pages/Jobs';
 import Services from './pages/Services';
-import ServiceStatusTest from './pages/ServiceStatusTest';
 
 function App() {
   return (
@@ -15,7 +14,6 @@ function App() {
           <Route path="/worker" element={<WorkerDashboard />} />
           <Route path="/worker/jobs" element={<Jobs />} />
           <Route path="/worker/services" element={<Services />} />
-          <Route path="/test/services" element={<ServiceStatusTest />} />
         </Routes>
       </div>
     </Router>

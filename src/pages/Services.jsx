@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 // import { useNavigate } from 'react-router-dom';
 import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../utils/firebase';
+import { getAllCategories, getCategoryInfo } from '../utils/serviceCategories';
 import WorkerNavigation from '../components/WorkerNavigation';
 import WorkerHeader from '../components/WorkerHeader';
 import ServiceCard from '../components/ServiceCard';
@@ -27,19 +28,7 @@ export default function Services() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Service categories
-  const serviceCategories = [
-    'Plumbing',
-    'Electrical',
-    'Cleaning',
-    'Handyman',
-    'Home Repair',
-    'Painting',
-    'Gardening',
-    'Auto Repair',
-    'HVAC',
-    'Carpentry',
-    'Other'
-  ];
+  const serviceCategories = getAllCategories();
 
   // Test data - we'll use this initially
   const testServices = useMemo(() => [
@@ -449,9 +438,14 @@ export default function Services() {
                       } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50`}
                     >
                       <option value="">Select a category</option>
-                      {serviceCategories.map(category => (
-                        <option key={category} value={category}>{category}</option>
-                      ))}
+                      {serviceCategories.map(category => {
+                        const categoryInfo = getCategoryInfo(category);
+                        return (
+                          <option key={category} value={category}>
+                            {categoryInfo.icon} {category} - {categoryInfo.description}
+                          </option>
+                        );
+                      })}
                     </select>
                     {formErrors.category && (
                       <p className="text-red-500 text-sm mt-1">{formErrors.category}</p>

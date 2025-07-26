@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { collection, addDoc, updateDoc, doc, getDocs } from 'firebase/firestore';
 import { db } from '../utils/firebase';
+import { getCategoryInfo } from '../utils/serviceCategories';
 
 export default function JobFormModal({ 
   isOpen, 
@@ -266,11 +267,14 @@ export default function JobFormModal({
                 } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50`}
               >
                 <option value="">Select a service</option>
-                {availableServices.map(service => (
-                  <option key={service.id} value={service.id}>
-                    {service.name} - €{service.basePrice} ({service.category})
-                  </option>
-                ))}
+                {availableServices.map(service => {
+                  const categoryInfo = getCategoryInfo(service.category);
+                  return (
+                    <option key={service.id} value={service.id}>
+                      {categoryInfo.icon} {service.name} - €{service.basePrice} ({service.category})
+                    </option>
+                  );
+                })}
               </select>
               {formErrors.serviceId && (
                 <p className="text-red-500 text-sm mt-1">{formErrors.serviceId}</p>
