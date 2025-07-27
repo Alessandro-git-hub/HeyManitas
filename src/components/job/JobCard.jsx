@@ -1,28 +1,11 @@
 import React from 'react';
+import { getStatusStyles, formatDate } from '../../utils/formatters';
 
 export default function JobCard({ job, onEdit, onDelete, onViewDetails }) {
-  const getStatusStyles = (status) => {
-    switch (status) {
-      case 'Done':
-        return 'bg-green-100 text-green-800';
-      case 'In Progress':
-        return 'bg-blue-100 text-blue-800';
-      case 'Cancelled':
-        return 'bg-red-100 text-red-800';
-      default: // Pending
-        return 'bg-yellow-100 text-yellow-800';
-    }
-  };
-
-  const formatDate = (date) => {
-    if (!date) return '';
-    const dateObj = date.toDate ? date.toDate() : new Date(date);
-    return dateObj.toLocaleDateString();
-  };
 
   return (
     <div 
-      className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-pointer"
+      className="bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow cursor-pointer"
       onClick={() => onViewDetails && onViewDetails(job)}
     >
       <div className="flex justify-between items-start mb-3">

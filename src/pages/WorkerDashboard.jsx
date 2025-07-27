@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../utils/firebase';
 import { useAuth } from '../contexts/AuthContext';
+import { getStatusStyles, formatDateShort, getTodaysDate } from '../utils/formatters';
 import JobFormModal from '../components/job/JobFormModal';
 import JobDetailsModal from '../components/job/JobDetailsModal';
 import ActionButton from '../components/common/ActionButton';
@@ -18,17 +19,12 @@ export default function WorkerDashboard() {
   const [feedback, setFeedback] = useState({ message: '', type: '' });
   const [todaysJobsCount, setTodaysJobsCount] = useState(0);
   const [recentJobs, setRecentJobs] = useState([]);
+  const [activeClientsCount, setActiveClientsCount] = useState(0);
+  const [weeklyEarnings, setWeeklyEarnings] = useState(0);
   
   // Job details modal state
   const [showJobDetails, setShowJobDetails] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
-  const [weeklyEarnings, setWeeklyEarnings] = useState(0);
-
-  // Function to get today's date in YYYY-MM-DD format
-  const getTodaysDate = () => {
-    const today = new Date();
-    return today.toISOString().split('T')[0];
-  };
 
   // Function to get start of current week (Monday)
   const getStartOfWeek = useCallback(() => {
@@ -68,29 +64,42 @@ export default function WorkerDashboard() {
     }, 0);
   }, [getStartOfWeek, getEndOfWeek]);
 
-  // Function to get status styles
-  const getStatusStyles = (status) => {
-    switch (status) {
-      case 'Done':
-        return 'bg-green-100 text-green-800';
-      case 'In Progress':
-        return 'bg-blue-100 text-blue-800';
-      case 'Cancelled':
-        return 'bg-red-100 text-red-800';
-      default: // Pending
-        return 'bg-yellow-100 text-yellow-800';
+  // Function to calculate active clients (customers from customers collection who have jobs)
+  const calculateActiveClients = useCallback(async (jobs) => {
+    if (!user) return 0;
+    
+    try {
+      // Get all customers for this user
+      const customersQuery = query(collection(db, 'customers'), where('userId', '==', user.uid));
+      const customersSnapshot = await getDocs(customersQuery);
+      
+      // Get set of client names from non-cancelled jobs
+      const clientNamesWithJobs = new Set();
+      jobs.forEach((job) => {
+        if (job.status !== 'Cancelled') {
+          const clientName = job.client || job.clientName;
+          if (clientName && clientName.trim()) {
+            clientNamesWithJobs.add(clientName.toLowerCase().trim());
+          }
+        }
+      });
+      
+      // Count customers who have jobs
+      let activeCustomersCount = 0;
+      customersSnapshot.forEach((doc) => {
+        const customer = doc.data();
+        const customerName = (customer.name || '').toLowerCase().trim();
+        if (clientNamesWithJobs.has(customerName)) {
+          activeCustomersCount++;
+        }
+      });
+      
+      return activeCustomersCount;
+    } catch (error) {
+      console.error('Error calculating active clients:', error);
+      return 0;
     }
-  };
-
-  // Function to format date for display
-  const formatDate = (date) => {
-    if (!date) return '';
-    const dateObj = date.toDate ? date.toDate() : new Date(date);
-    return dateObj.toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric' 
-    });
-  };
+  }, [user]);
 
   const handleJobSuccess = (message) => {
     setFeedback({ message, type: 'success' });
@@ -120,6 +129,10 @@ export default function WorkerDashboard() {
         const earnings = calculateWeeklyEarnings(allJobs);
         setWeeklyEarnings(earnings);
         
+        // Calculate active clients count
+        const clientsCount = await calculateActiveClients(allJobs);
+        setActiveClientsCount(clientsCount);
+        
         // Sort jobs by creation date (most recent first) and take the first 3
         const sortedJobs = allJobs.sort((a, b) => {
           const aDate = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt || 0);
@@ -132,6 +145,7 @@ export default function WorkerDashboard() {
         console.error('Error fetching jobs:', error);
         setTodaysJobsCount(0);
         setWeeklyEarnings(0);
+        setActiveClientsCount(0);
         setRecentJobs([]);
       }
     };
@@ -194,6 +208,10 @@ export default function WorkerDashboard() {
         const earnings = calculateWeeklyEarnings(allJobs);
         setWeeklyEarnings(earnings);
         
+        // Calculate active clients count
+        const clientsCount = await calculateActiveClients(allJobs);
+        setActiveClientsCount(clientsCount);
+        
         // Sort jobs by creation date (most recent first) and take the first 3
         const sortedJobs = allJobs.sort((a, b) => {
           const aDate = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt || 0);
@@ -206,12 +224,13 @@ export default function WorkerDashboard() {
         console.error('Error fetching jobs:', error);
         setTodaysJobsCount(0);
         setWeeklyEarnings(0);
+        setActiveClientsCount(0);
         setRecentJobs([]);
       }
     };
 
     fetchData();
-  }, [calculateWeeklyEarnings, user]);
+  }, [calculateWeeklyEarnings, calculateActiveClients, user]);
 
   return (
     <div className="min-h-screen bg-light">
@@ -298,7 +317,7 @@ export default function WorkerDashboard() {
               </div>
               <div className="ml-4 md:ml-0">
                 <p className="text-sm text-gray-600">Active Clients</p>
-                <p className="text-2xl font-bold text-deep">12</p>
+                <p className="text-2xl font-bold text-deep">{activeClientsCount}</p>
               </div>
             </div>
           </div>
@@ -340,7 +359,7 @@ export default function WorkerDashboard() {
                         <p className="font-medium text-deep">{job.client || job.clientName || 'Unknown Client'}</p>
                         <p className="text-sm text-gray-600">{job.description || 'No description'}</p>
                         {job.scheduledDate && (
-                          <p className="text-xs text-gray-500">Scheduled: {formatDate(job.scheduledDate + 'T00:00:00')}</p>
+                          <p className="text-xs text-gray-500">Scheduled: {formatDateShort(job.scheduledDate + 'T00:00:00')}</p>
                         )}
                       </div>
                       <div className="flex items-center space-x-2">

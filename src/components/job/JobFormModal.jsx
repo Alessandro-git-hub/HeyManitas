@@ -26,18 +26,21 @@ export default function JobFormModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [availableServices, setAvailableServices] = useState([]);
   const [loadingServices, setLoadingServices] = useState(false);
+  const [availableCustomers, setAvailableCustomers] = useState([]);
+  const [loadingCustomers, setLoadingCustomers] = useState(false);
 
-  // Fetch available services from Firestore
+  // Fetch available services and customers from Firestore
   useEffect(() => {
     if (isOpen && user) {
-      const fetchServices = async () => {
+      const fetchServicesAndCustomers = async () => {
         setLoadingServices(true);
+        setLoadingCustomers(true);
         try {
           // Fetch services from Firestore for the current user
-          const q = query(collection(db, 'services'), where('userId', '==', user.uid));
-          const querySnapshot = await getDocs(q);
+          const servicesQuery = query(collection(db, 'services'), where('userId', '==', user.uid));
+          const servicesSnapshot = await getDocs(servicesQuery);
           const servicesData = [];
-          querySnapshot.forEach((doc) => {
+          servicesSnapshot.forEach((doc) => {
             const service = { 
               id: doc.id, 
               ...doc.data(),
@@ -49,15 +52,32 @@ export default function JobFormModal({
             }
           });
           setAvailableServices(servicesData);
+
+          // Fetch customers from Firestore for the current user (show all customers for job selection)
+          const customersQuery = query(collection(db, 'customers'), where('userId', '==', user.uid));
+          const customersSnapshot = await getDocs(customersQuery);
+          const allCustomers = [];
+          customersSnapshot.forEach((doc) => {
+            allCustomers.push({ 
+              id: doc.id, 
+              ...doc.data()
+            });
+          });
+
+          // Sort customers by name
+          allCustomers.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+          setAvailableCustomers(allCustomers);
         } catch (error) {
-          console.error('Error fetching services:', error);
+          console.error('Error fetching services and customers:', error);
           setAvailableServices([]);
+          setAvailableCustomers([]);
         } finally {
           setLoadingServices(false);
+          setLoadingCustomers(false);
         }
       };
       
-      fetchServices();
+      fetchServicesAndCustomers();
     }
   }, [isOpen, user]);
 
@@ -155,6 +175,38 @@ export default function JobFormModal({
 
     setIsSubmitting(true);
     try {
+      // Check if customer exists, and create if new
+      let newCustomerCreated = false;
+      const customerName = formData.client.trim();
+      if (customerName) {
+        const existingCustomer = availableCustomers.find(
+          customer => customer.name.toLowerCase() === customerName.toLowerCase()
+        );
+        
+        if (!existingCustomer) {
+          // Create new customer record
+          try {
+            await addDoc(collection(db, 'customers'), {
+              name: customerName,
+              email: '',
+              phone: '',
+              company: '',
+              address: '',
+              notes: editingJob 
+                ? `Auto-created from editing job: ${formData.description || 'Job'}`
+                : `Auto-created from job: ${formData.description || 'New job'}`,
+              userId: user.uid,
+              createdAt: new Date(),
+              updatedAt: new Date()
+            });
+            newCustomerCreated = true;
+          } catch (customerError) {
+            console.warn('Failed to auto-create customer:', customerError);
+            // Continue with job creation even if customer creation fails
+          }
+        }
+      }
+
       const jobData = {
         client: formData.client,
         description: formData.description,
@@ -173,7 +225,11 @@ export default function JobFormModal({
           ...jobData,
           updatedAt: new Date()
         });
-        onSuccess('Job updated successfully!');
+        
+        const successMessage = newCustomerCreated 
+          ? `Job updated successfully! New customer "${customerName}" was also created.`
+          : 'Job updated successfully!';
+        onSuccess(successMessage);
       } else {
         // Create new job
         await addDoc(collection(db, 'jobs'), {
@@ -182,7 +238,11 @@ export default function JobFormModal({
           createdAt: new Date(),
           updatedAt: new Date()
         });
-        onSuccess('Job added successfully!');
+        
+        const successMessage = newCustomerCreated 
+          ? `Job added successfully! New customer "${customerName}" was also created.`
+          : 'Job added successfully!';
+        onSuccess(successMessage);
       }
       onClose();
     } catch (error) {
@@ -247,14 +307,34 @@ export default function JobFormModal({
                 value={formData.client}
                 onChange={handleInputChange}
                 disabled={isSubmitting}
+                list="customers-list"
                 className={`w-full p-3 border rounded-lg ${
                   formErrors.client ? 'border-red-500' : 'border-gray-300'
-                } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50`}
-                placeholder="Enter client name"
+                } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 ${
+                  loadingCustomers ? 'bg-gray-50' : ''
+                }`}
+                placeholder="Enter or select client name (new clients will be saved automatically)"
                 autoFocus={!editingJob}
               />
+              <datalist id="customers-list">
+                {!loadingCustomers && availableCustomers.map((customer) => (
+                  <option key={customer.id} value={customer.name}>
+                    {customer.company && `${customer.name} (${customer.company})`}
+                  </option>
+                ))}
+              </datalist>
               {formErrors.client && (
                 <p className="text-red-500 text-sm mt-1">{formErrors.client}</p>
+              )}
+              {!loadingCustomers && availableCustomers.length > 0 && (
+                <p className="text-xs text-gray-500 mt-1">
+                  Start typing to see existing clients or enter a new name (will be saved automatically)
+                </p>
+              )}
+              {!loadingCustomers && availableCustomers.length === 0 && (
+                <p className="text-xs text-gray-500 mt-1">
+                  Enter client name - new customers will be saved automatically
+                </p>
               )}
             </div>
 

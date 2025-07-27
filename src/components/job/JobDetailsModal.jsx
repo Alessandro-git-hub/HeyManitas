@@ -1,44 +1,8 @@
 import React from 'react';
+import { getStatusStyles, formatDateTimeDetailed, formatDateDetailed } from '../../utils/formatters';
 
 export default function JobDetailsModal({ isOpen, onClose, job }) {
   if (!isOpen || !job) return null;
-
-  const getStatusStyles = (status) => {
-    switch (status) {
-      case 'Done':
-        return 'bg-green-100 text-green-800 border-green-200';
-      case 'In Progress':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'Cancelled':
-        return 'bg-red-100 text-red-800 border-red-200';
-      default: // Pending
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-    }
-  };
-
-  const formatDateTime = (date) => {
-    if (!date) return 'Not specified';
-    const dateObj = date.toDate ? date.toDate() : new Date(date);
-    return dateObj.toLocaleString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  const formatDate = (date) => {
-    if (!date) return 'Not specified';
-    const dateObj = date.toDate ? date.toDate() : new Date(date);
-    return dateObj.toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
 
   const formatTime = (time) => {
     if (!time) return 'Not specified';
@@ -81,7 +45,7 @@ export default function JobDetailsModal({ isOpen, onClose, job }) {
               </div>
               <div>
                 <p className="text-sm text-gray-600">Status</p>
-                <span className={`inline-block px-3 py-1 text-sm font-medium rounded-full border ${getStatusStyles(job.status)}`}>
+                <span className={`inline-block px-3 py-1 text-sm font-medium rounded-full border ${getStatusStyles(job.status, true)}`}>
                   {job.status}
                 </span>
               </div>
@@ -145,7 +109,7 @@ export default function JobDetailsModal({ isOpen, onClose, job }) {
               <div>
                 <p className="text-sm text-gray-600">Scheduled Date</p>
                 <p className="font-medium text-gray-900">
-                  {job.scheduledDate ? formatDate(job.scheduledDate + 'T00:00:00') : 'Not scheduled'}
+                  {job.scheduledDate ? formatDateDetailed(job.scheduledDate + 'T00:00:00') : 'Not scheduled'}
                 </p>
               </div>
               <div>
@@ -166,7 +130,7 @@ export default function JobDetailsModal({ isOpen, onClose, job }) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <p className="text-sm text-gray-600">Created</p>
-                <p className="font-medium text-gray-900">{formatDateTime(job.createdAt)}</p>
+                <p className="font-medium text-gray-900">{formatDateTimeDetailed(job.createdAt)}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-600">Job ID</p>
