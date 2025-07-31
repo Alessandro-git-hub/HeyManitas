@@ -12,7 +12,6 @@ const CustomerProfessionals = () => {
   const [professionals, setProfessionals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [debugInfo, setDebugInfo] = useState('');
 
   // Color mapping for category backgrounds
   const colorMap = {
@@ -54,11 +53,6 @@ const CustomerProfessionals = () => {
         }
 
         // Query for services in this category
-        console.log('Searching for category:', categoryKey);
-        console.log('Category ID from URL:', categoryId);
-        
-        let debugLog = `Searching for category: "${categoryKey}" (URL ID: ${categoryId})\n`;
-        
         const servicesQuery = query(
           collection(db, 'services'),
           where('category', '==', categoryKey),
@@ -66,33 +60,8 @@ const CustomerProfessionals = () => {
         );
         
         const servicesSnapshot = await getDocs(servicesQuery);
-        console.log('Found services:', servicesSnapshot.docs.length);
-        debugLog += `Found ${servicesSnapshot.docs.length} active services\n`;
-        
-        // Log all services found for debugging
-        servicesSnapshot.docs.forEach(doc => {
-          console.log('Service found:', doc.id, doc.data());
-          debugLog += `Service: ${doc.data().name || 'Unnamed'} (Category: ${doc.data().category})\n`;
-        });
         
         if (servicesSnapshot.empty) {
-          console.log('No services found for category:', categoryKey);
-          
-          // Let's also try querying without the isActive filter to see if that's the issue
-          const allServicesQuery = query(
-            collection(db, 'services'),
-            where('category', '==', categoryKey)
-          );
-          const allServicesSnapshot = await getDocs(allServicesQuery);
-          console.log('Total services in category (including inactive):', allServicesSnapshot.docs.length);
-          debugLog += `Total services in category (including inactive): ${allServicesSnapshot.docs.length}\n`;
-          
-          allServicesSnapshot.docs.forEach(doc => {
-            console.log('All services in category:', doc.id, doc.data());
-            debugLog += `Inactive Service: ${doc.data().name || 'Unnamed'} (Active: ${doc.data().isActive})\n`;
-          });
-          
-          setDebugInfo(debugLog);
           setProfessionals([]);
           setLoading(false);
           return;
@@ -114,11 +83,8 @@ const CustomerProfessionals = () => {
         });
 
         const userIds = Array.from(userServicesMap.keys());
-        console.log('Found unique user IDs:', userIds);
-        debugLog += `Found ${userIds.length} unique professionals\n`;
         
         if (userIds.length === 0) {
-          setDebugInfo(debugLog);
           setProfessionals([]);
           setLoading(false);
           return;
@@ -128,19 +94,12 @@ const CustomerProfessionals = () => {
         const professionalProfiles = [];
         
         for (const userId of userIds) {
-          try {
-            console.log(`Fetching user profile for: ${userId}`);
-            debugLog += `Fetching user profile for: ${userId}\n`;
-            
+          try {            
             const userDocRef = doc(db, 'users', userId);
             const userDoc = await getDoc(userDocRef);
             
-            console.log(`User doc exists: ${userDoc.exists()}`);
-            
             if (userDoc.exists()) {
               const userData = userDoc.data();
-              console.log('User data:', userData);
-              debugLog += `User found: ${userData.displayName || userData.name || 'No name'}\n`;
               
               const userServices = userServicesMap.get(userId);
               
@@ -167,29 +126,16 @@ const CustomerProfessionals = () => {
                 availability: ['Available Today', 'Available This Week', 'Busy'][Math.floor(Math.random() * 3)],
                 services: userServices
               });
-            } else {
-              console.log(`No user document found for: ${userId}`);
-              debugLog += `No user document found for: ${userId}\n`;
             }
           } catch (userError) {
             console.error(`Error fetching user ${userId}:`, userError);
-            debugLog += `Error fetching user ${userId}: ${userError.message}\n`;
           }
         }
 
-        console.log('Final professional profiles:', professionalProfiles);
-        debugLog += `Final professional profiles: ${professionalProfiles.length}\n`;
-        
-        if (professionalProfiles.length > 0) {
-          debugLog += `Successfully created profiles for: ${professionalProfiles.map(p => p.name).join(', ')}\n`;
-        }
-        
-        setDebugInfo(debugLog);
         setProfessionals(professionalProfiles);
       } catch (err) {
         console.error('Error fetching professionals:', err);
         setError('Failed to load professionals');
-        setDebugInfo(prev => prev + `Error: ${err.message}\n`);
       } finally {
         setLoading(false);
       }
@@ -273,14 +219,6 @@ const CustomerProfessionals = () => {
         <div className="mb-6">
           <p className="text-gray-600">
             Found {professionals.length} {categoryName.toLowerCase()} professionals in your area
-          </p>
-          {/* Debug info - remove in production */}
-          <p className="text-sm text-gray-500">
-            Debug: Searching for category "{categoryKey}" (ID: {categoryId})
-          </p>
-          {/* Show current state for debugging */}
-          <p className="text-sm text-blue-600">
-            Loading: {loading.toString()}, Professionals: {professionals.length}, Error: {error || 'none'}
           </p>
         </div>
 
@@ -379,14 +317,6 @@ const CustomerProfessionals = () => {
             <p className="text-gray-500 mb-4">
               There are currently no professionals available for {categoryName.toLowerCase()} services.
             </p>
-            
-            {/* Debug Information */}
-            {debugInfo && (
-              <div className="mt-6 p-4 bg-gray-100 rounded-lg text-left text-sm text-gray-600 max-w-2xl mx-auto">
-                <h4 className="font-semibold mb-2">Debug Information:</h4>
-                <pre className="whitespace-pre-wrap">{debugInfo}</pre>
-              </div>
-            )}
             
             <button
               onClick={() => navigate('/customer/services')}
