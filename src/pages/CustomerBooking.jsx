@@ -1,0 +1,337 @@
+import React, { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { FaArrowLeft, FaStar, FaMapMarkerAlt, FaCalendar, FaClock } from 'react-icons/fa';
+
+const CustomerBooking = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  
+  const { professional, categoryName } = location.state || {};
+  
+  const [formData, setFormData] = useState({
+    serviceType: '',
+    description: '',
+    preferredDate: '',
+    preferredTime: '',
+    address: '',
+    phone: '',
+    email: '',
+    urgency: 'normal',
+    budget: ''
+  });
+  
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  if (!professional) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600 mb-4">No professional selected</p>
+          <button
+            onClick={() => navigate('/customer/services')}
+            className="text-blue-600 hover:text-blue-700"
+          >
+            Back to Services
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      // Here you would normally submit to Firebase
+      // For now, we'll simulate the booking process
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Show success and redirect
+      alert('Booking request sent successfully! The professional will contact you shortly.');
+      navigate('/customer/services');
+    } catch (error) {
+      console.error('Booking error:', error);
+      alert('Failed to submit booking. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const timeSlots = [
+    '8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM',
+    '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM',
+    '4:00 PM', '5:00 PM', '6:00 PM', '7:00 PM'
+  ];
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white shadow-sm border-b">
+        <div className="max-w-4xl mx-auto px-4 py-4">
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={() => navigate(-1)}
+              className="flex items-center text-gray-600 hover:text-gray-800 transition-colors"
+            >
+              <FaArrowLeft className="mr-2" />
+              Back
+            </button>
+            <h1 className="text-2xl font-bold text-gray-800">Book Service</h1>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Professional Info Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sticky top-8">
+              <div className="text-center mb-6">
+                <img
+                  src={professional.avatar}
+                  alt={professional.name}
+                  className="w-20 h-20 rounded-full mx-auto mb-4"
+                />
+                <h3 className="text-lg font-semibold text-gray-800">{professional.name}</h3>
+                <div className="flex items-center justify-center space-x-2 text-sm text-gray-600 mb-2">
+                  <FaStar className="text-yellow-400" />
+                  <span>{professional.rating}</span>
+                  <span>({professional.reviewCount} reviews)</span>
+                </div>
+                <div className="flex items-center justify-center space-x-1 text-sm text-gray-500">
+                  <FaMapMarkerAlt />
+                  <span>{professional.location}</span>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                  <span className="text-gray-600">Service</span>
+                  <span className="font-medium">{categoryName}</span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                  <span className="text-gray-600">Rate</span>
+                  <span className="font-medium">${professional.hourlyRate}/hr</span>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                  <span className="text-gray-600">Experience</span>
+                  <span className="font-medium">{professional.experience}</span>
+                </div>
+              </div>
+
+              <div className="mt-6">
+                <div className={`inline-flex px-3 py-1 text-xs rounded-full ${
+                  professional.availability === 'Available Today' 
+                    ? 'bg-green-100 text-green-700'
+                    : professional.availability === 'Available This Week'
+                    ? 'bg-yellow-100 text-yellow-700'
+                    : 'bg-red-100 text-red-700'
+                }`}>
+                  {professional.availability}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Booking Form */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <h2 className="text-xl font-semibold text-gray-800 mb-6">
+                Service Request Details
+              </h2>
+
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Service Type */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    What type of {categoryName.toLowerCase()} service do you need?
+                  </label>
+                  <select
+                    name="serviceType"
+                    value={formData.serviceType}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">Select service type</option>
+                    {professional.specialties.map((specialty, index) => (
+                      <option key={index} value={specialty}>{specialty}</option>
+                    ))}
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+
+                {/* Description */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Describe your project
+                  </label>
+                  <textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    rows={4}
+                    required
+                    placeholder="Please provide details about what you need done..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                {/* Date and Time */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <FaCalendar className="inline mr-1" />
+                      Preferred Date
+                    </label>
+                    <input
+                      type="date"
+                      name="preferredDate"
+                      value={formData.preferredDate}
+                      onChange={handleInputChange}
+                      required
+                      min={new Date().toISOString().split('T')[0]}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <FaClock className="inline mr-1" />
+                      Preferred Time
+                    </label>
+                    <select
+                      name="preferredTime"
+                      value={formData.preferredTime}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="">Select time</option>
+                      {timeSlots.map((time, index) => (
+                        <option key={index} value={time}>{time}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Contact Information */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Phone Number
+                    </label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      required
+                      placeholder="(555) 123-4567"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      required
+                      placeholder="your@email.com"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+
+                {/* Address */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Service Address
+                  </label>
+                  <textarea
+                    name="address"
+                    value={formData.address}
+                    onChange={handleInputChange}
+                    rows={2}
+                    required
+                    placeholder="Enter the full address where service is needed..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                {/* Urgency and Budget */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Urgency
+                    </label>
+                    <select
+                      name="urgency"
+                      value={formData.urgency}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="normal">Normal</option>
+                      <option value="urgent">Urgent</option>
+                      <option value="emergency">Emergency</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Budget Range
+                    </label>
+                    <select
+                      name="budget"
+                      value={formData.budget}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="">Select budget range</option>
+                      <option value="under-100">Under $100</option>
+                      <option value="100-300">$100 - $300</option>
+                      <option value="300-500">$300 - $500</option>
+                      <option value="500-1000">$500 - $1,000</option>
+                      <option value="over-1000">Over $1,000</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Submit Button */}
+                <div className="flex space-x-4 pt-6">
+                  <button
+                    type="button"
+                    onClick={() => navigate(-1)}
+                    className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    Back
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400"
+                  >
+                    {isSubmitting ? 'Sending Request...' : 'Send Booking Request'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default CustomerBooking;

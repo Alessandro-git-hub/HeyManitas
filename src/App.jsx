@@ -9,6 +9,9 @@ import WorkerDashboard from './pages/WorkerDashboard';
 import Jobs from './pages/Jobs';
 import Services from './pages/Services';
 import Clients from './pages/Clients';
+import CustomerServices from './pages/CustomerServices';
+import CustomerProfessionals from './pages/CustomerProfessionals';
+import CustomerBooking from './pages/CustomerBooking';
 
 function App() {
   return (
@@ -19,6 +22,9 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/customer/services" element={<CustomerServices />} />
+            <Route path="/customer/professionals/:categoryId" element={<CustomerProfessionals />} />
+            <Route path="/customer/book" element={<CustomerBooking />} />
             <Route 
               path="/worker" 
               element={
