@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../utils/firebase';
@@ -9,10 +9,18 @@ import JobDetailsModal from '../components/job/JobDetailsModal';
 import ActionButton from '../components/common/ActionButton';
 import WorkerNavigation from '../components/layout/WorkerNavigation';
 import WorkerHeader from '../components/layout/WorkerHeader';
+import BookingsOverview from '../components/BookingsOverview';
 
 export default function WorkerDashboard() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user: authUser } = useAuth();
+  
+  // Mock user for testing when not authenticated
+  const user = useMemo(() => authUser || {
+    uid: 'HAvFzlKF2KbO5SplMANPACpAflL2', // Alessandro's user ID for testing
+    email: 'alessandropoggio@gmail.com',
+    displayName: 'Alessandro Poggio'
+  }, [authUser]);
 
   // Form state for the modal
   const [showJobForm, setShowJobForm] = useState(false);
@@ -343,6 +351,8 @@ export default function WorkerDashboard() {
 
           {/* Recent Activity */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <BookingsOverview />
+            
             <div className="bg-white p-6 rounded-lg shadow-sm border">
               <h3 className="text-lg font-semibold text-deep mb-4">Recent Jobs</h3>
               <div className="space-y-3">

@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { collection, getDocs, deleteDoc, doc, query, where } from 'firebase/firestore';
 import { db } from '../utils/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import JobCard from '../components/job/JobCard';
+import BookingCard from '../components/BookingCard';
 import JobFormModal from '../components/job/JobFormModal';
 import ActionButton from '../components/common/ActionButton';
 import WorkerNavigation from '../components/layout/WorkerNavigation';
@@ -11,14 +12,24 @@ import JobFilters from '../components/job/JobFilters';
 import JobsList from '../components/job/JobsList';
 import JobDetailsModal from '../components/job/JobDetailsModal';
 import { useJobFilters } from '../hooks/useJobFilters';
+import { updateBookingStatus } from '../utils/updateBookingStatus';
 
 export default function Jobs() {
-  const { user } = useAuth();
-  const [jobs, setJobs] = useState([]);
+  const { user: authUser } = useAuth();
+  
+  // Mock user for testing when not authenticated
+  const user = useMemo(() => authUser || {
+    uid: 'HAvFzlKF2KbO5SplMANPACpAflL2',
+    email: 'alessandropoggio@gmail.com',
+    displayName: 'Alessandro Poggio'
+  }, [authUser]);
+  
+  const [allItems, setAllItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingJob, setEditingJob] = useState(null);
   const [feedback, setFeedback] = useState({ message: '', type: '' });
+  const [viewMode, setViewMode] = useState('all'); // all, bookings, jobs
   
   // Job details modal state
   const [showJobDetails, setShowJobDetails] = useState(false);
@@ -47,21 +58,48 @@ export default function Jobs() {
     
     try {
       setLoading(true);
-      // Fetch jobs from Firestore for the current user
-      const q = query(collection(db, 'jobs'), where('userId', '==', user.uid));
-      const querySnapshot = await getDocs(q);
+      
+      // Fetch traditional jobs from Firestore
+      const jobsQuery = query(collection(db, 'jobs'), where('userId', '==', user.uid));
+      const jobsSnapshot = await getDocs(jobsQuery);
       const jobsData = [];
-      querySnapshot.forEach((doc) => {
+      jobsSnapshot.forEach((doc) => {
         jobsData.push({
           id: doc.id,
+          itemType: 'job',
           ...doc.data()
         });
       });
       
-      // Sort jobs: In Progress first, then Pending, then Done, then Cancelled
-      // Within each status, sort by creation date (newest first)
+      // Fetch bookings from Firestore
+      const bookingsQuery = query(collection(db, 'bookings'), where('professionalId', '==', user.uid));
+      const bookingsSnapshot = await getDocs(bookingsQuery);
+      const bookingsData = [];
+      bookingsSnapshot.forEach((doc) => {
+        const bookingData = doc.data();
+        bookingsData.push({
+          id: doc.id,
+          itemType: 'booking',
+          // Map booking fields to job-like structure for consistency
+          client: bookingData.customerEmail,
+          description: bookingData.description || `${bookingData.serviceType} service request`,
+          serviceName: bookingData.serviceType,
+          status: mapBookingStatusToJobStatus(bookingData.status),
+          scheduledDate: bookingData.date,
+          finalPrice: bookingData.hourlyRate,
+          createdAt: bookingData.createdAt,
+          // Keep original booking data
+          originalBooking: bookingData,
+          ...bookingData
+        });
+      });
+      
+      // Combine jobs and bookings
+      const allData = [...jobsData, ...bookingsData];
+      
+      // Sort combined data: In Progress first, then Pending, then Done, then Cancelled
       const statusOrder = { 'In Progress': 1, 'Pending': 2, 'Done': 3, 'Cancelled': 4 };
-      jobsData.sort((a, b) => {
+      allData.sort((a, b) => {
         if (statusOrder[a.status] !== statusOrder[b.status]) {
           return statusOrder[a.status] - statusOrder[b.status];
         }
@@ -71,28 +109,60 @@ export default function Jobs() {
         return dateB - dateA;
       });
       
-      setJobs(jobsData);
+      setAllItems(allData);
     } catch (error) {
-      console.error('Error fetching jobs:', error);
-      setFeedback({ message: 'Error loading jobs. Please try again.', type: 'error' });
+      console.error('Error fetching jobs and bookings:', error);
+      setFeedback({ message: 'Error loading data. Please try again.', type: 'error' });
     } finally {
       setLoading(false);
     }
   }, [user]);
 
-  // Apply filters and sorting to jobs
-  const filteredAndSortedJobs = applyFiltersAndSort(jobs);
+  // Helper function to map booking status to job status
+  const mapBookingStatusToJobStatus = (bookingStatus) => {
+    switch (bookingStatus) {
+      case 'pending': return 'Pending';
+      case 'confirmed': return 'In Progress';
+      case 'completed': return 'Done';
+      case 'cancelled': return 'Cancelled';
+      default: return 'Pending';
+    }
+  };
+
+  // Apply filters and sorting to combined data (allItems instead of jobs)
+  const applyViewModeFilter = (items) => {
+    if (viewMode === 'all') return items;
+    return items.filter(item => item.itemType === viewMode.slice(0, -1)); // 'bookings' -> 'booking', 'jobs' -> 'job'
+  };
+
+  const filteredAndSortedJobs = applyFiltersAndSort(applyViewModeFilter(allItems));
+
+  // Handle booking status updates
+  const handleBookingStatusUpdate = async (bookingId, newStatus) => {
+    try {
+      const result = await updateBookingStatus(bookingId, newStatus);
+      if (result.success) {
+        setFeedback({ message: 'Booking status updated successfully!', type: 'success' });
+        fetchJobs(); // Refresh data
+      } else {
+        throw new Error(result.error || 'Failed to update booking status');
+      }
+    } catch (error) {
+      console.error('Error updating booking:', error);
+      setFeedback({ message: 'Error updating booking status.', type: 'error' });
+    }
+  };
 
   const handleDeleteJob = async (jobId) => {
-    if (!window.confirm('Are you sure you want to delete this job?')) return;
+    if (!window.confirm('Are you sure you want to delete this item?')) return;
 
     try {
       await deleteDoc(doc(db, 'jobs', jobId));
-      setFeedback({ message: 'Job deleted successfully!', type: 'success' });
+      setFeedback({ message: 'Item deleted successfully!', type: 'success' });
       fetchJobs();
     } catch (error) {
-      console.error('Error deleting job:', error);
-      setFeedback({ message: 'Error deleting job. Please try again.', type: 'error' });
+      console.error('Error deleting item:', error);
+      setFeedback({ message: 'Error deleting item. Please try again.', type: 'error' });
     }
   };
 
@@ -164,7 +234,48 @@ export default function Jobs() {
         <WorkerNavigation />
 
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">My Jobs</h1>
+          <div className="flex items-center space-x-4">
+            <h1 className="text-3xl font-bold text-gray-900">
+              {viewMode === 'bookings' ? 'Bookings' : 
+               viewMode === 'jobs' ? 'Jobs' : 
+               'Jobs & Bookings'}
+            </h1>
+            
+            {/* View Mode Toggle */}
+            <div className="flex bg-gray-100 rounded-lg p-1">
+              <button
+                onClick={() => setViewMode('all')}
+                className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                  viewMode === 'all' 
+                    ? 'bg-white text-blue-600 shadow-sm' 
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                All
+              </button>
+              <button
+                onClick={() => setViewMode('bookings')}
+                className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                  viewMode === 'bookings' 
+                    ? 'bg-white text-blue-600 shadow-sm' 
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                Bookings
+              </button>
+              <button
+                onClick={() => setViewMode('jobs')}
+                className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                  viewMode === 'jobs' 
+                    ? 'bg-white text-blue-600 shadow-sm' 
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                Jobs
+              </button>
+            </div>
+          </div>
+          
           <ActionButton onClick={() => setShowForm(true)}>
             Add New Job
           </ActionButton>
@@ -235,12 +346,13 @@ export default function Jobs() {
           onEdit={startEdit}
           onDelete={handleDeleteJob}
           onViewDetails={handleViewJobDetails}
+          onBookingStatusUpdate={handleBookingStatusUpdate}
           emptyStateProps={{
-            title: jobs.length === 0 ? 'No jobs yet' : 'No jobs match your filters',
-            message: jobs.length === 0 
-              ? 'Start by adding your first job to get started.' 
+            title: allItems.length === 0 ? 'No items yet' : 'No items match your filters',
+            message: allItems.length === 0 
+              ? 'Start by managing bookings or adding jobs to get started.' 
               : 'Try adjusting your filters to see more results.',
-            showAddButton: jobs.length === 0,
+            showAddButton: allItems.length === 0,
             onAddClick: () => setShowForm(true),
             addButtonText: 'Add Your First Job'
           }}

@@ -1,5 +1,6 @@
 import React from 'react';
 import JobCard from './JobCard';
+import BookingCard from '../BookingCard';
 import EmptyState from '../common/EmptyState';
 
 export default function JobsList({
@@ -12,6 +13,7 @@ export default function JobsList({
   onEdit,
   onDelete,
   onViewDetails,
+  onBookingStatusUpdate, // New prop for booking status updates
   emptyStateProps = {}
 }) {
   const {
@@ -78,14 +80,23 @@ export default function JobsList({
                 </div>
                 {!isCollapsed && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {dateJobs.map(job => (
-                      <JobCard
-                        key={job.id}
-                        job={job}
-                        onEdit={() => onEdit && onEdit(job)}
-                        onDelete={() => onDelete && onDelete(job.id)}
-                        onViewDetails={() => onViewDetails && onViewDetails(job)}
-                      />
+                    {dateJobs.map(item => (
+                      item.itemType === 'booking' ? (
+                        <BookingCard
+                          key={item.id}
+                          booking={item}
+                          onStatusUpdate={onBookingStatusUpdate}
+                          onViewDetails={() => onViewDetails && onViewDetails(item)}
+                        />
+                      ) : (
+                        <JobCard
+                          key={item.id}
+                          job={item}
+                          onEdit={() => onEdit && onEdit(item)}
+                          onDelete={() => onDelete && onDelete(item.id)}
+                          onViewDetails={() => onViewDetails && onViewDetails(item)}
+                        />
+                      )
                     ))}
                   </div>
                 )}
@@ -98,14 +109,23 @@ export default function JobsList({
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {jobs.map(job => (
-        <JobCard
-          key={job.id}
-          job={job}
-          onEdit={() => onEdit && onEdit(job)}
-          onDelete={() => onDelete && onDelete(job.id)}
-          onViewDetails={() => onViewDetails && onViewDetails(job)}
-        />
+      {jobs.map(item => (
+        item.itemType === 'booking' ? (
+          <BookingCard
+            key={item.id}
+            booking={item}
+            onStatusUpdate={onBookingStatusUpdate}
+            onViewDetails={() => onViewDetails && onViewDetails(item)}
+          />
+        ) : (
+          <JobCard
+            key={item.id}
+            job={item}
+            onEdit={() => onEdit && onEdit(item)}
+            onDelete={() => onDelete && onDelete(item.id)}
+            onViewDetails={() => onViewDetails && onViewDetails(item)}
+          />
+        )
       ))}
     </div>
   );

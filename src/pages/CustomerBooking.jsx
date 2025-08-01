@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaStar, FaMapMarkerAlt, FaCalendar, FaClock } from 'react-icons/fa';
+import CalendarWidget from '../components/CalendarWidget';
+import { createBooking } from '../utils/bookings';
 
 const CustomerBooking = () => {
   const location = useLocation();
@@ -11,8 +13,6 @@ const CustomerBooking = () => {
   const [formData, setFormData] = useState({
     serviceType: '',
     description: '',
-    preferredDate: '',
-    preferredTime: '',
     address: '',
     phone: '',
     email: '',
@@ -20,6 +20,8 @@ const CustomerBooking = () => {
     budget: ''
   });
   
+  const [selectedDateTime, setSelectedDateTime] = useState(null);
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!professional) {
@@ -46,18 +48,54 @@ const CustomerBooking = () => {
     }));
   };
 
+  const handleDateTimeSelect = (datetime, timeSlot) => {
+    setSelectedDateTime(datetime);
+    setSelectedTimeSlot(timeSlot);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!selectedDateTime || !selectedTimeSlot) {
+      alert('Please select a date and time for your appointment.');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      // Here you would normally submit to Firebase
-      // For now, we'll simulate the booking process
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Create the booking with real data
+      const bookingData = {
+        ...formData,
+        professionalId: professional.id,
+        professionalName: professional.name,
+        customerEmail: formData.email,
+        date: selectedDateTime.toISOString().split('T')[0], // YYYY-MM-DD
+        time: selectedTimeSlot, // HH:MM format
+        datetime: selectedDateTime.toISOString(),
+        status: 'pending',
+        categoryName,
+        hourlyRate: professional.hourlyRate
+      };
+
+      // Save to Firebase bookings collection
+      const result = await createBooking(bookingData);
       
-      // Show success and redirect
-      alert('Booking request sent successfully! The professional will contact you shortly.');
-      navigate('/customer/services');
+      if (result.success) {
+        // Show success and redirect
+        const timeDisplay = (() => {
+          const [hour, minute] = selectedTimeSlot.split(':');
+          const hourNum = parseInt(hour);
+          const ampm = hourNum >= 12 ? 'PM' : 'AM';
+          const displayHour = hourNum > 12 ? hourNum - 12 : hourNum === 0 ? 12 : hourNum;
+          return `${displayHour}:${minute} ${ampm}`;
+        })();
+        
+        alert(`Booking request sent successfully! Your appointment is scheduled for ${selectedDateTime.toLocaleDateString()} at ${timeDisplay}. The professional will contact you shortly.`);
+        navigate('/customer/services');
+      } else {
+        throw new Error(result.error || 'Failed to create booking');
+      }
     } catch (error) {
       console.error('Booking error:', error);
       alert('Failed to submit booking. Please try again.');
@@ -65,12 +103,6 @@ const CustomerBooking = () => {
       setIsSubmitting(false);
     }
   };
-
-  const timeSlots = [
-    '8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM',
-    '12:00 PM', '1:00 PM', '2:00 PM', '3:00 PM',
-    '4:00 PM', '5:00 PM', '6:00 PM', '7:00 PM'
-  ];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -186,41 +218,37 @@ const CustomerBooking = () => {
                   />
                 </div>
 
-                {/* Date and Time */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      <FaCalendar className="inline mr-1" />
-                      Preferred Date
-                    </label>
-                    <input
-                      type="date"
-                      name="preferredDate"
-                      value={formData.preferredDate}
-                      onChange={handleInputChange}
-                      required
-                      min={new Date().toISOString().split('T')[0]}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      <FaClock className="inline mr-1" />
-                      Preferred Time
-                    </label>
-                    <select
-                      name="preferredTime"
-                      value={formData.preferredTime}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="">Select time</option>
-                      {timeSlots.map((time, index) => (
-                        <option key={index} value={time}>{time}</option>
-                      ))}
-                    </select>
-                  </div>
+                {/* Calendar Widget for Date and Time Selection */}
+                <div>
+                  <CalendarWidget 
+                    professionalId={professional.id}
+                    onDateTimeSelect={handleDateTimeSelect}
+                    selectedDateTime={selectedDateTime}
+                  />
+                  {selectedDateTime && selectedTimeSlot && (
+                    <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+                      <h4 className="font-medium text-blue-800 mb-2">Selected Appointment</h4>
+                      <p className="text-blue-700">
+                        <FaCalendar className="inline mr-2" />
+                        {selectedDateTime.toLocaleDateString('en-US', { 
+                          weekday: 'long', 
+                          year: 'numeric', 
+                          month: 'long', 
+                          day: 'numeric' 
+                        })}
+                      </p>
+                      <p className="text-blue-700">
+                        <FaClock className="inline mr-2" />
+                        {selectedTimeSlot && (() => {
+                          const [hour, minute] = selectedTimeSlot.split(':');
+                          const hourNum = parseInt(hour);
+                          const ampm = hourNum >= 12 ? 'PM' : 'AM';
+                          const displayHour = hourNum > 12 ? hourNum - 12 : hourNum === 0 ? 12 : hourNum;
+                          return `${displayHour}:${minute} ${ampm}`;
+                        })()}
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 {/* Contact Information */}

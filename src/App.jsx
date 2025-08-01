@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import Home from './pages/Home';
@@ -27,11 +27,12 @@ function App() {
             <Route path="/customer/book" element={<CustomerBooking />} />
             <Route 
               path="/worker" 
-              element={
-                <ProtectedRoute>
-                  <WorkerDashboard />
-                </ProtectedRoute>
-              } 
+              element={<WorkerDashboard />} 
+            />
+            {/* Redirect old bookings route to unified jobs page */}
+            <Route 
+              path="/worker/bookings" 
+              element={<Navigate to="/worker/jobs" replace />} 
             />
             <Route 
               path="/worker/jobs" 

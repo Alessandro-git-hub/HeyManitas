@@ -19,10 +19,16 @@ Customer/client management components:
 ### `/job/`
 Job-related components:
 - `JobCard.jsx` - Individual job display card
-- `JobDetailsModal.jsx` - Modal for viewing job details
+- `JobDetailsModal.jsx` - Modal for viewing job and booking details (unified for both types)
 - `JobFilters.jsx` - Filtering controls for job lists
 - `JobFormModal.jsx` - Modal for creating/editing jobs (with customer integration)
-- `JobsList.jsx` - List component for displaying jobs with grouping
+- `JobsList.jsx` - List component for displaying jobs and bookings with grouping
+
+### `/booking/`
+Booking-related components:
+- `CalendarWidget.jsx` - Interactive calendar for customer appointment booking
+- `BookingCard.jsx` - Individual booking display card with status management
+- `BookingsSection.jsx` - Complete booking management interface (legacy, integrated into Jobs page)
 
 ### `/service/`
 Service-related components:
@@ -46,3 +52,7 @@ Layout and navigation components:
 - Simplified button components by using ActionButton directly
 - Added comprehensive customer management system with CRUD operations
 - Integrated customer data with job creation (auto-complete client names)
+- **Unified Jobs & Bookings system**: Combined booking requests and job management into single workflow
+- **Enhanced JobDetailsModal**: Now supports both jobs and bookings with appropriate field mapping
+- **Smart routing**: Old `/worker/bookings` URL redirects to unified `/worker/jobs` page
+- **Status transitions**: Bookings can be confirmed to automatically create jobs

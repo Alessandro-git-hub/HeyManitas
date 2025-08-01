@@ -8,7 +8,7 @@ export default function WorkerNavigation() {
   // Navigation items configuration
   const navItems = [
     { label: 'Dashboard', path: '/worker', key: 'dashboard' },
-    { label: 'Jobs', path: '/worker/jobs', key: 'jobs' },
+    { label: 'Jobs & Bookings', path: '/worker/jobs', key: 'jobs' },
     { label: 'Services', path: '/worker/services', key: 'services' },
     { label: 'Quotes', path: '/worker/quotes', key: 'quotes' },
     { label: 'Clients', path: '/worker/clients', key: 'clients' },
