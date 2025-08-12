@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const userType = searchParams.get('userType'); // 'customer' or 'worker'
   
   const [formData, setFormData] = useState({
     email: '',
@@ -47,7 +49,13 @@ export default function Login() {
     setIsLoading(true);
     try {
       await login(formData.email, formData.password);
-      navigate('/worker');
+      
+      // Redirect based on user type from URL parameter
+      if (userType === 'customer') {
+        navigate('/customer/services');
+      } else {
+        navigate('/worker');
+      }
     } catch (error) {
       console.error('Login error:', error);
       
@@ -76,16 +84,20 @@ export default function Login() {
         <div className="text-center">
           <h1 className="text-3xl font-bold text-blue-800">SkillBooster</h1>
           <p className="mt-2 text-sm text-gray-600">
-            Empowering skilled workers to grow their business
+            {userType === 'customer' 
+              ? 'Find skilled professionals for your needs' 
+              : 'Empowering skilled workers to grow their business'}
           </p>
         </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Sign in to your account
+          {userType === 'customer' 
+            ? 'Sign in to find professionals' 
+            : 'Sign in to your account'}
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
           Or{' '}
           <Link
-            to="/signup"
+            to={`/signup${userType ? `?userType=${userType}` : ''}`}
             className="font-medium text-blue-600 hover:text-blue-500"
           >
             create a new account

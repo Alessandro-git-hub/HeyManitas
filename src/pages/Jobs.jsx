@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { collection, getDocs, deleteDoc, doc, query, where } from 'firebase/firestore';
 import { db } from '../utils/firebase';
 import { useAuth } from '../contexts/AuthContext';
@@ -15,14 +15,7 @@ import { useJobFilters } from '../hooks/useJobFilters';
 import { updateBookingStatus } from '../utils/updateBookingStatus';
 
 export default function Jobs() {
-  const { user: authUser } = useAuth();
-  
-  // Mock user for testing when not authenticated
-  const user = useMemo(() => authUser || {
-    uid: 'HAvFzlKF2KbO5SplMANPACpAflL2',
-    email: 'alessandropoggio@gmail.com',
-    displayName: 'Alessandro Poggio'
-  }, [authUser]);
+  const { user, loading: authLoading } = useAuth();
   
   const [allItems, setAllItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -54,10 +47,14 @@ export default function Jobs() {
   } = useJobFilters();
 
   const fetchJobs = useCallback(async () => {
-    if (!user) return; // Don't fetch if no user
-    
     try {
       setLoading(true);
+      
+      // If no user is authenticated, show empty state
+      if (!user) {
+        setAllItems([]);
+        return;
+      }
       
       // Fetch traditional jobs from Firestore
       const jobsQuery = query(collection(db, 'jobs'), where('userId', '==', user.uid));
@@ -207,8 +204,37 @@ export default function Jobs() {
   }, [feedback]);
 
   useEffect(() => {
-    fetchJobs();
-  }, [fetchJobs]);
+    if (!authLoading) {
+      fetchJobs();
+    }
+  }, [fetchJobs, authLoading]);
+
+  // Show loading state while authentication is being determined
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-light flex items-center justify-center">
+        <div className="animate-spin h-12 w-12 border-4 border-blue-600 border-t-transparent rounded-full"></div>
+      </div>
+    );
+  }
+
+  // Show login prompt if user is not authenticated
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-light flex items-center justify-center">
+        <div className="max-w-md mx-auto text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Please Log In</h2>
+          <p className="text-gray-600 mb-6">You need to be logged in to view your jobs and bookings.</p>
+          <button
+            onClick={() => window.location.href = '/login'}
+            className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded-md font-medium transition-colors"
+          >
+            Go to Login
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (

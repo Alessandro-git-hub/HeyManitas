@@ -12,6 +12,7 @@ import Clients from './pages/Clients';
 import CustomerServices from './pages/CustomerServices';
 import CustomerProfessionals from './pages/CustomerProfessionals';
 import CustomerBooking from './pages/CustomerBooking';
+import CustomerDashboard from './pages/CustomerDashboard';
 
 function App() {
   return (
@@ -22,9 +23,26 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
-            <Route path="/customer/services" element={<CustomerServices />} />
-            <Route path="/customer/professionals/:categoryId" element={<CustomerProfessionals />} />
-            <Route path="/customer/book" element={<CustomerBooking />} />
+            <Route path="/customer/services" element={
+              <ProtectedRoute>
+                <CustomerServices />
+              </ProtectedRoute>
+            } />
+            <Route path="/customer/professionals/:categoryId" element={
+              <ProtectedRoute>
+                <CustomerProfessionals />
+              </ProtectedRoute>
+            } />
+            <Route path="/customer/book" element={
+              <ProtectedRoute>
+                <CustomerBooking />
+              </ProtectedRoute>
+            } />
+            <Route path="/customer/dashboard" element={
+              <ProtectedRoute>
+                <CustomerDashboard />
+              </ProtectedRoute>
+            } />
             <Route 
               path="/worker" 
               element={<WorkerDashboard />} 

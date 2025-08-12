@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Signup() {
   const { signup } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const userType = searchParams.get('userType'); // 'customer' or 'worker'
   
   const [formData, setFormData] = useState({
     firstName: '',
@@ -44,7 +46,7 @@ export default function Signup() {
       newErrors.email = 'Email is invalid';
     }
     
-    if (!formData.profession.trim()) {
+    if (!formData.profession.trim() && userType !== 'customer') {
       newErrors.profession = 'Profession is required';
     }
     
@@ -78,10 +80,16 @@ export default function Signup() {
         firstName: formData.firstName,
         lastName: formData.lastName,
         phone: formData.phone,
-        profession: formData.profession
+        profession: formData.profession,
+        userType: userType || 'worker' // Store user type in profile
       });
       
-      navigate('/worker');
+      // Redirect based on user type
+      if (userType === 'customer') {
+        navigate('/customer/services');
+      } else {
+        navigate('/worker');
+      }
     } catch (error) {
       console.error('Signup error:', error);
       
@@ -110,16 +118,20 @@ export default function Signup() {
         <div className="text-center">
           <h1 className="text-3xl font-bold text-blue-800">SkillBooster</h1>
           <p className="mt-2 text-sm text-gray-600">
-            Empowering skilled workers to grow their business
+            {userType === 'customer' 
+              ? 'Find skilled professionals for your needs' 
+              : 'Empowering skilled workers to grow their business'}
           </p>
         </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Create your account
+          {userType === 'customer' 
+            ? 'Create your customer account' 
+            : 'Create your professional account'}
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
           Or{' '}
           <Link
-            to="/login"
+            to={`/login${userType ? `?userType=${userType}` : ''}`}
             className="font-medium text-blue-600 hover:text-blue-500"
           >
             sign in to your existing account
@@ -232,29 +244,32 @@ export default function Signup() {
               </div>
             </div>
 
-            <div>
-              <label htmlFor="profession" className="block text-sm font-medium text-gray-700">
-                Profession
-              </label>
-              <div className="mt-1">
-                <input
-                  id="profession"
-                  name="profession"
-                  type="text"
-                  required
-                  value={formData.profession}
-                  onChange={handleChange}
-                  disabled={isLoading}
-                  className={`appearance-none block w-full px-3 py-2 border ${
-                    errors.profession ? 'border-red-300' : 'border-gray-300'
-                  } rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm disabled:opacity-50`}
-                  placeholder="e.g., Electrician, Plumber, Carpenter"
-                />
-                {errors.profession && (
-                  <p className="mt-1 text-sm text-red-600">{errors.profession}</p>
-                )}
+            {/* Show profession field only for workers */}
+            {userType !== 'customer' && (
+              <div>
+                <label htmlFor="profession" className="block text-sm font-medium text-gray-700">
+                  Profession
+                </label>
+                <div className="mt-1">
+                  <input
+                    id="profession"
+                    name="profession"
+                    type="text"
+                    required
+                    value={formData.profession}
+                    onChange={handleChange}
+                    disabled={isLoading}
+                    className={`appearance-none block w-full px-3 py-2 border ${
+                      errors.profession ? 'border-red-300' : 'border-gray-300'
+                    } rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm disabled:opacity-50`}
+                    placeholder="e.g., Electrician, Plumber, Carpenter"
+                  />
+                  {errors.profession && (
+                    <p className="mt-1 text-sm text-red-600">{errors.profession}</p>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">

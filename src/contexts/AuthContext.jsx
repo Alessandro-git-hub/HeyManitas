@@ -74,6 +74,7 @@ export const AuthProvider = ({ children }) => {
         lastName: userData.lastName || '',
         phone: userData.phone || '',
         profession: userData.profession || '',
+        userType: userData.userType || 'customer', // 'customer' or 'worker'
         createdAt: new Date(),
         updatedAt: new Date()
       };
