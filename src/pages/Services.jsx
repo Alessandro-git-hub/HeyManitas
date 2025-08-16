@@ -1,23 +1,19 @@
 import React, { useState, useEffect } from 'react';
-// import { useNavigate } from 'react-router-dom';
 import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc, query, where } from 'firebase/firestore';
 import { db } from '../utils/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { getAllCategories, getCategoryInfo } from '../utils/serviceCategories';
-import WorkerNavigation from '../components/layout/WorkerNavigation';
-import WorkerHeader from '../components/layout/WorkerHeader';
+import WorkerLayout from '../components/layout/WorkerLayout';
 import ServiceCard from '../components/service/ServiceCard';
 import EmptyState from '../components/common/EmptyState';
 import FormModal from '../components/common/FormModal';
 
 export default function Services() {
-  // const navigate = useNavigate();
   const { user } = useAuth();
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingService, setEditingService] = useState(null);
-  const [feedback, setFeedback] = useState({ message: '', type: '' });
   
   // Form state
   const [formData, setFormData] = useState({
@@ -36,12 +32,14 @@ export default function Services() {
 
   useEffect(() => {
     const fetchServices = async () => {
-      if (!user) return; // Don't fetch if no user
+      if (!user) {
+        setLoading(false);
+        return;
+      }
       
       try {
         setLoading(true);
         
-        // Fetch services from Firestore for the current user
         const q = query(collection(db, 'services'), where('userId', '==', user.uid));
         const querySnapshot = await getDocs(q);
         const servicesData = [];
@@ -57,7 +55,6 @@ export default function Services() {
         
       } catch (error) {
         console.error('Error fetching services:', error);
-        setFeedback({ message: 'Error loading services. Please try again.', type: 'error' });
         setServices([]);
       } finally {
         setLoading(false);
@@ -100,70 +97,88 @@ export default function Services() {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      description: '',
+      category: '',
+      basePrice: '',
+      duration: '',
+      isActive: true
+    });
+    setFormErrors({});
+    setEditingService(null);
+  };
 
+  const handleCloseModal = () => {
+    setShowForm(false);
+    resetForm();
+  };
+
+  const handleSubmit = async (e, showFeedback) => {
+    e.preventDefault();
+    
+    if (!validateForm() || isSubmitting) return;
+    
     setIsSubmitting(true);
+    
     try {
+      const serviceData = {
+        name: formData.name.trim(),
+        description: formData.description.trim(),
+        category: formData.category,
+        basePrice: parseFloat(formData.basePrice),
+        duration: formData.duration.trim(),
+        isActive: formData.isActive,
+        userId: user.uid,
+        updatedAt: new Date()
+      };
+
       if (editingService) {
-        // Update existing service in Firestore
-        const serviceData = {
-          ...formData,
-          basePrice: parseFloat(formData.basePrice),
-          updatedAt: new Date()
-        };
-        
+        // Update existing service
         await updateDoc(doc(db, 'services', editingService.id), serviceData);
         
         // Update local state
-        const updatedServices = services.map(service =>
-          service.id === editingService.id
+        setServices(prev => prev.map(service => 
+          service.id === editingService.id 
             ? { ...service, ...serviceData }
             : service
-        );
-        setServices(updatedServices);
-        setFeedback({ message: 'Service updated successfully!', type: 'success' });
-      } else {
-        // Add new service to Firestore
-        const serviceData = {
-          ...formData,
-          basePrice: parseFloat(formData.basePrice),
-          userId: user.uid, // Associate service with current user
-          createdAt: new Date(),
-          updatedAt: new Date()
-        };
+        ));
         
+        showFeedback('Service updated successfully!', 'success');
+      } else {
+        // Add new service
+        serviceData.createdAt = new Date();
         const docRef = await addDoc(collection(db, 'services'), serviceData);
-        const newService = { id: docRef.id, ...serviceData };
         
         // Update local state
-        setServices(prev => [newService, ...prev]);
-        setFeedback({ message: 'Service added successfully!', type: 'success' });
+        setServices(prev => [...prev, { 
+          id: docRef.id, 
+          ...serviceData 
+        }]);
+        
+        showFeedback('Service added successfully!', 'success');
       }
+      
       handleCloseModal();
     } catch (error) {
       console.error('Error saving service:', error);
-      setFeedback({ message: 'Error saving service. Please try again.', type: 'error' });
+      showFeedback('Error saving service. Please try again.', 'error');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleDeleteService = async (serviceId) => {
-    if (!window.confirm('Are you sure you want to delete this service?')) return;
+  const handleDeleteService = async (serviceId, showFeedback) => {
+    if (!confirm('Are you sure you want to delete this service?')) return;
     
     try {
-      // Delete from Firestore
       await deleteDoc(doc(db, 'services', serviceId));
-      
-      // Update local state
-      const updatedServices = services.filter(service => service.id !== serviceId);
-      setServices(updatedServices);
-      setFeedback({ message: 'Service deleted successfully!', type: 'success' });
+      setServices(prev => prev.filter(service => service.id !== serviceId));
+      showFeedback('Service deleted successfully!', 'success');
     } catch (error) {
       console.error('Error deleting service:', error);
-      setFeedback({ message: 'Error deleting service. Please try again.', type: 'error' });
+      showFeedback('Error deleting service. Please try again.', 'error');
     }
   };
 
@@ -180,88 +195,36 @@ export default function Services() {
     setShowForm(true);
   };
 
-  const handleCloseModal = () => {
-    setShowForm(false);
-    setEditingService(null);
-    setFormData({
-      name: '',
-      description: '',
-      category: '',
-      basePrice: '',
-      duration: '',
-      isActive: true
-    });
-    setFormErrors({});
-  };
-
-  const toggleServiceStatus = async (serviceId) => {
+  const toggleServiceStatus = async (serviceId, currentStatus, showFeedback) => {
     try {
-      // Find the service to get its current status
-      const service = services.find(s => s.id === serviceId);
-      if (!service) return;
-
-      const newStatus = !service.isActive;
-      
-      // Update in Firestore
-      await updateDoc(doc(db, 'services', serviceId), {
+      const newStatus = !currentStatus;
+      await updateDoc(doc(db, 'services', serviceId), { 
         isActive: newStatus,
         updatedAt: new Date()
       });
-
-      // Update local state
-      const updatedServices = services.map(service =>
-        service.id === serviceId
-          ? { ...service, isActive: newStatus, updatedAt: new Date() }
-          : service
-      );
-      setServices(updatedServices);
       
-      setFeedback({ 
-        message: `Service ${newStatus ? 'activated' : 'deactivated'} successfully!`, 
-        type: 'success' 
-      });
+      setServices(prev => prev.map(service => 
+        service.id === serviceId 
+          ? { ...service, isActive: newStatus }
+          : service
+      ));
+      
+      showFeedback(
+        `Service ${newStatus ? 'activated' : 'deactivated'} successfully!`,
+        'success'
+      );
     } catch (error) {
       console.error('Error updating service status:', error);
-      setFeedback({ 
-        message: 'Error updating service status. Please try again.', 
-        type: 'error' 
-      });
+      showFeedback(
+        'Error updating service status. Please try again.',
+        'error'
+      );
     }
   };
 
-  // Clear feedback after 5 seconds
-  useEffect(() => {
-    if (feedback.message) {
-      const timer = setTimeout(() => {
-        setFeedback({ message: '', type: '' });
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [feedback]);
-
-  if (loading) {
+  const renderContent = (showFeedback) => {
     return (
-      <div className="min-h-screen bg-light">
-        <WorkerHeader />
-        <div className="max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4">
-          <WorkerNavigation />
-          <h1 className="text-3xl font-bold mb-6 text-gray-900">My Services</h1>
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-800"></div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-light">
-      <WorkerHeader />
-      
-      <div className="max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4">
-        {/* Worker Navigation Tabs */}
-        <WorkerNavigation />
-
+      <>
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-gray-900">My Services</h1>
           <button
@@ -272,37 +235,16 @@ export default function Services() {
           </button>
         </div>
 
-        {/* Feedback Message */}
-        {feedback.message && (
-          <div className={`mb-6 p-4 rounded-lg ${
-            feedback.type === 'success' 
-              ? 'bg-green-100 text-green-800 border border-green-200' 
-              : 'bg-red-100 text-red-800 border border-red-200'
-          }`}>
-            <div className="flex justify-between items-center">
-              <span>{feedback.message}</span>
-              <button
-                onClick={() => setFeedback({ message: '', type: '' })}
-                className={`text-sm hover:opacity-70 ml-4 ${
-                  feedback.type === 'success' ? 'text-green-800' : 'text-red-800'
-                }`}
-              >
-                ✕
-              </button>
-            </div>
-          </div>
-        )}
-
         {/* Services Grid */}
         {services.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {services.map((service) => (
               <ServiceCard
                 key={service.id}
                 service={service}
                 onEdit={handleEditService}
-                onDelete={handleDeleteService}
-                onToggleStatus={toggleServiceStatus}
+                onDelete={(serviceId) => handleDeleteService(serviceId, showFeedback)}
+                onToggleStatus={(serviceId, currentStatus) => toggleServiceStatus(serviceId, currentStatus, showFeedback)}
               />
             ))}
           </div>
@@ -329,7 +271,7 @@ export default function Services() {
         <FormModal
           isOpen={showForm}
           onClose={handleCloseModal}
-          onSubmit={handleSubmit}
+          onSubmit={(e) => handleSubmit(e, showFeedback)}
           title={editingService ? 'Edit Service' : 'Add New Service'}
           size="lg"
           isSubmitting={isSubmitting}
@@ -462,7 +404,16 @@ export default function Services() {
             </label>
           </div>
         </FormModal>
-      </div>
-    </div>
+      </>
+    );
+  };
+
+  return (
+    <WorkerLayout
+      title="My Services"
+      loading={loading}
+    >
+      {renderContent}
+    </WorkerLayout>
   );
 }
