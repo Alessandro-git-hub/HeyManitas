@@ -8,6 +8,7 @@ import WorkerNavigation from '../components/layout/WorkerNavigation';
 import WorkerHeader from '../components/layout/WorkerHeader';
 import ServiceCard from '../components/service/ServiceCard';
 import EmptyState from '../components/common/EmptyState';
+import FormModal from '../components/common/FormModal';
 
 export default function Services() {
   // const navigate = useNavigate();
@@ -325,182 +326,142 @@ export default function Services() {
         )}
 
         {/* Service Form Modal */}
-        {showForm && (
-          <div 
-            className="fixed inset-0 flex items-center justify-center z-50 p-4"
-            style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}
-            onClick={(e) => {
-              if (e.target === e.currentTarget && !isSubmitting) {
-                handleCloseModal();
-              }
-            }}
-          >
-            <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-screen overflow-y-auto">
-              <div className="p-6">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-semibold">
-                    {editingService ? 'Edit Service' : 'Add New Service'}
-                  </h2>
-                  <button
-                    onClick={handleCloseModal}
-                    disabled={isSubmitting}
-                    className="text-gray-400 hover:text-gray-600 disabled:opacity-50"
-                  >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
-                
-                <form onSubmit={handleSubmit}>
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Service Name *
-                    </label>
-                    <input
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      disabled={isSubmitting}
-                      className={`w-full p-3 border rounded-lg ${
-                        formErrors.name ? 'border-red-500' : 'border-gray-300'
-                      } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50`}
-                      placeholder="e.g., Basic Plumbing Repair"
-                    />
-                    {formErrors.name && (
-                      <p className="text-red-500 text-sm mt-1">{formErrors.name}</p>
-                    )}
-                  </div>
+        <FormModal
+          isOpen={showForm}
+          onClose={handleCloseModal}
+          onSubmit={handleSubmit}
+          title={editingService ? 'Edit Service' : 'Add New Service'}
+          size="lg"
+          isSubmitting={isSubmitting}
+          submitLabel={editingService ? 'Update Service' : 'Add Service'}
+          cancelLabel="Cancel"
+        >
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Service Name *
+            </label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              disabled={isSubmitting}
+              className={`w-full p-3 border rounded-lg ${
+                formErrors.name ? 'border-red-500' : 'border-gray-300'
+              } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50`}
+              placeholder="e.g., Basic Plumbing Repair"
+            />
+            {formErrors.name && (
+              <p className="text-red-500 text-sm mt-1">{formErrors.name}</p>
+            )}
+          </div>
 
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Category *
-                    </label>
-                    <select
-                      name="category"
-                      value={formData.category}
-                      onChange={handleInputChange}
-                      disabled={isSubmitting}
-                      className={`w-full p-3 border rounded-lg ${
-                        formErrors.category ? 'border-red-500' : 'border-gray-300'
-                      } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50`}
-                    >
-                      <option value="">Select a category</option>
-                      {serviceCategories.map(category => {
-                        const categoryInfo = getCategoryInfo(category);
-                        return (
-                          <option key={category} value={category}>
-                            {categoryInfo.icon} {category} - {categoryInfo.description}
-                          </option>
-                        );
-                      })}
-                    </select>
-                    {formErrors.category && (
-                      <p className="text-red-500 text-sm mt-1">{formErrors.category}</p>
-                    )}
-                  </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Category *
+            </label>
+            <select
+              name="category"
+              value={formData.category}
+              onChange={handleInputChange}
+              disabled={isSubmitting}
+              className={`w-full p-3 border rounded-lg ${
+                formErrors.category ? 'border-red-500' : 'border-gray-300'
+              } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50`}
+            >
+              <option value="">Select a category</option>
+              {serviceCategories.map(category => {
+                const categoryInfo = getCategoryInfo(category);
+                return (
+                  <option key={category} value={category}>
+                    {categoryInfo.icon} {category} - {categoryInfo.description}
+                  </option>
+                );
+              })}
+            </select>
+            {formErrors.category && (
+              <p className="text-red-500 text-sm mt-1">{formErrors.category}</p>
+            )}
+          </div>
 
-                  <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Base Price (€) *
-                      </label>
-                      <input
-                        type="number"
-                        name="basePrice"
-                        value={formData.basePrice}
-                        onChange={handleInputChange}
-                        disabled={isSubmitting}
-                        min="0"
-                        step="0.01"
-                        className={`w-full p-3 border rounded-lg ${
-                          formErrors.basePrice ? 'border-red-500' : 'border-gray-300'
-                        } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50`}
-                        placeholder="75"
-                      />
-                      {formErrors.basePrice && (
-                        <p className="text-red-500 text-sm mt-1">{formErrors.basePrice}</p>
-                      )}
-                    </div>
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Base Price (€) *
+              </label>
+              <input
+                type="number"
+                name="basePrice"
+                value={formData.basePrice}
+                onChange={handleInputChange}
+                disabled={isSubmitting}
+                min="0"
+                step="0.01"
+                className={`w-full p-3 border rounded-lg ${
+                  formErrors.basePrice ? 'border-red-500' : 'border-gray-300'
+                } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50`}
+                placeholder="75"
+              />
+              {formErrors.basePrice && (
+                <p className="text-red-500 text-sm mt-1">{formErrors.basePrice}</p>
+              )}
+            </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Duration *
-                      </label>
-                      <input
-                        type="text"
-                        name="duration"
-                        value={formData.duration}
-                        onChange={handleInputChange}
-                        disabled={isSubmitting}
-                        className={`w-full p-3 border rounded-lg ${
-                          formErrors.duration ? 'border-red-500' : 'border-gray-300'
-                        } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50`}
-                        placeholder="1-2 hours"
-                      />
-                      {formErrors.duration && (
-                        <p className="text-red-500 text-sm mt-1">{formErrors.duration}</p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Description *
-                    </label>
-                    <textarea
-                      name="description"
-                      value={formData.description}
-                      onChange={handleInputChange}
-                      disabled={isSubmitting}
-                      rows="3"
-                      className={`w-full p-3 border rounded-lg ${
-                        formErrors.description ? 'border-red-500' : 'border-gray-300'
-                      } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50`}
-                      placeholder="Describe what this service includes..."
-                    ></textarea>
-                    {formErrors.description && (
-                      <p className="text-red-500 text-sm mt-1">{formErrors.description}</p>
-                    )}
-                  </div>
-
-                  <div className="mb-6">
-                    <label className="flex items-center">
-                      <input
-                        type="checkbox"
-                        name="isActive"
-                        checked={formData.isActive}
-                        onChange={handleInputChange}
-                        disabled={isSubmitting}
-                        className="mr-2"
-                      />
-                      <span className="text-sm text-gray-700">Service is active</span>
-                    </label>
-                  </div>
-
-                  <div className="flex gap-3">
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {isSubmitting ? 'Saving...' : (editingService ? 'Update Service' : 'Add Service')}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleCloseModal}
-                      disabled={isSubmitting}
-                      className="flex-1 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors font-medium disabled:opacity-50"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </form>
-              </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Duration *
+              </label>
+              <input
+                type="text"
+                name="duration"
+                value={formData.duration}
+                onChange={handleInputChange}
+                disabled={isSubmitting}
+                className={`w-full p-3 border rounded-lg ${
+                  formErrors.duration ? 'border-red-500' : 'border-gray-300'
+                } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50`}
+                placeholder="1-2 hours"
+              />
+              {formErrors.duration && (
+                <p className="text-red-500 text-sm mt-1">{formErrors.duration}</p>
+              )}
             </div>
           </div>
-        )}
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Description *
+            </label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              disabled={isSubmitting}
+              rows="3"
+              className={`w-full p-3 border rounded-lg ${
+                formErrors.description ? 'border-red-500' : 'border-gray-300'
+              } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50`}
+              placeholder="Describe what this service includes..."
+            ></textarea>
+            {formErrors.description && (
+              <p className="text-red-500 text-sm mt-1">{formErrors.description}</p>
+            )}
+          </div>
+
+          <div className="mb-4">
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                name="isActive"
+                checked={formData.isActive}
+                onChange={handleInputChange}
+                disabled={isSubmitting}
+                className="mr-2"
+              />
+              <span className="text-sm text-gray-700">Service is active</span>
+            </label>
+          </div>
+        </FormModal>
       </div>
     </div>
   );
