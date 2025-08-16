@@ -52,7 +52,7 @@ export default function Login() {
       
       // Redirect based on user type from URL parameter
       if (userType === 'customer') {
-        navigate('/customer/services');
+        navigate('/customer/profile');
       } else {
         navigate('/worker');
       }

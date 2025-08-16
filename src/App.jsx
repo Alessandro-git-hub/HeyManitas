@@ -9,10 +9,13 @@ import WorkerDashboard from './pages/WorkerDashboard';
 import Jobs from './pages/Jobs';
 import Services from './pages/Services';
 import Clients from './pages/Clients';
+import WorkerQuotes from './pages/WorkerQuotes';
 import CustomerServices from './pages/CustomerServices';
 import CustomerProfessionals from './pages/CustomerProfessionals';
 import CustomerBooking from './pages/CustomerBooking';
 import CustomerDashboard from './pages/CustomerDashboard';
+import CustomerProfile from './pages/CustomerProfile';
+import CustomerCalendar from './pages/CustomerCalendar';
 
 function App() {
   return (
@@ -43,6 +46,16 @@ function App() {
                 <CustomerDashboard />
               </ProtectedRoute>
             } />
+            <Route path="/customer/profile" element={
+              <ProtectedRoute>
+                <CustomerProfile />
+              </ProtectedRoute>
+            } />
+            <Route path="/customer/calendar" element={
+              <ProtectedRoute>
+                <CustomerCalendar />
+              </ProtectedRoute>
+            } />
             <Route 
               path="/worker" 
               element={<WorkerDashboard />} 
@@ -57,6 +70,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Jobs />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/worker/quotes" 
+              element={
+                <ProtectedRoute>
+                  <WorkerQuotes />
                 </ProtectedRoute>
               } 
             />

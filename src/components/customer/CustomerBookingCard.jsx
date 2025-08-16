@@ -1,22 +1,83 @@
 import React, { useState } from 'react';
-import { FaCalendar, FaClock, FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaCreditCard, FaCheckCircle } from 'react-icons/fa';
+import { doc, updateDoc, Timestamp } from 'firebase/firestore';
+import { db } from '../../utils/firebase';
+import { FaCalendar, FaClock, FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaCreditCard, FaCheckCircle, FaTimes, FaCheck } from 'react-icons/fa';
 import PaymentModal from '../payment/PaymentModal';
 
 const CustomerBookingCard = ({ booking, onPaymentComplete }) => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const handleQuoteResponse = async (action) => {
+    setIsUpdating(true);
+    try {
+      const newStatus = action === 'accept' ? 'quote_accepted' : 'quote_declined';
+      const bookingRef = doc(db, 'bookings', booking.id);
+      
+      await updateDoc(bookingRef, {
+        status: newStatus,
+        customerResponse: action === 'accept' 
+          ? 'Quote accepted by customer' 
+          : 'Quote declined by customer',
+        respondedAt: Timestamp.now(),
+        ...(action === 'accept' && { 
+          finalPrice: booking.quotedPrice,
+          paymentStatus: 'pending'
+        })
+      });
+
+      // Trigger a refresh of the booking data
+      window.location.reload();
+      
+    } catch (error) {
+      console.error('Error responding to quote:', error);
+      alert('Error updating quote response. Please try again.');
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   const getStatusStyles = (status) => {
     switch (status) {
       case 'pending':
         return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'quoted':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'quote_accepted':
       case 'confirmed':
         return 'bg-green-100 text-green-800 border-green-200';
+      case 'quote_declined':
+        return 'bg-orange-100 text-orange-800 border-orange-200';
       case 'completed':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
+        return 'bg-purple-100 text-purple-800 border-purple-200';
       case 'cancelled':
+      case 'declined':
         return 'bg-red-100 text-red-800 border-red-200';
       default:
         return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  const getStatusText = (status) => {
+    switch (status) {
+      case 'pending':
+        return 'Waiting for Quote';
+      case 'quoted':
+        return 'Quote Received';
+      case 'quote_accepted':
+        return 'Quote Accepted';
+      case 'quote_declined':
+        return 'Quote Declined';
+      case 'confirmed':
+        return 'Confirmed';
+      case 'completed':
+        return 'Completed';
+      case 'cancelled':
+        return 'Cancelled';
+      case 'declined':
+        return 'Declined by Worker';
+      default:
+        return status.charAt(0).toUpperCase() + status.slice(1);
     }
   };
 
@@ -77,7 +138,7 @@ const CustomerBookingCard = ({ booking, onPaymentComplete }) => {
           </div>
           <div className="flex flex-col items-end space-y-2">
             <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusStyles(booking.status)}`}>
-              {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+              {getStatusText(booking.status)}
             </span>
             {booking.paymentStatus && (
               <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getPaymentStatusStyles(booking.paymentStatus)}`}>
@@ -159,18 +220,74 @@ const CustomerBookingCard = ({ booking, onPaymentComplete }) => {
           </div>
         )}
 
+        {/* Quote Display (if status is 'quoted') */}
+        {booking.status === 'quoted' && booking.quotedPrice && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+            <h4 className="font-medium text-blue-900 mb-2">Quote Received</h4>
+            <div className="space-y-2">
+              {booking.originalPrice && (
+                <p className="text-sm text-gray-600">
+                  Original Rate: <span className="line-through">€{booking.originalPrice}</span>
+                </p>
+              )}
+              <p className="text-lg font-semibold text-blue-900">
+                Quoted Price: €{booking.quotedPrice}
+              </p>
+              {booking.workerQuoteMessage && (
+                <div className="mt-3">
+                  <p className="text-sm font-medium text-gray-700">Message from Professional:</p>
+                  <p className="text-sm text-gray-600 bg-white p-2 rounded border mt-1">
+                    {booking.workerQuoteMessage}
+                  </p>
+                </div>
+              )}
+              {booking.quoteExpiresAt && (
+                <p className="text-xs text-gray-500">
+                  Valid until: {new Date(booking.quoteExpiresAt.seconds * 1000).toLocaleDateString()}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Actions */}
         <div className="flex items-center justify-between pt-4 border-t border-gray-100">
           <div className="text-sm text-gray-600">
-            {booking.status === 'pending' && 'Waiting for professional confirmation'}
+            {booking.status === 'pending' && 'Waiting for professional quote'}
+            {booking.status === 'quoted' && 'Quote received - please review'}
+            {booking.status === 'quote_accepted' && 'Quote accepted - booking confirmed'}
+            {booking.status === 'quote_declined' && 'Quote declined'}
             {booking.status === 'confirmed' && 'Booking confirmed'}
             {booking.status === 'completed' && 'Service completed'}
             {booking.status === 'cancelled' && 'Booking cancelled'}
+            {booking.status === 'declined' && 'Request declined by professional'}
           </div>
           
           <div className="flex space-x-2">
+            {/* Quote Response Buttons */}
+            {booking.status === 'quoted' && (
+              <>
+                <button
+                  onClick={() => handleQuoteResponse('decline')}
+                  disabled={isUpdating}
+                  className="flex items-center px-3 py-2 text-sm text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 rounded transition-colors disabled:opacity-50"
+                >
+                  <FaTimes className="mr-1" />
+                  Decline
+                </button>
+                <button
+                  onClick={() => handleQuoteResponse('accept')}
+                  disabled={isUpdating}
+                  className="flex items-center px-3 py-2 text-sm text-white bg-green-600 hover:bg-green-700 rounded transition-colors disabled:opacity-50"
+                >
+                  <FaCheck className="mr-1" />
+                  Accept Quote
+                </button>
+              </>
+            )}
+            
             {/* Payment Button */}
-            {booking.status === 'confirmed' && booking.paymentStatus !== 'paid' && (
+            {(booking.status === 'confirmed' || booking.status === 'quote_accepted') && booking.paymentStatus !== 'paid' && (
               <button
                 onClick={() => setShowPaymentModal(true)}
                 className="flex items-center px-4 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded transition-colors"

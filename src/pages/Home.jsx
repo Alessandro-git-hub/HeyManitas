@@ -491,31 +491,10 @@ export default function Home() {
               I'm a Professional
             </button>
             <button 
-              onClick={() => navigate('/customer/services')}
+              onClick={() => navigate('/customer/profile')}
               className="bg-green-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-green-700 transition-colors shadow-lg"
             >
               I Need Work Done
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* Demo Access - For Development */}
-      <section className="bg-gray-50 py-6 border-t">
-        <div className="max-w-4xl mx-auto px-4">
-          <h3 className="text-md font-medium text-gray-700 mb-3 text-center">Demo Access</h3>
-          <div className="flex flex-wrap justify-center gap-3">
-            <button 
-              onClick={() => navigate('/worker')}
-              className="bg-gray-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors"
-            >
-              Worker Dashboard
-            </button>
-            <button 
-              onClick={() => navigate('/customer/dashboard')}
-              className="bg-gray-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-700 transition-colors"
-            >
-              Customer Dashboard
             </button>
           </div>
         </div>

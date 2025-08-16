@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaStar, FaMapMarkerAlt, FaCalendar, FaClock } from 'react-icons/fa';
 import CalendarWidget from '../components/CalendarWidget';
 import { createBooking } from '../utils/bookings';
+import CustomerHeader from '../components/layout/CustomerHeader';
+import CustomerNavigation from '../components/layout/CustomerNavigation';
 
 const CustomerBooking = () => {
   const location = useLocation();
@@ -107,22 +109,26 @@ const CustomerBooking = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={() => navigate(-1)}
-              className="flex items-center text-gray-600 hover:text-gray-800 transition-colors"
-            >
-              <FaArrowLeft className="mr-2" />
-              Back
-            </button>
-            <h1 className="text-2xl font-bold text-gray-800">Book Service</h1>
+      <CustomerHeader />
+      
+      <div className="max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4">
+        {/* Navigation */}
+        <CustomerNavigation />
+        
+        {/* Page Title */}
+        <div className="flex items-center mb-6">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center text-gray-600 hover:text-gray-800 transition-colors mr-4"
+          >
+            <FaArrowLeft className="mr-2" />
+            Back
+          </button>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Book Service</h1>
+            <p className="text-gray-600">Schedule your appointment with {professional.name}</p>
           </div>
         </div>
-      </div>
-
-      <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Professional Info Sidebar */}
           <div className="lg:col-span-1">
@@ -299,8 +305,8 @@ const CustomerBooking = () => {
                   />
                 </div>
 
-                {/* Urgency and Budget */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Urgency */}
+                <div className="grid grid-cols-1 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Urgency
@@ -316,7 +322,7 @@ const CustomerBooking = () => {
                       <option value="emergency">Emergency</option>
                     </select>
                   </div>
-                  <div>
+                  {/* <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Budget Range
                     </label>
@@ -333,7 +339,7 @@ const CustomerBooking = () => {
                       <option value="500-1000">$500 - $1,000</option>
                       <option value="over-1000">Over $1,000</option>
                     </select>
-                  </div>
+                  </div> */}
                 </div>
 
                 {/* Submit Button */}

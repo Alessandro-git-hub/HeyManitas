@@ -1,10 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { collection, query, getDocs, where } from 'firebase/firestore';
 import { db } from '../utils/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import CustomerBookingCard from '../components/customer/CustomerBookingCard';
+import CustomerHeader from '../components/layout/CustomerHeader';
+import CustomerNavigation from '../components/layout/CustomerNavigation';
 
 const CustomerDashboard = () => {
+  const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -106,7 +110,8 @@ const CustomerDashboard = () => {
     return {
       total: bookings.length,
       pending: bookings.filter(b => b.status === 'pending').length,
-      confirmed: bookings.filter(b => b.status === 'confirmed').length,
+      quoted: bookings.filter(b => b.status === 'quoted').length,
+      confirmed: bookings.filter(b => b.status === 'confirmed' || b.status === 'quote_accepted').length,
       completed: bookings.filter(b => b.status === 'completed').length,
       paid: bookings.filter(b => b.paymentStatus === 'paid').length,
     };
@@ -125,16 +130,19 @@ const CustomerDashboard = () => {
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Header */}
-      <div className="bg-white shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 py-6">
-          <h1 className="text-2xl font-bold text-gray-900">My Bookings</h1>
+      <CustomerHeader />
+      
+      <div className="max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4">
+        {/* Navigation */}
+        <CustomerNavigation />
+        
+        {/* Page Title */}
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-gray-900">My Bookings</h1>
           <p className="text-gray-600">Manage your service appointments and payments</p>
         </div>
-      </div>
-
-      <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
           <div className="bg-white p-4 rounded-lg shadow-sm border">
             <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
             <div className="text-sm text-gray-600">Total Bookings</div>
@@ -143,17 +151,37 @@ const CustomerDashboard = () => {
             <div className="text-2xl font-bold text-yellow-600">{stats.pending}</div>
             <div className="text-sm text-gray-600">Pending</div>
           </div>
+          <div 
+            onClick={stats.quoted > 0 ? () => navigate('/customer/profile?tab=quotes') : undefined}
+            className={`bg-white p-4 rounded-lg shadow-sm border ${
+              stats.quoted > 0 ? 'cursor-pointer hover:shadow-md transition-shadow' : ''
+            }`}
+          >
+            <div className="text-2xl font-bold text-blue-600">{stats.quoted}</div>
+            <div className="text-sm text-gray-600">Quotes Received</div>
+            {stats.quoted > 0 && (
+              <div className="text-xs text-blue-600 mt-1">Click to view</div>
+            )}
+          </div>
           <div className="bg-white p-4 rounded-lg shadow-sm border">
             <div className="text-2xl font-bold text-green-600">{stats.confirmed}</div>
             <div className="text-sm text-gray-600">Confirmed</div>
           </div>
-          <div className="bg-white p-4 rounded-lg shadow-sm border">
-            <div className="text-2xl font-bold text-blue-600">{stats.completed}</div>
-            <div className="text-sm text-gray-600">Completed</div>
+          <div 
+            onClick={stats.paid > 0 ? () => navigate('/customer/calendar') : undefined}
+            className={`bg-white p-4 rounded-lg shadow-sm border ${
+              stats.paid > 0 ? 'cursor-pointer hover:shadow-md transition-shadow' : ''
+            }`}
+          >
+            <div className="text-2xl font-bold text-emerald-600">{stats.paid}</div>
+            <div className="text-sm text-gray-600">Paid & Scheduled</div>
+            {stats.paid > 0 && (
+              <div className="text-xs text-emerald-600 mt-1">View calendar</div>
+            )}
           </div>
           <div className="bg-white p-4 rounded-lg shadow-sm border">
-            <div className="text-2xl font-bold text-green-600">{stats.paid}</div>
-            <div className="text-sm text-gray-600">Paid</div>
+            <div className="text-2xl font-bold text-purple-600">{stats.completed}</div>
+            <div className="text-sm text-gray-600">Completed</div>
           </div>
         </div>
 

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { FaTimes } from 'react-icons/fa';
 import PaymentForm from './PaymentForm';
-import { updateDoc, doc } from 'firebase/firestore';
-import { db } from '../../utils/firebase';
+import { updateDoc, doc, collection, addDoc, query, where, getDocs } from 'firebase/firestore';
+import { auth, db } from '../../utils/firebase';
 
 const PaymentModal = ({ 
   isOpen, 
@@ -16,7 +16,8 @@ const PaymentModal = ({
   if (!isOpen || !booking) return null;
 
   // Calculate payment amount (service cost + 5% fee)
-  const serviceAmount = booking.hourlyRate || 0;
+  // Use quotedPrice if available (after quote acceptance), otherwise use hourlyRate
+  const serviceAmount = booking.quotedPrice || booking.finalPrice || booking.hourlyRate || 0;
   const serviceFee = serviceAmount * 0.05;
   const totalAmount = serviceAmount + serviceFee;
 
@@ -24,17 +25,73 @@ const PaymentModal = ({
     setPaymentStep('processing');
     
     try {
-      // Update booking with payment information
+      // Update booking with payment information and status
       const bookingRef = doc(db, 'bookings', booking.id);
       const updateData = {
         paymentStatus: 'paid',
         paymentMethod: paymentData.paymentMethodId,
         amountPaid: totalAmount,
         paidAt: new Date().toISOString(),
+        status: 'confirmed', // Update status from quote_accepted to confirmed
         updatedAt: new Date().toISOString(),
       };
       
       await updateDoc(bookingRef, updateData);
+
+      // Create corresponding job for the worker (if not already exists)
+      const jobsQuery = query(
+        collection(db, 'jobs'),
+        where('originalBookingId', '==', booking.id)
+      );
+      const existingJobs = await getDocs(jobsQuery);
+      
+      if (existingJobs.empty) {
+        // Create new job entry for the worker
+        const jobData = {
+          title: booking.serviceType || 'Service Request',
+          description: booking.description || `${booking.serviceType} service for ${booking.customerName}`,
+          clientName: booking.customerName,
+          clientEmail: booking.customerEmail,
+          clientPhone: booking.customerPhone,
+          status: 'Pending', // Job starts as Pending until worker marks in progress
+          scheduledDate: booking.date,
+          scheduledTime: booking.time,
+          duration: booking.duration || '1 hour',
+          price: totalAmount,
+          finalPrice: totalAmount,
+          location: booking.address,
+          userId: booking.professionalId, // Worker's ID
+          professionalId: booking.professionalId,
+          originalBookingId: booking.id,
+          paymentConfirmed: true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+        
+        await addDoc(collection(db, 'jobs'), jobData);
+      }
+
+      // Create customer calendar entry
+      const customerCalendarData = {
+        customerId: auth.currentUser?.uid,
+        customerEmail: booking.customerEmail,
+        bookingId: booking.id,
+        title: `${booking.serviceType} - ${booking.professionalName}`,
+        description: booking.description,
+        serviceType: booking.serviceType,
+        professionalName: booking.professionalName,
+        professionalId: booking.professionalId,
+        date: booking.date,
+        time: booking.time,
+        duration: booking.duration || '1 hour',
+        location: booking.address,
+        status: 'scheduled',
+        amountPaid: totalAmount,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      
+      await addDoc(collection(db, 'customerCalendar'), customerCalendarData);
 
       setPaymentResult({
         success: true,

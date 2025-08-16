@@ -29,6 +29,7 @@ export default function WorkerDashboard() {
   const [recentJobs, setRecentJobs] = useState([]);
   const [activeClientsCount, setActiveClientsCount] = useState(0);
   const [weeklyEarnings, setWeeklyEarnings] = useState(0);
+  const [pendingQuotesCount, setPendingQuotesCount] = useState(0);
   
   // Job details modal state
   const [showJobDetails, setShowJobDetails] = useState(false);
@@ -109,6 +110,24 @@ export default function WorkerDashboard() {
     }
   }, [user]);
 
+  // Function to fetch and count pending quote requests
+  const fetchPendingQuotes = useCallback(async () => {
+    if (!user) return 0;
+    
+    try {
+      const bookingsQuery = query(
+        collection(db, 'bookings'), 
+        where('professionalId', '==', user.uid),
+        where('status', '==', 'pending')
+      );
+      const bookingsSnapshot = await getDocs(bookingsQuery);
+      return bookingsSnapshot.size;
+    } catch (error) {
+      console.error('Error fetching pending quotes:', error);
+      return 0;
+    }
+  }, [user]);
+
   const handleJobSuccess = (message) => {
     setFeedback({ message, type: 'success' });
     // Refresh today's jobs count, recent jobs, and weekly earnings
@@ -141,6 +160,10 @@ export default function WorkerDashboard() {
         const clientsCount = await calculateActiveClients(allJobs);
         setActiveClientsCount(clientsCount);
         
+        // Fetch pending quotes count
+        const quotesCount = await fetchPendingQuotes();
+        setPendingQuotesCount(quotesCount);
+        
         // Sort jobs by creation date (most recent first) and take the first 3
         const sortedJobs = allJobs.sort((a, b) => {
           const aDate = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt || 0);
@@ -154,6 +177,7 @@ export default function WorkerDashboard() {
         setTodaysJobsCount(0);
         setWeeklyEarnings(0);
         setActiveClientsCount(0);
+        setPendingQuotesCount(0);
         setRecentJobs([]);
       }
     };
@@ -177,6 +201,11 @@ export default function WorkerDashboard() {
   const handleCloseJobDetails = () => {
     setShowJobDetails(false);
     setSelectedJob(null);
+  };
+
+  // Handler for navigating to quotes
+  const handleViewQuotes = () => {
+    navigate('/worker/quotes');
   };
 
   // Clear feedback after 5 seconds
@@ -220,6 +249,10 @@ export default function WorkerDashboard() {
         const clientsCount = await calculateActiveClients(allJobs);
         setActiveClientsCount(clientsCount);
         
+        // Fetch pending quotes count
+        const quotesCount = await fetchPendingQuotes();
+        setPendingQuotesCount(quotesCount);
+        
         // Sort jobs by creation date (most recent first) and take the first 3
         const sortedJobs = allJobs.sort((a, b) => {
           const aDate = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt || 0);
@@ -233,12 +266,13 @@ export default function WorkerDashboard() {
         setTodaysJobsCount(0);
         setWeeklyEarnings(0);
         setActiveClientsCount(0);
+        setPendingQuotesCount(0);
         setRecentJobs([]);
       }
     };
 
     fetchData();
-  }, [calculateWeeklyEarnings, calculateActiveClients, user]);
+  }, [calculateWeeklyEarnings, calculateActiveClients, fetchPendingQuotes, user]);
 
   return (
     <div className="min-h-screen bg-light">
@@ -299,13 +333,21 @@ export default function WorkerDashboard() {
               </div>
             </div>
 
-            <div className="bg-white p-3 flex items-center rounded-lg shadow-sm border md:p-6 md:flex-col md:text-center">
+            <div 
+              onClick={pendingQuotesCount > 0 ? handleViewQuotes : undefined}
+              className={`bg-white p-3 flex items-center rounded-lg shadow-sm border md:p-6 md:flex-col md:text-center ${
+                pendingQuotesCount > 0 ? 'cursor-pointer hover:shadow-md transition-shadow' : ''
+              }`}
+            >
               <div className="bg-warning/10 p-3 rounded-full md:mb-3">
                 <span className="text-2xl">📄</span>
               </div>
               <div className="ml-4 md:ml-0">
                 <p className="text-sm text-gray-600">Pending Quotes</p>
-                <p className="text-2xl font-bold text-deep">2</p>
+                <p className="text-2xl font-bold text-deep">{pendingQuotesCount}</p>
+                {pendingQuotesCount > 0 && (
+                  <p className="text-xs text-blue-600 mt-1">Click to view</p>
+                )}
               </div>
             </div>
 

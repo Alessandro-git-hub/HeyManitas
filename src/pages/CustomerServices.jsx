@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';
 import { SERVICE_CATEGORIES } from '../utils/serviceCategories';
+import CustomerHeader from '../components/layout/CustomerHeader';
+import CustomerNavigation from '../components/layout/CustomerNavigation';
 
 const CustomerServices = () => {
   const navigate = useNavigate();
@@ -43,25 +45,19 @@ const CustomerServices = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-6xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => navigate('/')}
-                className="flex items-center text-gray-600 hover:text-gray-800 transition-colors"
-              >
-                <FaArrowLeft className="mr-2" />
-                Back to Home
-              </button>
-              <h1 className="text-2xl font-bold text-gray-800">Find Services</h1>
-            </div>
-          </div>
+      <CustomerHeader />
+      
+      <div className="max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4">
+        {/* Navigation */}
+        <CustomerNavigation />
+        
+        {/* Page Title */}
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-gray-900">Find Services</h1>
+          <p className="text-gray-600">Choose the service you need</p>
         </div>
-      </div>
 
-      {/* Search Section */}
-      <div className="max-w-6xl mx-auto px-4 py-8">
+        {/* Search Section */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">
             What service do you need?

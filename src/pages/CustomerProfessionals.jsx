@@ -4,6 +4,8 @@ import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firesto
 import { db } from '../utils/firebase';
 import { FaArrowLeft, FaStar, FaMapMarkerAlt, FaPhone, FaEnvelope } from 'react-icons/fa';
 import { SERVICE_CATEGORIES } from '../utils/serviceCategories';
+import CustomerHeader from '../components/layout/CustomerHeader';
+import CustomerNavigation from '../components/layout/CustomerNavigation';
 
 const CustomerProfessionals = () => {
   const { categoryId } = useParams();
@@ -187,39 +189,37 @@ const CustomerProfessionals = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-6xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => navigate('/customer/services')}
-                className="flex items-center text-gray-600 hover:text-gray-800 transition-colors"
+      <CustomerHeader />
+      
+      <div className="max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4">
+        {/* Navigation */}
+        <CustomerNavigation />
+        
+        {/* Page Title */}
+        <div className="flex items-center mb-6">
+          <button
+            onClick={() => navigate('/customer/services')}
+            className="flex items-center text-gray-600 hover:text-gray-800 transition-colors mr-4"
+          >
+            <FaArrowLeft className="mr-2" />
+            Back to Services
+          </button>
+          <div className="flex items-center space-x-3">
+            {category && (
+              <div 
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm"
+                style={{ backgroundColor: colorMap[category.color] || colorMap.gray }}
               >
-                <FaArrowLeft className="mr-2" />
-                Back to Services
-              </button>
-              <div className="flex items-center space-x-3">
-                {category && (
-                  <div 
-                    className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm"
-                    style={{ backgroundColor: colorMap[category.color] || colorMap.gray }}
-                  >
-                    {category.icon}
-                  </div>
-                )}
-                <h1 className="text-2xl font-bold text-gray-800">{categoryName} Professionals</h1>
+                {category.icon}
               </div>
+            )}
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">{categoryName} Professionals</h1>
+              <p className="text-gray-600">
+                Found {professionals.length} {categoryName.toLowerCase()} professionals in your area
+              </p>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        {/* Results Summary */}
-        <div className="mb-6">
-          <p className="text-gray-600">
-            Found {professionals.length} {categoryName.toLowerCase()} professionals in your area
-          </p>
         </div>
 
         {/* Professionals Grid */}
