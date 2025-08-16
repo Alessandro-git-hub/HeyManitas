@@ -3,6 +3,7 @@ import { collection, addDoc, updateDoc, doc, getDocs, query, where } from 'fireb
 import { db } from '../../utils/firebase';
 import { useAuth } from '../../contexts/AuthContext';
 import { getCategoryInfo } from '../../utils/serviceCategories';
+import FormModal from '../common/FormModal';
 
 export default function JobFormModal({ 
   isOpen, 
@@ -253,249 +254,195 @@ export default function JobFormModal({
     }
   };
 
-  // Handle ESC key
-  useEffect(() => {
-    const handleKeyPress = (e) => {
-      if (e.key === 'Escape' && !isSubmitting) {
-        onClose();
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('keydown', handleKeyPress);
-      return () => document.removeEventListener('keydown', handleKeyPress);
-    }
-  }, [isOpen, isSubmitting, onClose]);
-
-  if (!isOpen) return null;
-
+  // Remove the ESC key handling and modal visibility logic since FormModal handles it
+  
   return (
-    <div 
-      className="fixed inset-0 flex items-center justify-center z-50 p-4"
-      style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}
-      onClick={(e) => {
-        if (e.target === e.currentTarget && !isSubmitting) {
-          onClose();
-        }
-      }}
+    <FormModal
+      isOpen={isOpen}
+      onClose={onClose}
+      onSubmit={handleSubmit}
+      title={editingJob ? 'Edit Job' : 'Add New Job'}
+      size="lg"
+      isSubmitting={isSubmitting}
+      submitLabel={editingJob ? 'Update Job' : 'Add Job'}
+      cancelLabel="Cancel"
     >
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-screen overflow-y-auto">
-        <div className="p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">
-              {editingJob ? 'Edit Job' : 'Add New Job'}
-            </h2>
-            <button
-              onClick={onClose}
-              disabled={isSubmitting}
-              className="text-gray-400 hover:text-gray-600 disabled:opacity-50 cursor-pointer"
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Client Name *
+        </label>
+        <input
+          type="text"
+          name="client"
+          value={formData.client}
+          onChange={handleInputChange}
+          disabled={isSubmitting}
+          list="customers-list"
+          className={`w-full p-3 border rounded-lg ${
+            formErrors.client ? 'border-red-500' : 'border-gray-300'
+          } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 ${
+            loadingCustomers ? 'bg-gray-50' : ''
+          }`}
+          placeholder="Enter or select client name (new clients will be saved automatically)"
+          autoFocus={!editingJob}
+        />
+        <datalist id="customers-list">
+          {!loadingCustomers && availableCustomers.map((customer) => (
+            <option key={customer.id} value={customer.name}>
+              {customer.company && `${customer.name} (${customer.company})`}
+            </option>
+          ))}
+        </datalist>
+        {formErrors.client && (
+          <p className="text-red-500 text-sm mt-1">{formErrors.client}</p>
+        )}
+        {!loadingCustomers && availableCustomers.length > 0 && (
+          <p className="text-xs text-gray-500 mt-1">
+            Start typing to see existing clients or enter a new name (will be saved automatically)
+          </p>
+        )}
+        {!loadingCustomers && availableCustomers.length === 0 && (
+          <p className="text-xs text-gray-500 mt-1">
+            Enter client name - new customers will be saved automatically
+          </p>
+        )}
+      </div>
+
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Service *
+        </label>
+        <select
+          name="serviceId"
+          value={formData.serviceId}
+          onChange={handleServiceChange}
+          disabled={isSubmitting || loadingServices}
+          className={`w-full p-3 border rounded-lg ${
+            formErrors.serviceId ? 'border-red-500' : 'border-gray-300'
+          } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50`}
+        >
+          <option value="">Select a service</option>
+          {availableServices.map(service => {
+            const categoryInfo = getCategoryInfo(service.category);
+            return (
+              <option key={service.id} value={service.id}>
+                {categoryInfo.icon} {service.name} - €{service.basePrice} ({service.category})
+              </option>
+            );
+          })}
+        </select>
+        {formErrors.serviceId && (
+          <p className="text-red-500 text-sm mt-1">{formErrors.serviceId}</p>
+        )}
+        {loadingServices && (
+          <p className="text-gray-500 text-sm mt-1">Loading services...</p>
+        )}
+        {!loadingServices && availableServices.length === 0 && (
+          <p className="text-gray-500 text-sm mt-1">
+            No services available. <button 
+              type="button"
+              onClick={() => {
+                onClose();
+                // Navigate to services page - you might want to pass this as a prop
+                window.location.href = '/worker/services';
+              }}
+              className="text-blue-600 hover:text-blue-700 underline"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              Create your first service
             </button>
+          </p>
+        )}
+      </div>
+
+      {formData.serviceId && (
+        <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+          <div className="flex justify-between items-center text-sm">
+            <span className="text-blue-700 font-medium">Base Price:</span>
+            <span className="text-blue-900 font-semibold">€{formData.basePrice}</span>
           </div>
-          
-          <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Client Name *
-              </label>
-              <input
-                type="text"
-                name="client"
-                value={formData.client}
-                onChange={handleInputChange}
-                disabled={isSubmitting}
-                list="customers-list"
-                className={`w-full p-3 border rounded-lg ${
-                  formErrors.client ? 'border-red-500' : 'border-gray-300'
-                } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 ${
-                  loadingCustomers ? 'bg-gray-50' : ''
-                }`}
-                placeholder="Enter or select client name (new clients will be saved automatically)"
-                autoFocus={!editingJob}
-              />
-              <datalist id="customers-list">
-                {!loadingCustomers && availableCustomers.map((customer) => (
-                  <option key={customer.id} value={customer.name}>
-                    {customer.company && `${customer.name} (${customer.company})`}
-                  </option>
-                ))}
-              </datalist>
-              {formErrors.client && (
-                <p className="text-red-500 text-sm mt-1">{formErrors.client}</p>
-              )}
-              {!loadingCustomers && availableCustomers.length > 0 && (
-                <p className="text-xs text-gray-500 mt-1">
-                  Start typing to see existing clients or enter a new name (will be saved automatically)
-                </p>
-              )}
-              {!loadingCustomers && availableCustomers.length === 0 && (
-                <p className="text-xs text-gray-500 mt-1">
-                  Enter client name - new customers will be saved automatically
-                </p>
-              )}
-            </div>
+        </div>
+      )}
 
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Service *
-              </label>
-              <select
-                name="serviceId"
-                value={formData.serviceId}
-                onChange={handleServiceChange}
-                disabled={isSubmitting || loadingServices}
-                className={`w-full p-3 border rounded-lg ${
-                  formErrors.serviceId ? 'border-red-500' : 'border-gray-300'
-                } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50`}
-              >
-                <option value="">Select a service</option>
-                {availableServices.map(service => {
-                  const categoryInfo = getCategoryInfo(service.category);
-                  return (
-                    <option key={service.id} value={service.id}>
-                      {categoryInfo.icon} {service.name} - €{service.basePrice} ({service.category})
-                    </option>
-                  );
-                })}
-              </select>
-              {formErrors.serviceId && (
-                <p className="text-red-500 text-sm mt-1">{formErrors.serviceId}</p>
-              )}
-              {loadingServices && (
-                <p className="text-gray-500 text-sm mt-1">Loading services...</p>
-              )}
-              {!loadingServices && availableServices.length === 0 && (
-                <p className="text-gray-500 text-sm mt-1">
-                  No services available. <button 
-                    type="button"
-                    onClick={() => {
-                      onClose();
-                      // Navigate to services page - you might want to pass this as a prop
-                      window.location.href = '/worker/services';
-                    }}
-                    className="text-blue-600 hover:text-blue-700 underline"
-                  >
-                    Create your first service
-                  </button>
-                </p>
-              )}
-            </div>
+      <div className="grid grid-cols-2 gap-4 mb-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Final Price (€) *
+          </label>
+          <input
+            type="number"
+            name="finalPrice"
+            value={formData.finalPrice}
+            onChange={handleInputChange}
+            disabled={isSubmitting}
+            min="0"
+            step="0.01"
+            className={`w-full p-3 border rounded-lg ${
+              formErrors.finalPrice ? 'border-red-500' : 'border-gray-300'
+            } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50`}
+            placeholder="Final quoted price"
+          />
+          {formErrors.finalPrice && (
+            <p className="text-red-500 text-sm mt-1">{formErrors.finalPrice}</p>
+          )}
+        </div>
 
-            {formData.serviceId && (
-              <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-blue-700 font-medium">Base Price:</span>
-                  <span className="text-blue-900 font-semibold">€{formData.basePrice}</span>
-                </div>
-              </div>
-            )}
-
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Final Price (€) *
-                </label>
-                <input
-                  type="number"
-                  name="finalPrice"
-                  value={formData.finalPrice}
-                  onChange={handleInputChange}
-                  disabled={isSubmitting}
-                  min="0"
-                  step="0.01"
-                  className={`w-full p-3 border rounded-lg ${
-                    formErrors.finalPrice ? 'border-red-500' : 'border-gray-300'
-                  } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50`}
-                  placeholder="Final quoted price"
-                />
-                {formErrors.finalPrice && (
-                  <p className="text-red-500 text-sm mt-1">{formErrors.finalPrice}</p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Status
-                </label>
-                <select
-                  name="status"
-                  value={formData.status}
-                  onChange={handleInputChange}
-                  disabled={isSubmitting}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
-                >
-                  <option value="Pending">Pending</option>
-                  <option value="In Progress">In Progress</option>
-                  <option value="Done">Done</option>
-                  <option value="Cancelled">Cancelled</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Scheduled Date *
-              </label>
-              <input
-                type="date"
-                name="scheduledDate"
-                value={formData.scheduledDate}
-                onChange={handleInputChange}
-                disabled={isSubmitting}
-                className={`w-full p-3 border rounded-lg ${
-                  formErrors.scheduledDate ? 'border-red-500' : 'border-gray-300'
-                } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50`}
-              />
-              {formErrors.scheduledDate && (
-                <p className="text-red-500 text-sm mt-1">{formErrors.scheduledDate}</p>
-              )}
-            </div>
-
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Job Description *
-              </label>
-              <textarea
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                disabled={isSubmitting}
-                rows="4"
-                className={`w-full p-3 border rounded-lg ${
-                  formErrors.description ? 'border-red-500' : 'border-gray-300'
-                } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50`}
-                placeholder="Describe the job details, requirements, and any important notes..."
-              ></textarea>
-              {formErrors.description && (
-                <p className="text-red-500 text-sm mt-1">{formErrors.description}</p>
-              )}
-            </div>
-
-            <div className="flex gap-3">
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="flex-1 bg-blue-800 text-white py-2 px-4 rounded-lg hover:bg-blue-900 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-              >
-                {isSubmitting ? 'Saving...' : (editingJob ? 'Update Job' : 'Add Job')}
-              </button>
-              <button
-                type="button"
-                onClick={onClose}
-                disabled={isSubmitting}
-                className="flex-1 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors font-medium disabled:opacity-50 cursor-pointer"
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-          
-          <p className="text-xs text-gray-500 mt-4 text-center">Press ESC to cancel</p>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Status
+          </label>
+          <select
+            name="status"
+            value={formData.status}
+            onChange={handleInputChange}
+            disabled={isSubmitting}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
+          >
+            <option value="Pending">Pending</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Done">Done</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
         </div>
       </div>
-    </div>
+
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Scheduled Date *
+        </label>
+        <input
+          type="date"
+          name="scheduledDate"
+          value={formData.scheduledDate}
+          onChange={handleInputChange}
+          disabled={isSubmitting}
+          className={`w-full p-3 border rounded-lg ${
+            formErrors.scheduledDate ? 'border-red-500' : 'border-gray-300'
+          } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50`}
+        />
+        {formErrors.scheduledDate && (
+          <p className="text-red-500 text-sm mt-1">{formErrors.scheduledDate}</p>
+        )}
+      </div>
+
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Job Description *
+        </label>
+        <textarea
+          name="description"
+          value={formData.description}
+          onChange={handleInputChange}
+          disabled={isSubmitting}
+          rows="4"
+          className={`w-full p-3 border rounded-lg ${
+            formErrors.description ? 'border-red-500' : 'border-gray-300'
+          } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50`}
+          placeholder="Describe the job details, requirements, and any important notes..."
+        ></textarea>
+        {formErrors.description && (
+          <p className="text-red-500 text-sm mt-1">{formErrors.description}</p>
+        )}
+      </div>
+    </FormModal>
   );
 }
