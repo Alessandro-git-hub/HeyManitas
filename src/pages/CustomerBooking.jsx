@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaStar, FaMapMarkerAlt, FaCalendar, FaClock } from 'react-icons/fa';
 import CalendarWidget from '../components/CalendarWidget';
+import FileUploader from '../components/common/FileUploader';
 import { createBooking } from '../utils/bookings';
 import CustomerHeader from '../components/layout/CustomerHeader';
 import CustomerNavigation from '../components/layout/CustomerNavigation';
@@ -35,10 +36,10 @@ const CustomerBooking = () => {
   
   const [selectedDateTime, setSelectedDateTime] = useState(null);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
+  const [attachedFiles, setAttachedFiles] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!professional) {
-    console.log('No professional data found in location.state');
     return (
       <div className="min-h-screen bg-light">
         <CustomerHeader />
@@ -58,9 +59,6 @@ const CustomerBooking = () => {
       </div>
     );
   }
-
-  console.log('Professional data:', professional);
-  console.log('Category name:', categoryName);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -97,12 +95,15 @@ const CustomerBooking = () => {
         datetime: selectedDateTime.toISOString(),
         status: 'pending',
         categoryName,
-        hourlyRate: professional.hourlyRate
+        hourlyRate: professional.hourlyRate,
+        attachments: attachedFiles.map(file => ({
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          url: file.url,
+          uploadedAt: new Date().toISOString()
+        }))
       };
-
-      console.log('🔍 DEBUGGING: Creating booking with data:', bookingData);
-      console.log('🔍 DEBUGGING: User auth email:', user.email);
-      console.log('🔍 DEBUGGING: Professional ID:', professional.id);
 
       // Save to Firebase bookings collection
       const result = await createBooking(bookingData);
@@ -141,13 +142,6 @@ const CustomerBooking = () => {
         
         {/* Page Title */}
         <div className="flex items-center mb-6">
-          <button
-            onClick={() => navigate(-1)}
-            className="flex items-center text-gray-600 hover:text-gray-800 transition-colors mr-4"
-          >
-            <FaArrowLeft className="mr-2" />
-            Back
-          </button>
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Book Service</h1>
             <p className="text-gray-600">Schedule your appointment with {professional.name}</p>
@@ -245,6 +239,22 @@ const CustomerBooking = () => {
                     required
                     placeholder="Please provide details about what you need done..."
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                {/* File Attachments */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Attach Files (Optional)
+                  </label>
+                  <p className="text-sm text-gray-500 mb-3">
+                    Add photos, documents, or sketches to help explain your project requirements
+                  </p>
+                  <FileUploader 
+                    onFilesChange={setAttachedFiles}
+                    maxFiles={5}
+                    maxFileSize={10 * 1024 * 1024} // 10MB
+                    acceptedTypes={['image/*', 'application/pdf', '.doc', '.docx', '.txt']}
                   />
                 </div>
 

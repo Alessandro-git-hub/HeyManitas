@@ -87,11 +87,25 @@ const CalendarWidget = ({ professionalId, onDateTimeSelect, selectedDateTime }) 
       const bookingsSnapshot = await getDocs(bookingsQuery);
       const bookedTimes = bookingsSnapshot.docs.map(doc => doc.data().time);
 
-      // Calculate available slots (professional available AND not booked)
-      const available = professionalAvailability.filter(slot => !bookedTimes.includes(slot));
+      // Also check for existing jobs/appointments for this professional on this date
+      const jobsQuery = query(
+        collection(db, 'jobs'),
+        where('userId', '==', professionalId),
+        where('date', '==', dateString),
+        where('status', 'in', ['pending', 'confirmed', 'in-progress'])
+      );
+      
+      const jobsSnapshot = await getDocs(jobsQuery);
+      const jobTimes = jobsSnapshot.docs.map(doc => doc.data().time);
+
+      // Combine all conflicting times
+      const conflictingTimes = [...new Set([...bookedTimes, ...jobTimes])];
+
+      // Calculate available slots (professional available AND not booked AND no job conflicts)
+      const available = professionalAvailability.filter(slot => !conflictingTimes.includes(slot));
 
       setAvailableSlots(available);
-      setBookedSlots(bookedTimes);
+      setBookedSlots(conflictingTimes);
     } catch (error) {
       console.error('Error fetching availability:', error);
       setAvailableSlots(timeSlots); // Fallback to all slots
@@ -230,22 +244,45 @@ const CalendarWidget = ({ professionalId, onDateTimeSelect, selectedDateTime }) 
                     onClick={() => handleTimeSelect(time)}
                     disabled={!isAvailable}
                     className={`
-                      py-2 px-3 rounded-lg text-sm font-medium transition-colors
+                      py-2 px-3 rounded-lg text-sm font-medium transition-colors relative
                       ${!isAvailable 
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                        ? 'bg-red-50 text-red-500 cursor-not-allowed border border-red-200' 
                         : isSelectedTime
                         ? 'bg-blue-600 text-white'
                         : 'bg-gray-50 text-gray-700 hover:bg-blue-100 cursor-pointer'
                       }
                     `}
+                    title={!isAvailable ? 'Time slot unavailable - Worker has existing appointment' : ''}
                   >
                     {formatTimeSlot(time)}
-                    {isBooked && (
-                      <span className="block text-xs text-red-500">Booked</span>
+                    {isBooked && !isAvailable && (
+                      <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
                     )}
                   </button>
                 );
               })}
+            </div>
+          )}
+          
+          {/* Legend for time slot states */}
+          {selectedDate && (
+            <div className="mt-4 pt-3 border-t border-gray-100">
+              <div className="flex flex-wrap gap-4 text-xs text-gray-600">
+                <div className="flex items-center gap-1">
+                  <div className="w-3 h-3 bg-gray-50 border border-gray-200 rounded"></div>
+                  <span>Available</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-3 h-3 bg-red-50 border border-red-200 rounded relative">
+                    <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+                  </div>
+                  <span>Unavailable (Existing appointment)</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-3 h-3 bg-blue-600 rounded"></div>
+                  <span>Selected</span>
+                </div>
+              </div>
             </div>
           )}
           

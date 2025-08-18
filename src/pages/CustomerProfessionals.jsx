@@ -197,13 +197,6 @@ const CustomerProfessionals = () => {
         
         {/* Page Title */}
         <div className="flex items-center mb-6">
-          <button
-            onClick={() => navigate('/customer/services')}
-            className="flex items-center text-gray-600 hover:text-gray-800 transition-colors mr-4"
-          >
-            <FaArrowLeft className="mr-2" />
-            Back to Services
-          </button>
           <div className="flex items-center space-x-3">
             {category && (
               <div 

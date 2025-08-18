@@ -50,20 +50,6 @@ const CustomerProfile = () => {
     
     try {
       setLoading(true);
-      console.log('Fetching quotes for user email:', user.email);
-      
-      // First, let's see all bookings with this customer email (for debugging)
-      const allBookingsQuery = query(
-        collection(db, 'bookings'),
-        where('customerEmail', '==', user.email)
-      );
-      
-      const allSnapshot = await getDocs(allBookingsQuery);
-      console.log('All bookings for this customer:', allSnapshot.size);
-      allSnapshot.forEach((doc) => {
-        const data = doc.data();
-        console.log('Booking:', doc.id, 'Status:', data.status, 'CustomerEmail:', data.customerEmail);
-      });
       
       const quotesQuery = query(
         collection(db, 'bookings'),
@@ -74,11 +60,8 @@ const CustomerProfile = () => {
       const snapshot = await getDocs(quotesQuery);
       const quotesList = [];
       
-      console.log('Found', snapshot.size, 'quotes with quoted status');
-      
       snapshot.forEach((doc) => {
         const data = { id: doc.id, ...doc.data() };
-        console.log('Quote found:', data);
         quotesList.push(data);
       });
       
@@ -89,7 +72,6 @@ const CustomerProfile = () => {
         return dateB - dateA;
       });
       
-      console.log('Final quotes list:', quotesList);
       setQuotes(quotesList);
     } catch (error) {
       console.error('Error fetching quotes:', error);

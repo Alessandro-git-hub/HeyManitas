@@ -43,6 +43,16 @@ const BookingCard = ({ booking, onStatusUpdate, onViewDetails }) => {
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
       {/* Header */}
+      <div className="flex items-center space-x-2">
+          <span className={`px-3 py-1 text-xs mb-3 font-medium rounded-full border ${getStatusStyles(booking.status)}`}>
+            {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+          </span>
+          {isUpcoming() && (
+            <span className="px-2 py-1 text-xs bg-blue-50 text-blue-600 rounded">
+              Upcoming
+            </span>
+          )}
+        </div>
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center space-x-3">
           <div className="flex-shrink-0">
@@ -56,16 +66,6 @@ const BookingCard = ({ booking, onStatusUpdate, onViewDetails }) => {
             </h3>
             <p className="text-sm text-gray-600">{booking.customerEmail}</p>
           </div>
-        </div>
-        <div className="flex items-center space-x-2">
-          <span className={`px-3 py-1 text-xs font-medium rounded-full border ${getStatusStyles(booking.status)}`}>
-            {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-          </span>
-          {isUpcoming() && (
-            <span className="px-2 py-1 text-xs bg-blue-50 text-blue-600 rounded">
-              Upcoming
-            </span>
-          )}
         </div>
       </div>
 
