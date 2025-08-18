@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import HeyManitasLogo from '../../images/HeyManitasLogo.png';
 
 export default function WorkerHeader() {
   const navigate = useNavigate();
@@ -27,7 +28,13 @@ export default function WorkerHeader() {
               onClick={() => navigate('/')}
               className="text-xl md:text-2xl font-bold text-deep hover:text-blue-800 transition-colors cursor-pointer flex-shrink-0"
             >
-              SkillBooster
+              <div className="flex items-center gap-1">
+                <img 
+                  src={HeyManitasLogo} 
+                  alt="SkillBooster Logo" 
+                  className="h-6 md:h-8 w-auto" 
+                />
+              </div>
             </button>
           </div>
           <div className="flex items-center space-x-2 md:space-x-4 min-w-0">

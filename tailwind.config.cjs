@@ -9,12 +9,30 @@ module.exports = {
       colors: {
         // Core Palette with variations
         primary: {
-          DEFAULT: '#1E3A8A',    // Deep Steel Blue
-          50: '#EFF6FF',
-          100: '#DBEAFE',
-          600: '#1E3A8A',
-          700: '#1E40AF',
-          800: '#1E3A8A',
+          DEFAULT: '#334340',    // Dark Green-Gray
+          50: '#f6f8f7',
+          100: '#e8ece9',
+          200: '#d3dbd6',
+          300: '#b4c1b8',
+          400: '#8ea095',
+          500: '#6d7f75',
+          600: '#57695e',
+          700: '#47564c',
+          800: '#334340',
+          900: '#2c3a36',
+        },
+        secondary: {
+          DEFAULT: '#cda961',    // Golden Brass
+          50: '#fdf9f0',
+          100: '#faf0dc',
+          200: '#f4dfb8',
+          300: '#ecc88a',
+          400: '#e2ae5a',
+          500: '#da9539',
+          600: '#cda961',
+          700: '#a6733c',
+          800: '#875d33',
+          900: '#6f4d2e',
         },
         accent: {
           DEFAULT: '#F97316',    // Energetic Orange
@@ -50,7 +68,7 @@ module.exports = {
         // Neutral & Background
         light: '#F9FAFB',        // Soft White
         base: '#F3F4F6',         // Cool Gray
-        deep: '#1F2937',         // Charcoal Gray
+        deep: '#334340',         // Primary Dark (matching new primary color)
       },
     },
   },

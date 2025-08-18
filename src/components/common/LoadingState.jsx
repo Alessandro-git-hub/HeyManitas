@@ -36,7 +36,7 @@ export default function LoadingState({
         {/* Spinner */}
         <div 
           className={`
-            animate-spin rounded-full border-blue-600 border-t-transparent mx-auto
+            animate-spin rounded-full border-primary-600 border-t-transparent mx-auto
             ${sizeClasses[size]}
           `}
         />

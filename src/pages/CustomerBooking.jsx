@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaStar, FaMapMarkerAlt, FaCalendar, FaClock } from 'react-icons/fa';
 import CalendarWidget from '../components/CalendarWidget';
 import { createBooking } from '../utils/bookings';
 import CustomerHeader from '../components/layout/CustomerHeader';
 import CustomerNavigation from '../components/layout/CustomerNavigation';
+import { useAuth } from '../contexts/AuthContext';
 
 const CustomerBooking = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth();
   
   const { professional, categoryName } = location.state || {};
   
@@ -17,30 +19,48 @@ const CustomerBooking = () => {
     description: '',
     address: '',
     phone: '',
-    email: '',
-    urgency: 'normal',
-    budget: ''
+    email: user?.email || '', // Auto-populate with user's email
+    contactName: ''
   });
+
+  // Update email when user loads
+  useEffect(() => {
+    if (user?.email) {
+      setFormData(prev => ({
+        ...prev,
+        email: user.email
+      }));
+    }
+  }, [user]);
   
   const [selectedDateTime, setSelectedDateTime] = useState(null);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!professional) {
+    console.log('No professional data found in location.state');
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-600 mb-4">No professional selected</p>
-          <button
-            onClick={() => navigate('/customer/services')}
-            className="text-blue-600 hover:text-blue-700"
-          >
-            Back to Services
-          </button>
+      <div className="min-h-screen bg-light">
+        <CustomerHeader />
+        <div className="max-w-4xl mx-auto px-4 py-8">
+          <CustomerNavigation />
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Professional Not Found</h1>
+            <p className="text-gray-600 mb-6">We couldn't find the professional you're trying to book.</p>
+            <button
+              onClick={() => navigate('/customer/services')}
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Back to Services
+            </button>
+          </div>
         </div>
       </div>
     );
   }
+
+  console.log('Professional data:', professional);
+  console.log('Category name:', categoryName);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -71,7 +91,7 @@ const CustomerBooking = () => {
         ...formData,
         professionalId: professional.id,
         professionalName: professional.name,
-        customerEmail: formData.email,
+        customerEmail: user.email, // Use auth email directly for consistency
         date: selectedDateTime.toISOString().split('T')[0], // YYYY-MM-DD
         time: selectedTimeSlot, // HH:MM format
         datetime: selectedDateTime.toISOString(),
@@ -79,6 +99,10 @@ const CustomerBooking = () => {
         categoryName,
         hourlyRate: professional.hourlyRate
       };
+
+      console.log('🔍 DEBUGGING: Creating booking with data:', bookingData);
+      console.log('🔍 DEBUGGING: User auth email:', user.email);
+      console.log('🔍 DEBUGGING: Professional ID:', professional.id);
 
       // Save to Firebase bookings collection
       const result = await createBooking(bookingData);
@@ -276,15 +300,15 @@ const CustomerBooking = () => {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Email Address
+                      <span className="text-xs text-gray-500 ml-2">(From your account)</span>
                     </label>
                     <input
                       type="email"
                       name="email"
                       value={formData.email}
-                      onChange={handleInputChange}
-                      required
-                      placeholder="your@email.com"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      readOnly
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-600 cursor-not-allowed"
+                      title="This email is automatically set from your account"
                     />
                   </div>
                 </div>

@@ -19,10 +19,15 @@ export default function WorkerQuotes() {
 
   // Fetch pending booking requests
   const fetchBookingRequests = useCallback(async () => {
-    if (!user) return;
+    if (!user) {
+      console.log('No user, skipping fetch');
+      return;
+    }
     
     try {
       setLoading(true);
+      console.log('Fetching booking requests for worker:', user.uid);
+      
       const bookingsQuery = query(
         collection(db, 'bookings'),
         where('professionalId', '==', user.uid),
@@ -32,11 +37,12 @@ export default function WorkerQuotes() {
       const snapshot = await getDocs(bookingsQuery);
       const requests = [];
       
+      console.log('Found', snapshot.size, 'pending booking requests');
+      
       snapshot.forEach((doc) => {
-        requests.push({
-          id: doc.id,
-          ...doc.data()
-        });
+        const data = { id: doc.id, ...doc.data() };
+        console.log('Booking request:', data);
+        requests.push(data);
       });
       
       // Sort by creation date (newest first)
@@ -46,6 +52,7 @@ export default function WorkerQuotes() {
         return dateB - dateA;
       });
       
+      console.log('Final booking requests:', requests);
       setBookingRequests(requests);
     } catch (error) {
       console.error('Error fetching booking requests:', error);
@@ -117,15 +124,23 @@ export default function WorkerQuotes() {
         ? new Date(quoteForm.validUntil)
         : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
+      // Get the booking to check its current data
+      const booking = bookingRequests.find(b => b.id === bookingId);
+      console.log('Sending quote for booking:', booking);
+
       // Update the booking with quote information
-      await updateDoc(doc(db, 'bookings', bookingId), {
+      const updateData = {
         status: 'quoted',
         quotedPrice: quotedPrice,
-        originalPrice: bookingRequests.find(b => b.id === bookingId)?.hourlyRate,
+        originalPrice: booking?.hourlyRate,
         workerQuoteMessage: quoteForm.message.trim(),
         quotedAt: Timestamp.now(),
         quoteExpiresAt: Timestamp.fromDate(validUntil)
-      });
+      };
+      
+      console.log('Updating booking with:', updateData);
+      
+      await updateDoc(doc(db, 'bookings', bookingId), updateData);
 
       setFeedback({ message: 'Quote sent successfully!', type: 'success' });
       setActiveQuoteId(null);

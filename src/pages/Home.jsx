@@ -12,7 +12,7 @@ export default function Home() {
           <div className="text-left">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
               Connect with local professionals.<br />
-              <span className="text-blue-600">Get things done.</span>
+              <span className="text-primary-600">Get things done.</span>
             </h1>
             <p className="text-xl text-gray-600 mb-8 max-w-2xl">
               Whether you need work done or you're a professional looking to grow your business - 
@@ -23,7 +23,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-4 mb-12">
               <button 
                 onClick={() => navigate('/login?userType=worker')}
-                className="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg"
+                className="bg-primary-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-primary-700 transition-colors shadow-lg"
               >
                 I'm a Professional
               </button>
@@ -486,7 +486,7 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <button 
               onClick={() => navigate('/signup')}
-              className="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg"
+              className="bg-primary-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-primary-700 transition-colors shadow-lg"
             >
               I'm a Professional
             </button>

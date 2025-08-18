@@ -1,5 +1,125 @@
 @import "tailwindcss";
 
+/* Primary Color Classes - Dark Green-Gray (#334340) */
+.bg-primary {
+  background-color: #334340;
+}
+
+.bg-primary-600 {
+  background-color: #334340;
+}
+
+.bg-primary-700 {
+  background-color: #2c3a36;
+}
+
+.bg-primary-800 {
+  background-color: #334340;
+}
+
+.text-primary {
+  color: #334340;
+}
+
+.text-primary-600 {
+  color: #334340;
+}
+
+.text-primary-700 {
+  color: #2c3a36;
+}
+
+.text-primary-800 {
+  color: #334340;
+}
+
+.border-primary {
+  border-color: #334340;
+}
+
+.border-primary-600 {
+  border-color: #334340;
+}
+
+/* Secondary Color Classes - Golden Brass (#cda961) */
+.bg-secondary {
+  background-color: #cda961;
+}
+
+.bg-secondary-600 {
+  background-color: #cda961;
+}
+
+.bg-secondary-700 {
+  background-color: #a6733c;
+}
+
+.text-secondary {
+  color: #cda961;
+}
+
+.text-secondary-600 {
+  color: #cda961;
+}
+
+.text-secondary-700 {
+  color: #a6733c;
+}
+
+.border-secondary {
+  border-color: #cda961;
+}
+
+.border-secondary-600 {
+  border-color: #cda961;
+}
+
+/* Focus states for primary color */
+.focus\:ring-primary:focus {
+  --tw-ring-color: #334340;
+}
+
+.focus\:border-primary:focus {
+  border-color: #334340;
+}
+
+/* Override blue colors with primary colors (for existing elements) */
+.bg-blue-600 {
+  background-color: #334340;
+}
+
+.bg-blue-700 {
+  background-color: #2c3a36;
+}
+
+.bg-blue-800 {
+  background-color: #334340;
+}
+
+.text-blue-600 {
+  color: #334340;
+}
+
+.text-blue-700 {
+  color: #2c3a36;
+}
+
+.text-blue-800 {
+  color: #334340;
+}
+
+.border-blue-600 {
+  border-color: #334340;
+}
+
+.focus\:ring-blue-500:focus {
+  --tw-ring-color: #334340;
+}
+
+.focus\:border-blue-500:focus {
+  border-color: #334340;
+}
+
 /* Custom scrollbar utilities */
 .scrollbar-hide {
   /* Hide scrollbar for Chrome, Safari and Opera */

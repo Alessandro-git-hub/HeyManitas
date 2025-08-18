@@ -4,11 +4,15 @@ import { db } from './firebase';
 // Create a new booking
 export const createBooking = async (bookingData) => {
   try {
+    console.log('Creating booking with data:', bookingData);
+    
     const docRef = await addDoc(collection(db, 'bookings'), {
       ...bookingData,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     });
+    
+    console.log('Booking created successfully with ID:', docRef.id);
     return { success: true, id: docRef.id };
   } catch (error) {
     console.error('Error creating booking:', error);

@@ -139,7 +139,7 @@ const PaymentForm = ({
         className={`w-full py-3 px-4 rounded-md font-medium transition-colors ${
           processing || isProcessing
             ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            : 'bg-blue-600 hover:bg-blue-700 text-white'
+            : 'bg-primary-600 hover:bg-primary-700 text-white'
         }`}
       >
         {processing || isProcessing ? (

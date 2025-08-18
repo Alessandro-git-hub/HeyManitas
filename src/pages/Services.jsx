@@ -229,7 +229,7 @@ export default function Services() {
           <h1 className="text-3xl font-bold text-gray-900">My Services</h1>
           <button
             onClick={() => setShowForm(true)}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors font-medium"
           >
             Add New Service
           </button>

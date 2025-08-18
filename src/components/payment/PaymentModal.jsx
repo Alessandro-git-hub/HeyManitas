@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { FaTimes } from 'react-icons/fa';
+import Modal from '../common/Modal';
+import LoadingState from '../common/LoadingState';
 import PaymentForm from './PaymentForm';
 import { updateDoc, doc, collection, addDoc, query, where, getDocs } from 'firebase/firestore';
 import { auth, db } from '../../utils/firebase';
@@ -128,6 +129,16 @@ const PaymentModal = ({
     onClose();
   };
 
+  const getModalTitle = () => {
+    switch (paymentStep) {
+      case 'form': return 'Complete Payment';
+      case 'processing': return 'Processing Payment';
+      case 'success': return 'Payment Complete';
+      case 'error': return 'Payment Failed';
+      default: return 'Payment';
+    }
+  };
+
   const renderContent = () => {
     switch (paymentStep) {
       case 'form':
@@ -142,15 +153,10 @@ const PaymentModal = ({
 
       case 'processing':
         return (
-          <div className="text-center py-8">
-            <div className="animate-spin h-12 w-12 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Processing Payment...
-            </h3>
-            <p className="text-gray-600">
-              Please don't close this window while we process your payment.
-            </p>
-          </div>
+          <LoadingState 
+            size="lg"
+            text="Processing your payment... Please don't close this window."
+          />
         );
 
       case 'success':
@@ -185,7 +191,7 @@ const PaymentModal = ({
             </div>
             <button
               onClick={handleClose}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md font-medium transition-colors"
+              className="w-full bg-primary-600 hover:bg-primary-700 text-white py-2 px-4 rounded-md font-medium transition-colors"
             >
               Close
             </button>
@@ -209,7 +215,7 @@ const PaymentModal = ({
             <div className="flex space-x-3">
               <button
                 onClick={() => setPaymentStep('form')}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md font-medium transition-colors"
+                className="flex-1 bg-primary-600 hover:bg-primary-700 text-white py-2 px-4 rounded-md font-medium transition-colors"
               >
                 Try Again
               </button>
@@ -229,31 +235,17 @@ const PaymentModal = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-xl font-semibold text-gray-900">
-            {paymentStep === 'form' ? 'Complete Payment' : 
-             paymentStep === 'success' ? 'Payment Complete' :
-             paymentStep === 'error' ? 'Payment Failed' : 'Processing...'}
-          </h2>
-          {paymentStep !== 'processing' && (
-            <button
-              onClick={handleClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
-            >
-              <FaTimes className="w-6 h-6" />
-            </button>
-          )}
-        </div>
-
-        {/* Content */}
-        <div className="p-6">
-          {renderContent()}
-        </div>
-      </div>
-    </div>
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      title={getModalTitle()}
+      size="md"
+      preventClose={paymentStep === 'processing'}
+      closeOnEscape={paymentStep !== 'processing'}
+      closeOnOverlay={paymentStep !== 'processing'}
+    >
+      {renderContent()}
+    </Modal>
   );
 };
 
