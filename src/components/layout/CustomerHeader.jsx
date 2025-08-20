@@ -23,12 +23,9 @@ export default function CustomerHeader() {
       <div className="max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4">
         <div className="flex justify-between items-center gap-2 md:gap-4">
           <div className="flex items-center space-x-2 md:space-x-4 min-w-0">
-            <button 
-              onClick={() => navigate('/')}
-              className="text-xl md:text-2xl font-bold text-deep hover:text-blue-800 transition-colors cursor-pointer flex-shrink-0"
-            >
-              SkillBooster
-            </button>
+                        <Link to="/customer" className="text-xl font-bold text-primary-800">
+              HeyManitas
+            </Link>
           </div>
           <div className="flex items-center space-x-2 md:space-x-4 min-w-0">
             <span className="text-xs md:text-sm text-gray-600 hidden md:inline">Welcome back, {firstName}</span>

@@ -1,7 +1,7 @@
-# SkillBooster Development Progress Summary
+# HeyManitas Development Progress Summary
 
 ## 🎯 Project Overview
-SkillBooster is a comprehensive marketplace platform connecting customers with service professionals through an intuitive booking system and unified worker dashboard.
+HeyManitas is a comprehensive marketplace platform connecting customers with service professionals through an intuitive booking system and unified worker dashboard.
 
 ---
 
@@ -237,4 +237,4 @@ This project demonstrates:
 - **Problem-Solving**: Creative solutions to complex technical challenges
 - **System Integration**: Seamless integration of multiple system components
 
-The SkillBooster platform represents a comprehensive, production-ready solution that effectively bridges the gap between service professionals and their customers through modern web technology and thoughtful user experience design.
+The HeyManitas platform represents a comprehensive, production-ready solution that effectively bridges the gap between service professionals and their customers through modern web technology and thoughtful user experience design.

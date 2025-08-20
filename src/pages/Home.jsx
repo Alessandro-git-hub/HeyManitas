@@ -16,7 +16,7 @@ export default function Home() {
             </h1>
             <p className="text-xl text-gray-600 mb-8 max-w-2xl">
               Whether you need work done or you're a professional looking to grow your business - 
-              SkillBooster brings customers and skilled workers together.
+              HeyManitas brings customers and skilled workers together.
             </p>
             
             {/* Primary CTAs */}
@@ -324,7 +324,7 @@ export default function Home() {
       <section className="py-16 bg-white">
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="text-3xl font-bold text-gray-900 mb-4 text-left">
-            Why choose SkillBooster?
+            Why choose HeyManitas?
           </h2>
           <p className="text-lg text-gray-600 mb-12 text-left">
             We make it easy for everyone to get things done.
@@ -447,7 +447,7 @@ export default function Home() {
                 </div>
                 <div>
                   <blockquote className="text-gray-700 mb-3">
-                    "Found an amazing electrician through SkillBooster. The whole process was smooth and I felt safe knowing they were verified."
+                    "Found an amazing electrician through HeyManitas. The whole process was smooth and I felt safe knowing they were verified."
                   </blockquote>
                   <p className="text-gray-500 text-sm">— Maria, Customer from Barcelona</p>
                 </div>
@@ -481,7 +481,7 @@ export default function Home() {
             Ready to get started?
           </h2>
           <p className="text-lg text-gray-600 mb-8">
-            Join thousands of customers and professionals already using SkillBooster.
+            Join thousands of customers and professionals already using HeyManitas.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <button 
@@ -504,7 +504,7 @@ export default function Home() {
       <footer className="bg-gray-900 text-white py-12">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center">
-            <h3 className="text-lg font-semibold mb-4">SkillBooster</h3>
+            <h3 className="text-lg font-semibold mb-4">HeyManitas</h3>
             <div className="flex flex-wrap justify-center gap-6 mb-6 text-sm">
               <a href="#" className="text-gray-300 hover:text-white">About</a>
               <a href="#" className="text-gray-300 hover:text-white">Help</a>
@@ -512,7 +512,7 @@ export default function Home() {
               <a href="#" className="text-gray-300 hover:text-white">Contact</a>
             </div>
             <p className="text-gray-400 text-sm">
-              &copy; 2025 SkillBooster. Connecting customers and professionals.
+              &copy; 2025 HeyManitas. Connecting customers and professionals.
             </p>
           </div>
         </div>

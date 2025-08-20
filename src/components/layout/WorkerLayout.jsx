@@ -75,7 +75,9 @@ export default function WorkerLayout({
     <div className="min-h-screen bg-light">
       {/* Set page title if provided */}
       {title && (
-        <title>{`${title} - SkillBooster Worker`}</title>
+              <Head>
+        <title>{`${title} - HeyManitas Worker`}</title>
+      </Head>
       )}
       
       {/* Header */}

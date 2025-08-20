@@ -31,8 +31,8 @@ export default function WorkerHeader() {
               <div className="flex items-center gap-1">
                 <img 
                   src={HeyManitasLogo} 
-                  alt="SkillBooster Logo" 
-                  className="h-6 md:h-8 w-auto" 
+                  alt="HeyManitas Logo" 
+                  className="h-8" 
                 />
               </div>
             </button>

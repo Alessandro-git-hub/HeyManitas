@@ -1,7 +1,7 @@
-# SkillBooster Customer Features Documentation
+# HeyManitas Customer Features Documentation
 
 ## 🎯 Overview
-This document outlines all the features and functionality available to customers in the SkillBooster marketplace platform, focusing on the seamless booking experience and service discovery.
+This document outlines all the features and functionality available to customers in the HeyManitas marketplace platform, focusing on the seamless booking experience and service discovery.
 
 ---
 

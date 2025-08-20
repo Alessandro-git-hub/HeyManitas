@@ -1,6 +1,8 @@
 # SkillBooster Marketplace
 
-A modern marketplace platform connecting customers with skilled service providers across various categories including cleaning, tutoring, personal training, and more.
+# HeyManitas Marketplace
+
+A comprehensive platform connecting customers with skilled service professionals.
 
 ## 🚀 Quick Start
 

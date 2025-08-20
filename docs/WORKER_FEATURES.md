@@ -1,7 +1,7 @@
-# SkillBooster Worker Features Documentation
+# HeyManitas Worker Features Documentation
 
 ## 🎯 Overview
-This document outlines all the features and functionality available to workers (service providers) in the SkillBooster marketplace platform.
+This document outlines all the features and functionality available to workers (service providers) in the HeyManitas marketplace platform.
 
 ---
 

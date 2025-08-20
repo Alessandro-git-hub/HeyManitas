@@ -82,7 +82,7 @@ export default function Login() {
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-primary-800">SkillBooster</h1>
+          <h1 className="text-3xl font-bold text-primary-800">HeyManitas</h1>
           <p className="mt-2 text-sm text-gray-600">
             {userType === 'customer' 
               ? 'Find skilled professionals for your needs' 
@@ -188,7 +188,7 @@ export default function Login() {
                 <div className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">New to SkillBooster?</span>
+                <span className="px-2 bg-white text-gray-500">New to HeyManitas?</span>
               </div>
             </div>
 

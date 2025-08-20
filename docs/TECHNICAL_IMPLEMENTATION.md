@@ -1,10 +1,10 @@
-# SkillBooster Technical Implementation Guide
+# HeyManitas Technical Implementation Guide
 
 ## 🏗️ System Architecture Overview
 
 ### **Application Structure**
 ```
-SkillBooster Platform
+HeyManitas Platform
 ├── Customer Interface (Public)
 │   ├── Service Discovery
 │   ├── Professional Browsing
