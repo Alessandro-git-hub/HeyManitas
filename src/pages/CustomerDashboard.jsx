@@ -67,7 +67,7 @@ const CustomerDashboard = () => {
   if (authLoading) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="animate-spin h-12 w-12 border-4 border-blue-600 border-t-transparent rounded-full"></div>
+        <div className="animate-spin h-12 w-12 border-4 border-primary-600 border-t-transparent rounded-full"></div>
       </div>
     );
   }
@@ -81,7 +81,7 @@ const CustomerDashboard = () => {
           <p className="text-gray-600 mb-6">You need to be logged in to view your bookings.</p>
           <button
             onClick={() => window.location.href = '/login'}
-            className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded-md font-medium transition-colors"
+            className="bg-primary-600 hover:bg-primary-700 text-white py-2 px-6 rounded-md font-medium transition-colors"
           >
             Go to Login
           </button>
@@ -122,7 +122,7 @@ const CustomerDashboard = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="animate-spin h-12 w-12 border-4 border-blue-600 border-t-transparent rounded-full"></div>
+        <div className="animate-spin h-12 w-12 border-4 border-primary-600 border-t-transparent rounded-full"></div>
       </div>
     );
   }
@@ -157,10 +157,10 @@ const CustomerDashboard = () => {
               stats.quoted > 0 ? 'cursor-pointer hover:shadow-md transition-shadow' : ''
             }`}
           >
-            <div className="text-2xl font-bold text-blue-600">{stats.quoted}</div>
+            <div className="text-2xl font-bold text-primary-600">{stats.quoted}</div>
             <div className="text-sm text-gray-600">Quotes Received</div>
             {stats.quoted > 0 && (
-              <div className="text-xs text-blue-600 mt-1">Click to view</div>
+              <div className="text-xs text-primary-600 mt-1">Click to view</div>
             )}
           </div>
           <div className="bg-white p-4 rounded-lg shadow-sm border">
@@ -198,7 +198,7 @@ const CustomerDashboard = () => {
               onClick={() => setFilter(tab.key)}
               className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
                 filter === tab.key
-                  ? 'bg-white text-blue-600 shadow-sm'
+                  ? 'bg-white text-primary-600 shadow-sm'
                   : 'text-gray-600 hover:text-gray-800'
               }`}
             >
@@ -226,7 +226,7 @@ const CustomerDashboard = () => {
             </p>
             <button
               onClick={() => window.location.href = '/customer/services'}
-              className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md font-medium transition-colors"
+              className="bg-primary-600 hover:bg-primary-700 text-white py-2 px-4 rounded-md font-medium transition-colors"
             >
               Browse Services
             </button>
@@ -245,9 +245,9 @@ const CustomerDashboard = () => {
 
         {/* Payment Instructions */}
         {stats.confirmed > stats.paid && (
-          <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
-            <h3 className="font-semibold text-blue-900 mb-2">Payment Required</h3>
-            <p className="text-blue-800 text-sm">
+          <div className="mt-8 bg-primary-50 border border-primary-200 rounded-lg p-6">
+            <h3 className="font-semibold text-primary-900 mb-2">Payment Required</h3>
+            <p className="text-primary-800 text-sm">
               You have confirmed bookings that require payment. Click "Pay Now" on any confirmed booking to complete your payment securely.
             </p>
           </div>

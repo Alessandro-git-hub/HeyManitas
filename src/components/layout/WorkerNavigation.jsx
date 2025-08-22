@@ -32,7 +32,7 @@ export default function WorkerNavigation() {
             onClick={() => navigate(item.path)}
             className={`whitespace-nowrap transition-colors cursor-pointer ${
               isActive(item.path)
-                ? 'text-blue-800 border-b-2 border-blue-800 font-semibold'
+                ? 'text-primary-800 border-b-2 border-secondary-600 font-semibold'
                 : 'text-gray-500 hover:text-deep'
             }`}
           >

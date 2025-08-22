@@ -42,7 +42,7 @@ const CustomerBookingCard = ({ booking, onPaymentComplete }) => {
       case 'pending':
         return 'bg-yellow-100 text-yellow-800 border-yellow-200';
       case 'quoted':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
+        return 'bg-primary-100 text-primary-800 border-primary-200';
       case 'quote_accepted':
       case 'confirmed':
         return 'bg-green-100 text-green-800 border-green-200';
@@ -222,15 +222,15 @@ const CustomerBookingCard = ({ booking, onPaymentComplete }) => {
 
         {/* Quote Display (if status is 'quoted') */}
         {booking.status === 'quoted' && booking.quotedPrice && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-            <h4 className="font-medium text-blue-900 mb-2">Quote Received</h4>
+          <div className="bg-primary-50 border border-primary-200 rounded-lg p-4 mb-4">
+            <h4 className="font-medium text-primary-900 mb-2">Quote Received</h4>
             <div className="space-y-2">
               {booking.originalPrice && (
                 <p className="text-sm text-gray-600">
                   Original Rate: <span className="line-through">€{booking.originalPrice}</span>
                 </p>
               )}
-              <p className="text-lg font-semibold text-blue-900">
+              <p className="text-lg font-semibold text-primary-900">
                 Quoted Price: €{booking.quotedPrice}
               </p>
               {booking.workerQuoteMessage && (
@@ -290,7 +290,7 @@ const CustomerBookingCard = ({ booking, onPaymentComplete }) => {
             {(booking.status === 'confirmed' || booking.status === 'quote_accepted') && booking.paymentStatus !== 'paid' && (
               <button
                 onClick={() => setShowPaymentModal(true)}
-                className="flex items-center px-4 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded transition-colors"
+                className="flex items-center px-4 py-2 text-sm text-white bg-primary-600 hover:bg-primary-700 rounded transition-colors"
               >
                 <FaCreditCard className="mr-2" />
                 Pay Now

@@ -50,7 +50,7 @@ const CustomerBooking = () => {
             <p className="text-gray-600 mb-6">We couldn't find the professional you're trying to book.</p>
             <button
               onClick={() => navigate('/customer/services')}
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              className="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700 transition-colors"
             >
               Back to Services
             </button>
@@ -216,7 +216,7 @@ const CustomerBooking = () => {
                     value={formData.serviceType}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   >
                     <option value="">Select service type</option>
                     {professional.specialties.map((specialty, index) => (
@@ -238,7 +238,7 @@ const CustomerBooking = () => {
                     rows={4}
                     required
                     placeholder="Please provide details about what you need done..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   />
                 </div>
 
@@ -266,9 +266,9 @@ const CustomerBooking = () => {
                     selectedDateTime={selectedDateTime}
                   />
                   {selectedDateTime && selectedTimeSlot && (
-                    <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-                      <h4 className="font-medium text-blue-800 mb-2">Selected Appointment</h4>
-                      <p className="text-blue-700">
+                    <div className="mt-4 p-4 bg-primary-50 rounded-lg">
+                      <h4 className="font-medium text-primary-800 mb-2">Selected Appointment</h4>
+                      <p className="text-primary-700">
                         <FaCalendar className="inline mr-2" />
                         {selectedDateTime.toLocaleDateString('en-US', { 
                           weekday: 'long', 
@@ -277,7 +277,7 @@ const CustomerBooking = () => {
                           day: 'numeric' 
                         })}
                       </p>
-                      <p className="text-blue-700">
+                      <p className="text-primary-700">
                         <FaClock className="inline mr-2" />
                         {selectedTimeSlot && (() => {
                           const [hour, minute] = selectedTimeSlot.split(':');
@@ -304,7 +304,7 @@ const CustomerBooking = () => {
                       onChange={handleInputChange}
                       required
                       placeholder="(555) 123-4567"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     />
                   </div>
                   <div>
@@ -335,7 +335,7 @@ const CustomerBooking = () => {
                     rows={2}
                     required
                     placeholder="Enter the full address where service is needed..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   />
                 </div>
 
@@ -349,31 +349,13 @@ const CustomerBooking = () => {
                       name="urgency"
                       value={formData.urgency}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     >
                       <option value="normal">Normal</option>
                       <option value="urgent">Urgent</option>
                       <option value="emergency">Emergency</option>
                     </select>
                   </div>
-                  {/* <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Budget Range
-                    </label>
-                    <select
-                      name="budget"
-                      value={formData.budget}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="">Select budget range</option>
-                      <option value="under-100">Under $100</option>
-                      <option value="100-300">$100 - $300</option>
-                      <option value="300-500">$300 - $500</option>
-                      <option value="500-1000">$500 - $1,000</option>
-                      <option value="over-1000">Over $1,000</option>
-                    </select>
-                  </div> */}
                 </div>
 
                 {/* Submit Button */}
@@ -388,7 +370,7 @@ const CustomerBooking = () => {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400"
+                    className="flex-1 px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:bg-primary-400"
                   >
                     {isSubmitting ? 'Sending Request...' : 'Send Booking Request'}
                   </button>

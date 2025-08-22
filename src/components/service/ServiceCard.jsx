@@ -64,7 +64,7 @@ export default function ServiceCard({
           <div className="flex space-x-2">
             <button
               onClick={() => onEdit && onEdit(service)}
-              className="text-blue-600 hover:text-blue-800 transition-colors"
+              className="text-primary-600 hover:text-primary-800 transition-colors"
               title="Edit service"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

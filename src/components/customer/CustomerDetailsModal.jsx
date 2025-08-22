@@ -43,7 +43,7 @@ export default function CustomerDetailsModal({ isOpen, onClose, customer, onEdit
                   onClose();
                   onEdit(customer);
                 }}
-                className="text-blue-600 hover:text-blue-800 transition-colors p-2 rounded-lg hover:bg-blue-50"
+                className="text-primary-600 hover:text-primary-800 transition-colors p-2 rounded-lg hover:bg-primary-50"
                 title="Edit customer"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -74,7 +74,7 @@ export default function CustomerDetailsModal({ isOpen, onClose, customer, onEdit
                   </svg>
                   <div>
                     <p className="text-sm font-medium text-gray-700">Email</p>
-                    <a href={`mailto:${customer.email}`} className="text-blue-600 hover:text-blue-800 transition-colors">
+                    <a href={`mailto:${customer.email}`} className="text-primary-600 hover:text-primary-800 transition-colors">
                       {customer.email}
                     </a>
                   </div>
@@ -88,7 +88,7 @@ export default function CustomerDetailsModal({ isOpen, onClose, customer, onEdit
                   </svg>
                   <div>
                     <p className="text-sm font-medium text-gray-700">Phone</p>
-                    <a href={`tel:${customer.phone}`} className="text-blue-600 hover:text-blue-800 transition-colors">
+                    <a href={`tel:${customer.phone}`} className="text-primary-600 hover:text-primary-800 transition-colors">
                       {formatPhone(customer.phone)}
                     </a>
                   </div>

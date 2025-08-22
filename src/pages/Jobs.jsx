@@ -213,7 +213,7 @@ export default function Jobs() {
   if (authLoading) {
     return (
       <div className="min-h-screen bg-light flex items-center justify-center">
-        <div className="animate-spin h-12 w-12 border-4 border-blue-600 border-t-transparent rounded-full"></div>
+        <div className="animate-spin h-12 w-12 border-4 border-primary-600 border-t-transparent rounded-full"></div>
       </div>
     );
   }
@@ -227,7 +227,7 @@ export default function Jobs() {
           <p className="text-gray-600 mb-6">You need to be logged in to view your jobs and bookings.</p>
           <button
             onClick={() => window.location.href = '/login'}
-            className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded-md font-medium transition-colors"
+            className="bg-primary-600 hover:bg-primary-700 text-white py-2 px-6 rounded-md font-medium transition-colors"
           >
             Go to Login
           </button>
@@ -244,7 +244,7 @@ export default function Jobs() {
           <WorkerNavigation />
           <h1 className="text-3xl font-bold mb-6 text-gray-900">My Jobs</h1>
           <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-800"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-800"></div>
           </div>
         </div>
       </div>
@@ -273,7 +273,7 @@ export default function Jobs() {
                 onClick={() => setViewMode('all')}
                 className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
                   viewMode === 'all' 
-                    ? 'bg-white text-blue-600 shadow-sm' 
+                    ? 'bg-white text-primary-600 shadow-sm' 
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
@@ -283,7 +283,7 @@ export default function Jobs() {
                 onClick={() => setViewMode('bookings')}
                 className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
                   viewMode === 'bookings' 
-                    ? 'bg-white text-blue-600 shadow-sm' 
+                    ? 'bg-white text-primary-600 shadow-sm' 
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
@@ -293,7 +293,7 @@ export default function Jobs() {
                 onClick={() => setViewMode('jobs')}
                 className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
                   viewMode === 'jobs' 
-                    ? 'bg-white text-blue-600 shadow-sm' 
+                    ? 'bg-white text-primary-600 shadow-sm' 
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
               >

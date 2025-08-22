@@ -133,7 +133,7 @@ export default function CustomerFormModal({
           name="name"
           value={formData.name}
           onChange={handleInputChange}
-          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
             formErrors.name ? 'border-red-300' : 'border-gray-300'
           }`}
           placeholder="Enter customer name"
@@ -154,7 +154,7 @@ export default function CustomerFormModal({
           name="email"
           value={formData.email}
           onChange={handleInputChange}
-          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
             formErrors.email ? 'border-red-300' : 'border-gray-300'
           }`}
           placeholder="Enter email address"
@@ -175,7 +175,7 @@ export default function CustomerFormModal({
           name="phone"
           value={formData.phone}
           onChange={handleInputChange}
-          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
             formErrors.phone ? 'border-red-300' : 'border-gray-300'
           }`}
           placeholder="Enter phone number"
@@ -196,7 +196,7 @@ export default function CustomerFormModal({
           name="company"
           value={formData.company}
           onChange={handleInputChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           placeholder="Enter company name"
         />
       </div>
@@ -212,7 +212,7 @@ export default function CustomerFormModal({
           value={formData.address}
           onChange={handleInputChange}
           rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           placeholder="Enter full address"
         />
       </div>
@@ -228,7 +228,7 @@ export default function CustomerFormModal({
           value={formData.notes}
           onChange={handleInputChange}
           rows={4}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           placeholder="Add any additional notes about this customer..."
         />
       </div>

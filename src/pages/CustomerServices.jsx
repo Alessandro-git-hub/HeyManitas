@@ -68,7 +68,7 @@ const CustomerServices = () => {
               placeholder="Search for services (e.g., plumbing, electrical, cleaning...)"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             />
           </div>
         </div>
@@ -101,7 +101,7 @@ const CustomerServices = () => {
                     Available professionals
                   </span>
                   <button 
-                    className="text-blue-600 hover:text-blue-700 font-medium text-sm"
+                    className="text-primary-600 hover:text-primary-700 font-medium text-sm"
                   >
                     View Professionals →
                   </button>
@@ -136,7 +136,7 @@ const CustomerServices = () => {
               <button
                 key={category.id}
                 onClick={() => handleServiceSelect(category)}
-                className="flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-colors"
+                className="flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:border-primary-300 hover:bg-primary-50 transition-colors"
               >
                 <div 
                   className="w-10 h-10 rounded-lg flex items-center justify-center text-white text-lg mb-2"

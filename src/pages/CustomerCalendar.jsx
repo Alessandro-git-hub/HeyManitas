@@ -83,7 +83,7 @@ const CustomerCalendar = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'scheduled': return 'bg-blue-100 text-blue-800';
+      case 'scheduled': return 'bg-primary-100 text-primary-800';
       case 'in-progress': return 'bg-yellow-100 text-yellow-800';
       case 'completed': return 'bg-green-100 text-green-800';
       case 'cancelled': return 'bg-red-100 text-red-800';
@@ -125,7 +125,7 @@ const CustomerCalendar = () => {
             <h1 className="text-3xl font-bold text-gray-900">My Calendar</h1>
             <p className="text-gray-600">View and manage your scheduled services</p>
           </div>
-          <FaCalendarAlt className="text-3xl text-blue-600" />
+          <FaCalendarAlt className="text-3xl text-primary-600" />
         </div>
         {/* Filter Tabs */}
         <div className="flex space-x-1 mb-6">
@@ -139,7 +139,7 @@ const CustomerCalendar = () => {
               onClick={() => setFilter(key)}
               className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                 filter === key
-                  ? 'bg-blue-100 text-blue-700 border border-blue-200'
+                  ? 'bg-primary-100 text-primary-700 border border-primary-200'
                   : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
               }`}
             >
@@ -187,7 +187,7 @@ const CustomerCalendar = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div className="flex items-center text-gray-600">
-                    <FaCalendarAlt className="mr-2 text-blue-500" />
+                    <FaCalendarAlt className="mr-2 text-primary-500" />
                     {formatDate(appointment.date)}
                   </div>
                   <div className="flex items-center text-gray-600">

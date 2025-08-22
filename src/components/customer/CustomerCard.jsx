@@ -45,7 +45,7 @@ export default function CustomerCard({ customer, onEdit, onDelete, onViewDetails
         <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
           <button
             onClick={() => onEdit(customer)}
-            className="text-blue-600 hover:text-blue-800 transition-colors p-1"
+            className="text-primary-600 hover:text-primary-800 transition-colors p-1"
             title="Edit customer"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

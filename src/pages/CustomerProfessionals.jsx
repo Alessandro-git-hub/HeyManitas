@@ -17,7 +17,7 @@ const CustomerProfessionals = () => {
 
   // Color mapping for category backgrounds
   const colorMap = {
-    blue: '#3B82F6',
+    primary: '#3B82F6',
     yellow: '#EAB308',
     green: '#10B981',
     orange: '#F97316',
@@ -162,7 +162,7 @@ const CustomerProfessionals = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading professionals...</p>
         </div>
       </div>
@@ -177,7 +177,7 @@ const CustomerProfessionals = () => {
           <p className="text-gray-600">{error}</p>
           <button 
             onClick={() => navigate('/customer/services')}
-            className="mt-4 text-blue-600 hover:text-blue-700"
+            className="mt-4 text-primary-600 hover:text-primary-700"
           >
             Back to Services
           </button>
@@ -262,7 +262,7 @@ const CustomerProfessionals = () => {
                     {professional.specialties.map((specialty, index) => (
                       <span
                         key={index}
-                        className="px-3 py-1 bg-blue-100 text-blue-700 text-xs rounded-full"
+                        className="px-3 py-1 bg-primary-100 text-primary-700 text-xs rounded-full"
                       >
                         {specialty}
                       </span>
@@ -287,7 +287,7 @@ const CustomerProfessionals = () => {
                 <div className="flex space-x-3">
                   <button
                     onClick={() => handleBookProfessional(professional)}
-                    className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                    className="flex-1 bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 transition-colors font-medium"
                   >
                     Book Now
                   </button>
@@ -313,7 +313,7 @@ const CustomerProfessionals = () => {
             
             <button
               onClick={() => navigate('/customer/services')}
-              className="text-blue-600 hover:text-blue-700 font-medium mt-4"
+              className="text-primary-600 hover:text-primary-700 font-medium mt-4"
             >
               Browse other services
             </button>

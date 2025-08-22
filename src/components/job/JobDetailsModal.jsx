@@ -37,7 +37,7 @@ export default function JobDetailsModal({ isOpen, onClose, job }) {
           {/* Customer Information */}
           <div className="bg-gray-50 p-4 rounded-lg">
             <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center">
-              <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 mr-2 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
               Customer Information
@@ -88,23 +88,23 @@ export default function JobDetailsModal({ isOpen, onClose, job }) {
               
               {/* Service Information */}
               {(job.serviceName || job.serviceType) && (
-                <div className="bg-blue-50 p-3 rounded border border-blue-200">
+                <div className="bg-primary-50 p-3 rounded border border-primary-200">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <p className="text-sm text-blue-600">Service</p>
-                      <p className="font-medium text-blue-900">{job.serviceName || job.serviceType}</p>
+                      <p className="text-sm text-primary-600">Service</p>
+                      <p className="font-medium text-primary-900">{job.serviceName || job.serviceType}</p>
                     </div>
                     {job.basePrice && (
                       <div>
-                        <p className="text-sm text-blue-600">Base Price</p>
-                        <p className="font-medium text-blue-900">€{job.basePrice}</p>
+                        <p className="text-sm text-primary-600">Base Price</p>
+                        <p className="font-medium text-primary-900">€{job.basePrice}</p>
                       </div>
                     )}
                   </div>
                   {isBooking && job.budget && (
                     <div className="mt-2">
-                      <p className="text-sm text-blue-600">Budget</p>
-                      <p className="font-medium text-blue-900">{job.budget}</p>
+                      <p className="text-sm text-primary-600">Budget</p>
+                      <p className="font-medium text-primary-900">{job.budget}</p>
                     </div>
                   )}
                 </div>

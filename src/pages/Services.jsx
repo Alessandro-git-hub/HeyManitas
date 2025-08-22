@@ -290,7 +290,7 @@ export default function Services() {
               disabled={isSubmitting}
               className={`w-full p-3 border rounded-lg ${
                 formErrors.name ? 'border-red-500' : 'border-gray-300'
-              } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50`}
+              } focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50`}
               placeholder="e.g., Basic Plumbing Repair"
             />
             {formErrors.name && (
@@ -309,7 +309,7 @@ export default function Services() {
               disabled={isSubmitting}
               className={`w-full p-3 border rounded-lg ${
                 formErrors.category ? 'border-red-500' : 'border-gray-300'
-              } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50`}
+              } focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50`}
             >
               <option value="">Select a category</option>
               {serviceCategories.map(category => {
@@ -341,7 +341,7 @@ export default function Services() {
                 step="0.01"
                 className={`w-full p-3 border rounded-lg ${
                   formErrors.basePrice ? 'border-red-500' : 'border-gray-300'
-                } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50`}
+                } focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50`}
                 placeholder="75"
               />
               {formErrors.basePrice && (
@@ -361,7 +361,7 @@ export default function Services() {
                 disabled={isSubmitting}
                 className={`w-full p-3 border rounded-lg ${
                   formErrors.duration ? 'border-red-500' : 'border-gray-300'
-                } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50`}
+                } focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50`}
                 placeholder="1-2 hours"
               />
               {formErrors.duration && (
@@ -382,7 +382,7 @@ export default function Services() {
               rows="3"
               className={`w-full p-3 border rounded-lg ${
                 formErrors.description ? 'border-red-500' : 'border-gray-300'
-              } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50`}
+              } focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50`}
               placeholder="Describe what this service includes..."
             ></textarea>
             {formErrors.description && (

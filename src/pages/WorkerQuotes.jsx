@@ -77,7 +77,7 @@ export default function WorkerQuotes() {
   if (authLoading) {
     return (
       <div className="min-h-screen bg-light flex items-center justify-center">
-        <div className="animate-spin h-12 w-12 border-4 border-blue-600 border-t-transparent rounded-full"></div>
+        <div className="animate-spin h-12 w-12 border-4 border-primary-600 border-t-transparent rounded-full"></div>
       </div>
     );
   }
@@ -91,7 +91,7 @@ export default function WorkerQuotes() {
           <p className="text-gray-600 mb-6">You need to be logged in to view quote requests.</p>
           <button
             onClick={() => window.location.href = '/login'}
-            className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded-md font-medium transition-colors"
+            className="bg-primary-600 hover:bg-primary-700 text-white py-2 px-6 rounded-md font-medium transition-colors"
           >
             Go to Login
           </button>
@@ -185,7 +185,7 @@ export default function WorkerQuotes() {
   if (loading) {
     return (
       <div className="min-h-screen bg-light flex items-center justify-center">
-        <div className="animate-spin h-12 w-12 border-4 border-blue-600 border-t-transparent rounded-full"></div>
+        <div className="animate-spin h-12 w-12 border-4 border-primary-600 border-t-transparent rounded-full"></div>
       </div>
     );
   }
@@ -275,7 +275,7 @@ export default function WorkerQuotes() {
                   <div className="mt-6 flex space-x-4">
                     {activeQuoteId === request.id ? (
                       <div className="flex-1">
-                        <div className="bg-blue-50 p-4 rounded-lg">
+                        <div className="bg-primary-50 p-4 rounded-lg">
                           <h4 className="font-medium text-gray-900 mb-4">Send Quote</h4>
                           
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -289,7 +289,7 @@ export default function WorkerQuotes() {
                                 min="0"
                                 value={quoteForm.quotedPrice}
                                 onChange={(e) => setQuoteForm(prev => ({ ...prev, quotedPrice: e.target.value }))}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                                 placeholder="150.00"
                               />
                             </div>
@@ -301,7 +301,7 @@ export default function WorkerQuotes() {
                                 type="date"
                                 value={quoteForm.validUntil}
                                 onChange={(e) => setQuoteForm(prev => ({ ...prev, validUntil: e.target.value }))}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                                 min={new Date().toISOString().split('T')[0]}
                               />
                             </div>
@@ -314,7 +314,7 @@ export default function WorkerQuotes() {
                             <textarea
                               value={quoteForm.message}
                               onChange={(e) => setQuoteForm(prev => ({ ...prev, message: e.target.value }))}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                               rows="3"
                               placeholder="Thank you for your request. Based on your requirements, I can complete this service for..."
                             />
@@ -323,7 +323,7 @@ export default function WorkerQuotes() {
                           <div className="flex space-x-3">
                             <button
                               onClick={() => handleQuoteSubmit(request.id)}
-                              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
+                              className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
                             >
                               Send Quote
                             </button>
@@ -346,7 +346,7 @@ export default function WorkerQuotes() {
                             setActiveQuoteId(request.id);
                             setQuoteForm(prev => ({ ...prev, quotedPrice: request.hourlyRate?.toString() || '' }));
                           }}
-                          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition-colors cursor-pointer"
+                          className="bg-primary-600 hover:bg-primary-700 text-white px-6 py-2 rounded-md font-medium transition-colors cursor-pointer"
                         >
                           Send Quote
                         </button>

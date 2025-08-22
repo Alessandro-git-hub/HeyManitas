@@ -14,7 +14,7 @@ export default function ActionButton({
   
   // Variant styles with consistent color schemes
   const variantStyles = {
-    primary: 'bg-blue-800 hover:bg-blue-900 text-white',
+    primary: 'bg-primary-800 hover:bg-primary-900 text-white',
     secondary: 'bg-gray-600 hover:bg-gray-700 text-white',
     success: 'bg-emerald-600 hover:bg-emerald-700 text-white',
     warning: 'bg-orange-600 hover:bg-orange-700 text-white',

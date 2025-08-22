@@ -1,5 +1,3 @@
-# SkillBooster Marketplace
-
 # HeyManitas Marketplace
 
 A comprehensive platform connecting customers with skilled service professionals.

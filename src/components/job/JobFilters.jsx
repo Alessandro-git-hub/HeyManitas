@@ -23,7 +23,7 @@ export default function JobFilters({
           <select
             value={dateFilter}
             onChange={(e) => setDateFilter(e.target.value)}
-            className="px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
           >
             <option value="all">All Time</option>
             <option value="today">Today</option>
@@ -38,7 +38,7 @@ export default function JobFilters({
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
           >
             <option value="all">All Status</option>
             <option value="Pending">Pending</option>
@@ -54,7 +54,7 @@ export default function JobFilters({
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
           >
             <option value="date-newest">Date (Newest)</option>
             <option value="date-oldest">Date (Oldest)</option>
@@ -83,7 +83,7 @@ export default function JobFilters({
           <div className="flex items-center gap-2">
             <button
               onClick={() => setCollapsedGroups(new Set())}
-              className="text-xs text-blue-600 hover:text-blue-800 underline"
+              className="text-xs text-primary-600 hover:text-primary-800 underline"
             >
               Expand All
             </button>
@@ -93,7 +93,7 @@ export default function JobFilters({
                 const groupedJobs = groupJobsByDate(filteredJobs);
                 setCollapsedGroups(new Set(Object.keys(groupedJobs)));
               }}
-              className="text-xs text-blue-600 hover:text-blue-800 underline"
+              className="text-xs text-primary-600 hover:text-primary-800 underline"
             >
               Collapse All
             </button>

@@ -82,7 +82,10 @@ export default function Login() {
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-primary-800">HeyManitas</h1>
+          <div className="flex items-center justify-center text-xl md:text-2xl font-bold">
+            <h1 className="text-secondary">Hey</h1>
+            <h1 className="text-primary">Manitas</h1>
+          </div>
           <p className="mt-2 text-sm text-gray-600">
             {userType === 'customer' 
               ? 'Find skilled professionals for your needs' 
@@ -98,7 +101,7 @@ export default function Login() {
           Or{' '}
           <Link
             to={`/signup${userType ? `?userType=${userType}` : ''}`}
-            className="font-medium text-blue-600 hover:text-blue-500"
+            className="font-medium text-primary-600 hover:text-primary-500"
           >
             create a new account
           </Link>
@@ -130,7 +133,7 @@ export default function Login() {
                   disabled={isLoading}
                   className={`appearance-none block w-full px-3 py-2 border ${
                     errors.email ? 'border-red-300' : 'border-gray-300'
-                  } rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm disabled:opacity-50`}
+                  } rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm disabled:opacity-50`}
                   placeholder="Enter your email"
                 />
                 {errors.email && (
@@ -155,7 +158,7 @@ export default function Login() {
                   disabled={isLoading}
                   className={`appearance-none block w-full px-3 py-2 border ${
                     errors.password ? 'border-red-300' : 'border-gray-300'
-                  } rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm disabled:opacity-50`}
+                  } rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm disabled:opacity-50`}
                   placeholder="Enter your password"
                 />
                 {errors.password && (
@@ -195,7 +198,7 @@ export default function Login() {
             <div className="mt-6">
               <Link
                 to="/signup"
-                className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
               >
                 Create new account
               </Link>

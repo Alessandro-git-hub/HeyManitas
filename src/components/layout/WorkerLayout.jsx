@@ -72,14 +72,7 @@ export default function WorkerLayout({
   }
 
   return (
-    <div className="min-h-screen bg-light">
-      {/* Set page title if provided */}
-      {title && (
-              <Head>
-        <title>{`${title} - HeyManitas Worker`}</title>
-      </Head>
-      )}
-      
+    <div className="min-h-screen bg-light">      
       {/* Header */}
       <WorkerHeader />
       

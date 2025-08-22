@@ -101,7 +101,7 @@ const CustomerProfile = () => {
   if (authLoading) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="animate-spin h-12 w-12 border-4 border-blue-600 border-t-transparent rounded-full"></div>
+        <div className="animate-spin h-12 w-12 border-4 border-primary-600 border-t-transparent rounded-full"></div>
       </div>
     );
   }
@@ -115,7 +115,7 @@ const CustomerProfile = () => {
           <p className="text-gray-600 mb-6">You need to be logged in to view your profile.</p>
           <button
             onClick={() => window.location.href = '/login'}
-            className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded-md font-medium transition-colors"
+            className="bg-primary-600 hover:bg-primary-700 text-white py-2 px-6 rounded-md font-medium transition-colors"
           >
             Go to Login
           </button>
@@ -188,7 +188,7 @@ const CustomerProfile = () => {
   const getQuoteStatusColor = (status) => {
     switch (status) {
       case 'quoted':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
+        return 'bg-primary-100 text-primary-800 border-primary-200';
       case 'quote_accepted':
         return 'bg-green-100 text-green-800 border-green-200';
       case 'quote_declined':
@@ -241,7 +241,7 @@ const CustomerProfile = () => {
             onClick={() => setActiveTab('profile')}
             className={`flex-1 py-3 px-4 rounded-md text-sm font-medium transition-colors ${
               activeTab === 'profile'
-                ? 'bg-white text-blue-600 shadow-sm'
+                ? 'bg-white text-primary-600 shadow-sm'
                 : 'text-gray-600 hover:text-gray-800'
             }`}
           >
@@ -252,7 +252,7 @@ const CustomerProfile = () => {
             onClick={() => setActiveTab('quotes')}
             className={`flex-1 py-3 px-4 rounded-md text-sm font-medium transition-colors ${
               activeTab === 'quotes'
-                ? 'bg-white text-blue-600 shadow-sm'
+                ? 'bg-white text-primary-600 shadow-sm'
                 : 'text-gray-600 hover:text-gray-800'
             }`}
           >
@@ -270,7 +270,7 @@ const CustomerProfile = () => {
                 {!isEditing ? (
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="flex items-center px-4 py-2 text-sm text-blue-600 hover:text-blue-700 font-medium"
+                    className="flex items-center px-4 py-2 text-sm text-primary-600 hover:text-primary-700 font-medium"
                   >
                     <FaEdit className="mr-2" />
                     Edit Profile
@@ -317,7 +317,7 @@ const CustomerProfile = () => {
                       type="text"
                       value={profileData.displayName}
                       onChange={(e) => setProfileData(prev => ({ ...prev, displayName: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                       placeholder="Enter your full name"
                     />
                   ) : (
@@ -346,7 +346,7 @@ const CustomerProfile = () => {
                       type="tel"
                       value={profileData.phone}
                       onChange={(e) => setProfileData(prev => ({ ...prev, phone: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                       placeholder="Enter your phone number"
                     />
                   ) : (
@@ -364,7 +364,7 @@ const CustomerProfile = () => {
                       type="text"
                       value={profileData.address}
                       onChange={(e) => setProfileData(prev => ({ ...prev, address: e.target.value }))}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                       placeholder="Enter your address"
                     />
                   ) : (
@@ -381,7 +381,7 @@ const CustomerProfile = () => {
           <div>
             {loading ? (
               <div className="bg-white rounded-lg shadow-sm border p-12 text-center">
-                <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto"></div>
+                <div className="animate-spin h-8 w-8 border-4 border-primary-600 border-t-transparent rounded-full mx-auto"></div>
                 <p className="text-gray-600 mt-4">Loading quotes...</p>
               </div>
             ) : quotes.length === 0 ? (
@@ -393,7 +393,7 @@ const CustomerProfile = () => {
                 </p>
                 <button
                   onClick={() => navigate('/customer/services')}
-                  className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md font-medium transition-colors"
+                  className="bg-primary-600 hover:bg-primary-700 text-white py-2 px-4 rounded-md font-medium transition-colors"
                 >
                   Browse Services
                 </button>
@@ -438,7 +438,7 @@ const CustomerProfile = () => {
                             {quote.hourlyRate && (
                               <p><span className="text-gray-600">Original Rate:</span> €{quote.hourlyRate}</p>
                             )}
-                            <p className="text-lg font-semibold text-blue-900">
+                            <p className="text-lg font-semibold text-primary-900">
                               Quote Price: €{quote.quotedPrice}
                             </p>
                             {quote.quoteExpiresAt && (

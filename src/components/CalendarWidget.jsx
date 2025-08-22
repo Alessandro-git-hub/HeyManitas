@@ -204,10 +204,10 @@ const CalendarWidget = ({ professionalId, onDateTimeSelect, selectedDateTime }) 
               ${!date ? 'invisible' : ''}
               ${!isDateSelectable(date) 
                 ? 'text-gray-300 cursor-not-allowed' 
-                : 'text-gray-700 hover:bg-blue-100 cursor-pointer'
+                : 'text-gray-700 hover:bg-primary-100 cursor-pointer'
               }
-              ${isToday(date) ? 'bg-blue-100 text-blue-600' : ''}
-              ${isSelected(date) ? 'bg-blue-600 text-white hover:bg-blue-700' : ''}
+              ${isToday(date) ? 'bg-primary-100 text-primary-600' : ''}
+              ${isSelected(date) ? 'bg-primary-600 text-white hover:bg-primary-700' : ''}
             `}
           >
             {date?.getDate()}
@@ -227,7 +227,7 @@ const CalendarWidget = ({ professionalId, onDateTimeSelect, selectedDateTime }) 
           
           {loading ? (
             <div className="text-center py-4">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"></div>
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-600 mx-auto"></div>
               <p className="text-sm text-gray-500 mt-2">Loading availability...</p>
             </div>
           ) : (
@@ -248,8 +248,8 @@ const CalendarWidget = ({ professionalId, onDateTimeSelect, selectedDateTime }) 
                       ${!isAvailable 
                         ? 'bg-red-50 text-red-500 cursor-not-allowed border border-red-200' 
                         : isSelectedTime
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-50 text-gray-700 hover:bg-blue-100 cursor-pointer'
+                        ? 'bg-primary-600 text-white'
+                        : 'bg-gray-50 text-gray-700 hover:bg-primary-100 cursor-pointer'
                       }
                     `}
                     title={!isAvailable ? 'Time slot unavailable - Worker has existing appointment' : ''}
@@ -279,7 +279,7 @@ const CalendarWidget = ({ professionalId, onDateTimeSelect, selectedDateTime }) 
                   <span>Unavailable (Existing appointment)</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <div className="w-3 h-3 bg-blue-600 rounded"></div>
+                  <div className="w-3 h-3 bg-primary-600 rounded"></div>
                   <span>Selected</span>
                 </div>
               </div>

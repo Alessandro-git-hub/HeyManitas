@@ -10,9 +10,9 @@ const FileUploader = ({ onFilesChange, maxFiles = 5, maxFileSize = 10 * 1024 * 1
   const fileInputRef = useRef(null);
 
   const getFileIcon = (fileType) => {
-    if (fileType.startsWith('image/')) return <FaImage className="text-blue-500" />;
+    if (fileType.startsWith('image/')) return <FaImage className="text-primary-500" />;
     if (fileType === 'application/pdf') return <FaFilePdf className="text-red-500" />;
-    if (fileType.includes('word') || fileType.includes('msword')) return <FaFileWord className="text-blue-600" />;
+    if (fileType.includes('word') || fileType.includes('msword')) return <FaFileWord className="text-primary-600" />;
     if (fileType.includes('sheet') || fileType.includes('excel')) return <FaFileExcel className="text-green-600" />;
     return <FaFile className="text-gray-500" />;
   };
@@ -192,9 +192,9 @@ const FileUploader = ({ onFilesChange, maxFiles = 5, maxFileSize = 10 * 1024 * 1
                 {uploadProgress[file.id] !== undefined && uploadProgress[file.id] < 100 && uploadProgress[file.id] !== -1 && (
                   <div className="flex-shrink-0 mx-2">
                     <div className="w-6 h-6 relative">
-                      <div className="w-full h-full rounded-full border border-blue-200 bg-blue-50">
+                      <div className="w-full h-full rounded-full border border-primary-200 bg-primary-50">
                         <div 
-                          className="absolute top-0 left-0 rounded-full bg-blue-500 transition-all duration-300"
+                          className="absolute top-0 left-0 rounded-full bg-primary-500 transition-all duration-300"
                           style={{
                             width: '100%',
                             height: '100%',
@@ -203,7 +203,7 @@ const FileUploader = ({ onFilesChange, maxFiles = 5, maxFileSize = 10 * 1024 * 1
                           }}
                         />
                       </div>
-                      <span className="absolute inset-0 flex items-center justify-center text-xs font-medium text-blue-600">
+                      <span className="absolute inset-0 flex items-center justify-center text-xs font-medium text-primary-600">
                         {uploadProgress[file.id]}%
                       </span>
                     </div>
@@ -238,7 +238,7 @@ const FileUploader = ({ onFilesChange, maxFiles = 5, maxFileSize = 10 * 1024 * 1
       <div
         className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
           uploading 
-            ? 'border-blue-300 bg-blue-50' 
+            ? 'border-primary-300 bg-primary-50' 
             : files.length > 0 
             ? 'border-gray-200 bg-gray-50 hover:border-gray-300'
             : 'border-gray-300 hover:border-gray-400 cursor-pointer'
@@ -247,7 +247,7 @@ const FileUploader = ({ onFilesChange, maxFiles = 5, maxFileSize = 10 * 1024 * 1
         onDragOver={handleDragOver}
         onClick={() => !uploading && files.length < maxFiles && fileInputRef.current?.click()}
       >
-        <FaUpload className={`mx-auto mb-3 text-2xl ${uploading ? 'text-blue-500' : files.length > 0 ? 'text-gray-300' : 'text-gray-400'}`} />
+        <FaUpload className={`mx-auto mb-3 text-2xl ${uploading ? 'text-primary-500' : files.length > 0 ? 'text-gray-300' : 'text-gray-400'}`} />
         <p className="text-gray-600 mb-2">
           {uploading 
             ? 'Uploading files...' 

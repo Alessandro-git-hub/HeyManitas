@@ -13,7 +13,7 @@ export default function JobCard({ job, onEdit, onDelete, onViewDetails }) {
         <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
           <button
             onClick={() => onEdit(job)}
-            className="text-blue-600 hover:text-blue-800 transition-colors"
+            className="text-primary-600 hover:text-primary-800 transition-colors"
             title="Edit job"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -36,13 +36,13 @@ export default function JobCard({ job, onEdit, onDelete, onViewDetails }) {
 
       {/* Service Information */}
       {job.serviceName && (
-        <div className="mb-3 p-2 bg-blue-50 rounded border border-blue-200">
+        <div className="mb-3 p-2 bg-primary-50 rounded border border-primary-200">
           <div className="flex justify-between items-center">
-            <span className="text-sm text-blue-700 font-medium">
+            <span className="text-sm text-primary-700 font-medium">
               🔧 {job.serviceName}
             </span>
             {job.finalPrice && (
-              <span className="text-sm text-blue-900 font-semibold">
+              <span className="text-sm text-primary-900 font-semibold">
                 €{job.finalPrice}
               </span>
             )}
@@ -52,7 +52,7 @@ export default function JobCard({ job, onEdit, onDelete, onViewDetails }) {
       
       {job.scheduledDate && (
         <div className="mb-3">
-          <span className="text-sm text-blue-700 font-medium">
+          <span className="text-sm text-primary-700 font-medium">
             📅 Scheduled: {job.scheduledDate}
           </span>
         </div>

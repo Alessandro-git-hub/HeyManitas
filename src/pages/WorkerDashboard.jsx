@@ -346,7 +346,7 @@ export default function WorkerDashboard() {
                 <p className="text-sm text-gray-600">Pending Quotes</p>
                 <p className="text-2xl font-bold text-deep">{pendingQuotesCount}</p>
                 {pendingQuotesCount > 0 && (
-                  <p className="text-xs text-blue-600 mt-1">Click to view</p>
+                  <p className="text-xs text-primary-600 mt-1">Click to view</p>
                 )}
               </div>
             </div>
@@ -444,7 +444,7 @@ export default function WorkerDashboard() {
               {recentJobs.length > 0 && (
                 <button 
                   onClick={() => navigate('/worker/jobs')}
-                  className="mt-4 text-blue-800 text-sm hover:text-blue-900 cursor-pointer"
+                  className="mt-4 text-primary-800 text-sm hover:text-primary-900 cursor-pointer"
                 >
                   View all jobs →
                 </button>
@@ -459,7 +459,7 @@ export default function WorkerDashboard() {
                     <p className="font-medium text-deep">Bathroom Renovation</p>
                     <p className="text-sm text-gray-600">Luis Martín - €2,400</p>
                   </div>
-                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">Sent</span>
+                  <span className="text-xs bg-primary-100 text-primary-800 px-2 py-1 rounded">Sent</span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-gray-100">
                   <div>
@@ -476,7 +476,7 @@ export default function WorkerDashboard() {
                   <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Accepted</span>
                 </div>
               </div>
-              <button className="mt-4 text-blue-800 text-sm hover:text-blue-900 cursor-pointer">
+              <button className="mt-4 text-primary-800 text-sm hover:text-primary-900 cursor-pointer">
                 View all quotes →
               </button>
             </div>

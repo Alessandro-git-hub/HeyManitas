@@ -280,7 +280,7 @@ export default function JobFormModal({
           list="customers-list"
           className={`w-full p-3 border rounded-lg ${
             formErrors.client ? 'border-red-500' : 'border-gray-300'
-          } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 ${
+          } focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50 ${
             loadingCustomers ? 'bg-gray-50' : ''
           }`}
           placeholder="Enter or select client name (new clients will be saved automatically)"
@@ -319,7 +319,7 @@ export default function JobFormModal({
           disabled={isSubmitting || loadingServices}
           className={`w-full p-3 border rounded-lg ${
             formErrors.serviceId ? 'border-red-500' : 'border-gray-300'
-          } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50`}
+          } focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50`}
         >
           <option value="">Select a service</option>
           {availableServices.map(service => {
@@ -346,7 +346,7 @@ export default function JobFormModal({
                 // Navigate to services page - you might want to pass this as a prop
                 window.location.href = '/worker/services';
               }}
-              className="text-blue-600 hover:text-blue-700 underline"
+              className="text-primary-600 hover:text-primary-700 underline"
             >
               Create your first service
             </button>
@@ -355,10 +355,10 @@ export default function JobFormModal({
       </div>
 
       {formData.serviceId && (
-        <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+        <div className="mb-4 p-3 bg-primary-50 rounded-lg border border-primary-200">
           <div className="flex justify-between items-center text-sm">
-            <span className="text-blue-700 font-medium">Base Price:</span>
-            <span className="text-blue-900 font-semibold">€{formData.basePrice}</span>
+            <span className="text-primary-700 font-medium">Base Price:</span>
+            <span className="text-primary-900 font-semibold">€{formData.basePrice}</span>
           </div>
         </div>
       )}
@@ -378,7 +378,7 @@ export default function JobFormModal({
             step="0.01"
             className={`w-full p-3 border rounded-lg ${
               formErrors.finalPrice ? 'border-red-500' : 'border-gray-300'
-            } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50`}
+            } focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50`}
             placeholder="Final quoted price"
           />
           {formErrors.finalPrice && (
@@ -395,7 +395,7 @@ export default function JobFormModal({
             value={formData.status}
             onChange={handleInputChange}
             disabled={isSubmitting}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50"
           >
             <option value="Pending">Pending</option>
             <option value="In Progress">In Progress</option>
@@ -417,7 +417,7 @@ export default function JobFormModal({
           disabled={isSubmitting}
           className={`w-full p-3 border rounded-lg ${
             formErrors.scheduledDate ? 'border-red-500' : 'border-gray-300'
-          } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50`}
+          } focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50`}
         />
         {formErrors.scheduledDate && (
           <p className="text-red-500 text-sm mt-1">{formErrors.scheduledDate}</p>
@@ -436,7 +436,7 @@ export default function JobFormModal({
           rows="4"
           className={`w-full p-3 border rounded-lg ${
             formErrors.description ? 'border-red-500' : 'border-gray-300'
-          } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50`}
+          } focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50`}
           placeholder="Describe the job details, requirements, and any important notes..."
         ></textarea>
         {formErrors.description && (

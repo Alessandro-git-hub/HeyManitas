@@ -62,7 +62,7 @@
   color: #cda961;
 }
 
-.text-secondary-700 {
+.hover\:text-secondary-700:hover {
   color: #a6733c;
 }
 
@@ -80,43 +80,6 @@
 }
 
 .focus\:border-primary:focus {
-  border-color: #334340;
-}
-
-/* Override blue colors with primary colors (for existing elements) */
-.bg-blue-600 {
-  background-color: #334340;
-}
-
-.bg-blue-700 {
-  background-color: #2c3a36;
-}
-
-.bg-blue-800 {
-  background-color: #334340;
-}
-
-.text-blue-600 {
-  color: #334340;
-}
-
-.text-blue-700 {
-  color: #2c3a36;
-}
-
-.text-blue-800 {
-  color: #334340;
-}
-
-.border-blue-600 {
-  border-color: #334340;
-}
-
-.focus\:ring-blue-500:focus {
-  --tw-ring-color: #334340;
-}
-
-.focus\:border-blue-500:focus {
   border-color: #334340;
 }
 

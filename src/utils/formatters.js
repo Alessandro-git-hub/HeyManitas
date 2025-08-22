@@ -11,7 +11,7 @@ export const getStatusStyles = (status, includeBorder = false) => {
     case 'Done':
       return `bg-green-100 text-green-800${includeBorder ? ' border-green-200' : ''}`;
     case 'In Progress':
-      return `bg-blue-100 text-blue-800${includeBorder ? ' border-blue-200' : ''}`;
+      return `bg-primary-100 text-primary-800${includeBorder ? ' border-primary-200' : ''}`;
     case 'Cancelled':
       return `bg-red-100 text-red-800${includeBorder ? ' border-red-200' : ''}`;
     default: // Pending

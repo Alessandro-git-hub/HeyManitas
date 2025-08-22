@@ -73,7 +73,7 @@ const BookingsOverview = () => {
     switch (status) {
       case 'pending': return 'text-yellow-600 bg-yellow-100';
       case 'confirmed': return 'text-green-600 bg-green-100';
-      case 'completed': return 'text-blue-600 bg-blue-100';
+      case 'completed': return 'text-primary-600 bg-primary-100';
       default: return 'text-gray-600 bg-gray-100';
     }
   };
@@ -82,7 +82,7 @@ const BookingsOverview = () => {
     return (
       <div className="bg-white p-6 rounded-lg shadow-sm border">
         <div className="flex items-center justify-center py-8">
-          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-600"></div>
         </div>
       </div>
     );
@@ -100,7 +100,7 @@ const BookingsOverview = () => {
           )}
           <button
             onClick={() => navigate('/worker/bookings')}
-            className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+            className="text--600 hover:text--700 text-sm font-medium"
           >
             View All →
           </button>
@@ -119,8 +119,8 @@ const BookingsOverview = () => {
             <div key={booking.id} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
               <div className="flex items-center space-x-3">
                 <div className="flex-shrink-0">
-                  <div className="w-8 h-8 bg-blue-50 rounded-full flex items-center justify-center">
-                    <FaCalendarAlt className="text-blue-600 text-sm" />
+                  <div className="w-8 h-8 bg--50 rounded-full flex items-center justify-center">
+                    <FaCalendarAlt className="text--600 text-sm" />
                   </div>
                 </div>
                 <div>

@@ -9,7 +9,7 @@ const BookingCard = ({ booking, onStatusUpdate, onViewDetails }) => {
       case 'confirmed':
         return 'bg-green-100 text-green-800 border-green-200';
       case 'completed':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
+        return 'bg-primary-100 text-primary-800 border-primary-200';
       case 'cancelled':
         return 'bg-red-100 text-red-800 border-red-200';
       default:
@@ -48,7 +48,7 @@ const BookingCard = ({ booking, onStatusUpdate, onViewDetails }) => {
             {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
           </span>
           {isUpcoming() && (
-            <span className="px-2 py-1 text-xs bg-blue-50 text-blue-600 rounded">
+            <span className="px-2 py-1 text-xs bg-primary-50 text-primary-600 rounded">
               Upcoming
             </span>
           )}
@@ -56,8 +56,8 @@ const BookingCard = ({ booking, onStatusUpdate, onViewDetails }) => {
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center space-x-3">
           <div className="flex-shrink-0">
-            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-              <FaUser className="text-blue-600" />
+            <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
+              <FaUser className="text-primary-600" />
             </div>
           </div>
           <div>
@@ -153,7 +153,7 @@ const BookingCard = ({ booking, onStatusUpdate, onViewDetails }) => {
           {booking.status === 'confirmed' && isUpcoming() && (
             <button
               onClick={() => onStatusUpdate(booking.id, 'completed')}
-              className="px-3 py-1 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded transition-colors"
+                className="px-3 py-1 text-sm text-white bg-primary-600 hover:bg-primary-700 rounded transition-colors"
             >
               Mark Complete
             </button>
