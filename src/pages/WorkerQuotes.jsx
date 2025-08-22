@@ -3,7 +3,7 @@ import { collection, getDocs, query, where, updateDoc, doc, Timestamp } from 'fi
 import { db } from '../utils/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import WorkerNavigation from '../components/layout/WorkerNavigation';
-import WorkerHeader from '../components/layout/WorkerHeader';
+import AppHeader from '../components/layout/AppHeader';
 
 export default function WorkerQuotes() {
   const { user, loading: authLoading } = useAuth();
@@ -192,7 +192,7 @@ export default function WorkerQuotes() {
 
   return (
     <div className="min-h-screen bg-light">
-      <WorkerHeader />
+      <AppHeader />
       
       <div className="max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4">
         {/* Navigation */}

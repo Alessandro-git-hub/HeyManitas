@@ -7,7 +7,7 @@ import BookingCard from '../components/BookingCard';
 import JobFormModal from '../components/job/JobFormModal';
 import ActionButton from '../components/common/ActionButton';
 import WorkerNavigation from '../components/layout/WorkerNavigation';
-import WorkerHeader from '../components/layout/WorkerHeader';
+import AppHeader from '../components/layout/AppHeader';
 import JobFilters from '../components/job/JobFilters';
 import JobsList from '../components/job/JobsList';
 import JobDetailsModal from '../components/job/JobDetailsModal';
@@ -239,7 +239,7 @@ export default function Jobs() {
   if (loading) {
     return (
       <div className="min-h-screen bg-light">
-        <WorkerHeader />
+        <AppHeader />
         <div className="max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4">
           <WorkerNavigation />
           <h1 className="text-3xl font-bold mb-6 text-gray-900">My Jobs</h1>
@@ -253,7 +253,7 @@ export default function Jobs() {
 
   return (
     <div className="min-h-screen bg-light">
-      <WorkerHeader />
+      <AppHeader />
       
       <div className="max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4">
         {/* Worker Navigation Tabs */}

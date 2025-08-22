@@ -8,7 +8,7 @@ import JobFormModal from '../components/job/JobFormModal';
 import JobDetailsModal from '../components/job/JobDetailsModal';
 import ActionButton from '../components/common/ActionButton';
 import WorkerNavigation from '../components/layout/WorkerNavigation';
-import WorkerHeader from '../components/layout/WorkerHeader';
+import AppHeader from '../components/layout/AppHeader';
 import BookingsOverview from '../components/BookingsOverview';
 
 export default function WorkerDashboard() {
@@ -277,7 +277,7 @@ export default function WorkerDashboard() {
   return (
     <div className="min-h-screen bg-light">
       {/* Header/Navigation */}
-      <WorkerHeader />
+      <AppHeader />
 
       <div className="max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4">
         {/* Feedback Message */}

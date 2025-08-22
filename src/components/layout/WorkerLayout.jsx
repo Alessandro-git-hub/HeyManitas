@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import WorkerHeader from './WorkerHeader';
+import AppHeader from './AppHeader';
 import WorkerNavigation from './WorkerNavigation';
 import { AuthLoadingState, PageLoadingState } from '../common/LoadingState';
 import { useFeedback } from '../../hooks/useFeedback';
@@ -74,7 +74,7 @@ export default function WorkerLayout({
   return (
     <div className="min-h-screen bg-light">      
       {/* Header */}
-      <WorkerHeader />
+      <AppHeader />
       
       {/* Main Content Container */}
       <div className={`max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4 ${className}`}>

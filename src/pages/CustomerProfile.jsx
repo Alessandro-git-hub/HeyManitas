@@ -5,7 +5,7 @@ import { updateProfile } from 'firebase/auth';
 import { db } from '../utils/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaEdit, FaSave, FaTimes, FaCheck, FaArrowLeft, FaQuoteLeft } from 'react-icons/fa';
-import CustomerHeader from '../components/layout/CustomerHeader';
+import AppHeader from '../components/layout/AppHeader';
 import CustomerNavigation from '../components/layout/CustomerNavigation';
 
 const CustomerProfile = () => {
@@ -214,7 +214,7 @@ const CustomerProfile = () => {
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Header */}
-      <CustomerHeader />
+      <AppHeader />
       
       <div className="max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4">
         {/* Navigation */}

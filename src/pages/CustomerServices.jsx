@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';
 import { SERVICE_CATEGORIES } from '../utils/serviceCategories';
-import CustomerHeader from '../components/layout/CustomerHeader';
+import AppHeader from '../components/layout/AppHeader';
 import CustomerNavigation from '../components/layout/CustomerNavigation';
 
 const CustomerServices = () => {
@@ -45,7 +45,7 @@ const CustomerServices = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <CustomerHeader />
+      <AppHeader />
       
       <div className="max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4">
         {/* Navigation */}

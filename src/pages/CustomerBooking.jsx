@@ -4,7 +4,7 @@ import { FaArrowLeft, FaStar, FaMapMarkerAlt, FaCalendar, FaClock } from 'react-
 import CalendarWidget from '../components/CalendarWidget';
 import FileUploader from '../components/common/FileUploader';
 import { createBooking } from '../utils/bookings';
-import CustomerHeader from '../components/layout/CustomerHeader';
+import AppHeader from '../components/layout/AppHeader';
 import CustomerNavigation from '../components/layout/CustomerNavigation';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -42,7 +42,7 @@ const CustomerBooking = () => {
   if (!professional) {
     return (
       <div className="min-h-screen bg-light">
-        <CustomerHeader />
+        <AppHeader />
         <div className="max-w-4xl mx-auto px-4 py-8">
           <CustomerNavigation />
           <div className="text-center">
@@ -134,7 +134,7 @@ const CustomerBooking = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <CustomerHeader />
+      <AppHeader />
       
       <div className="max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4">
         {/* Navigation */}
