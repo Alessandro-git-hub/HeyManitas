@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/common/ProtectedRoute';
+import SiteGate from './components/SiteGate';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
@@ -19,8 +20,9 @@ import CustomerCalendar from './pages/CustomerCalendar';
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
+    <SiteGate>
+      <AuthProvider>
+        <Router>
         <div className="min-h-screen bg-gray-100">
           <Routes>
             <Route path="/" element={<Home />} />
@@ -101,6 +103,7 @@ function App() {
         </div>
       </Router>
     </AuthProvider>
+  </SiteGate>
   );
 }
 
