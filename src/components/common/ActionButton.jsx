@@ -7,7 +7,9 @@ export default function ActionButton({
   children,
   className = '',
   disabled = false,
-  type = 'button'
+  type = 'button',
+  form,
+  ...props
 }) {
   // Base styles that are common to all variants
   const baseStyles = 'rounded-lg transition-colors font-medium cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
@@ -38,6 +40,8 @@ export default function ActionButton({
       onClick={onClick}
       disabled={disabled}
       className={buttonClasses}
+      form={form}
+      {...props}
     >
       {children}
     </button>

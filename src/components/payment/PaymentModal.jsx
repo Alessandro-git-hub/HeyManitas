@@ -74,6 +74,7 @@ const PaymentModal = ({
 
       // Create customer calendar entry
       const customerCalendarData = {
+        userId: auth.currentUser?.uid,
         customerId: auth.currentUser?.uid,
         customerEmail: booking.customerEmail,
         bookingId: booking.id,
@@ -92,7 +93,12 @@ const PaymentModal = ({
         updatedAt: new Date().toISOString()
       };
       
-      await addDoc(collection(db, 'customerCalendar'), customerCalendarData);
+      try {
+        await addDoc(collection(db, 'customerCalendar'), customerCalendarData);
+      } catch (calendarError) {
+        console.error('Error creating calendar entry:', calendarError);
+        // Continue with payment flow even if calendar fails
+      }
 
       setPaymentResult({
         success: true,
