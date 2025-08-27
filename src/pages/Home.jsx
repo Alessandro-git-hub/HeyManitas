@@ -14,7 +14,7 @@ export default function Home() {
       
       {/* Hero Section */}
       <section className="py-16 bg-gradient-to-br from-gray-50 via-white to-primary-50/30 relative overflow-hidden"> 
-      
+
         {/* Subtle grid pattern */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.02)_1px,transparent_1px)] bg-[size:32px_32px]"></div>
         <div className="max-w-6xl mx-auto px-4 relative z-10">
@@ -31,7 +31,7 @@ export default function Home() {
             {/* Right Side - Image */}
             <div className="order-1 lg:order-2">
               <img 
-                src="/src/images/handyman.jpg" 
+                src="/handyman.jpg" 
                 alt="Professional handyman at work" 
                 className="w-full h-auto rounded-lg shadow-xl"
               />
