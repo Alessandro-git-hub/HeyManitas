@@ -6,6 +6,11 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        'sans': ['Open Sans', 'system-ui', 'sans-serif'],           // Primary font for body text
+        'ui': ['Inter', 'system-ui', 'sans-serif'],                 // UI elements (buttons, forms)
+        'accessible': ['Atkinson Hyperlegible', 'system-ui', 'sans-serif'], // Critical text (navigation, instructions)
+      },
       colors: {
         // Core Palette with variations
         primary: {

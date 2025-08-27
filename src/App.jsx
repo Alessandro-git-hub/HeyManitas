@@ -28,6 +28,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/services" element={<CustomerServices />} />
             <Route path="/customer/services" element={
               <ProtectedRoute>
                 <CustomerServices />

@@ -1,13 +1,24 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';
 import { SERVICE_CATEGORIES } from '../utils/serviceCategories';
 import AppHeader from '../components/layout/AppHeader';
 import CustomerNavigation from '../components/layout/CustomerNavigation';
+import { useAuth } from '../contexts/AuthContext';
 
 const CustomerServices = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [searchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState('');
+
+  // Load search query from URL parameters
+  useEffect(() => {
+    const query = searchParams.get('q');
+    if (query) {
+      setSearchTerm(query);
+    }
+  }, [searchParams]);
 
   // Convert SERVICE_CATEGORIES object to array format
   const categoryArray = Object.keys(SERVICE_CATEGORIES).map(key => ({
@@ -37,24 +48,37 @@ const CustomerServices = () => {
   );
 
   const handleServiceSelect = (category) => {
-    navigate(`/customer/professionals/${category.id}`, { 
-      state: { categoryName: category.name } 
-    });
+    if (user) {
+      // If user is logged in, go to professionals page
+      navigate(`/customer/professionals/${category.id}`, { 
+        state: { categoryName: category.name } 
+      });
+    } else {
+      // If user is not logged in, redirect to login with return path
+      navigate(`/login?userType=customer&returnTo=/customer/professionals/${category.id}`, {
+        state: { categoryName: category.name }
+      });
+    }
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <AppHeader />
+      <AppHeader showPublicNav={!user} />
       
       <div className="max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4">
-        {/* Navigation */}
-        <CustomerNavigation />
+        {/* Navigation - only show for authenticated users */}
+        {user && <CustomerNavigation />}
         
         {/* Page Title */}
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-900">Find Services</h1>
           <p className="text-gray-600">Choose the service you need</p>
+          {!user && (
+            <p className="text-sm text-gray-500 mt-2">
+              Sign in after selecting a service to book professionals
+            </p>
+          )}
         </div>
 
         {/* Search Section */}
