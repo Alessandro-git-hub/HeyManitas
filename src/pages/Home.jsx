@@ -13,13 +13,10 @@ export default function Home() {
       <AppHeader showPublicNav={true} />
       
       {/* Hero Section */}
-     <section className="py-16 bg-gradient-to-br from-[#FFFDF7] via-[#FEFAF1] to-[#FDFCF9] relative overflow-hidden">
-
-        {/* Subtle grid pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(210,180,140,0.15)_1px,transparent_1px),linear-gradient(90deg,rgba(210,180,140,0.15)_1px,transparent_1px)] bg-[size:32px_32px]"></div>
+     <section className="py-16 relative overflow-hidden" style={{ backgroundColor: '#f4dfb8' }}>
 
         <div className="max-w-6xl mx-auto px-4 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
 
             {/* Title and Search - Top on mobile, Left on desktop */}
             <div className="order-1 lg:order-1">
@@ -32,9 +29,9 @@ export default function Home() {
             {/* Image - Bottom on mobile, Right on desktop */}
             <div className="order-2 lg:order-2">
               <img 
-                src="/handyman.jpg" 
+                src="/HeroSectionImage.png" 
                 alt="Professional handyman at work" 
-                className="w-full h-auto rounded-lg shadow-xl"
+                className="w-200px ml-auto mr-auto"
               />
             </div>
           </div>
