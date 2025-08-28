@@ -13,23 +13,24 @@ export default function Home() {
       <AppHeader showPublicNav={true} />
       
       {/* Hero Section */}
-      <section className="py-16 bg-gradient-to-br from-gray-50 via-white to-primary-50/30 relative overflow-hidden"> 
+     <section className="py-16 bg-gradient-to-br from-[#FFFDF7] via-[#FEFAF1] to-[#FDFCF9] relative overflow-hidden">
 
         {/* Subtle grid pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.02)_1px,transparent_1px)] bg-[size:32px_32px]"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(210,180,140,0.15)_1px,transparent_1px),linear-gradient(90deg,rgba(210,180,140,0.15)_1px,transparent_1px)] bg-[size:32px_32px]"></div>
+
         <div className="max-w-6xl mx-auto px-4 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
 
-            {/* Left Side - Title and Search */}
-            <div className="order-2 lg:order-1">
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+            {/* Title and Search - Top on mobile, Left on desktop */}
+            <div className="order-1 lg:order-1">
+              <h1 className="text-3xl md:text-5xl font-bold text-primary-700 mb-6">
                 Find trusted professionals for any home service
               </h1>
               <ServiceSearch />
             </div>
             
-            {/* Right Side - Image */}
-            <div className="order-1 lg:order-2">
+            {/* Image - Bottom on mobile, Right on desktop */}
+            <div className="order-2 lg:order-2">
               <img 
                 src="/handyman.jpg" 
                 alt="Professional handyman at work" 

@@ -57,31 +57,31 @@ export default function AppHeader({ userType = 'customer', showPublicNav = false
   // Render public navigation for unauthenticated users
   const renderPublicNav = () => (
     <>
-      <nav className="hidden md:flex items-center space-x-8 font-accessible">
+      <nav className="hidden lg:flex items-center space-x-8 font-accessible">
         <button 
           onClick={() => handleNavigation('/services')}
-          className="text-gray-600 hover:text-primary-600 font-medium transition-colors"
+          className="text-primary-800 hover:text-secondary-700 font-medium transition-colors cursor-pointer"
         >
           Browse Services
         </button>
         <button 
           onClick={() => handleNavigation('/how-it-works')}
-          className="text-gray-600 hover:text-primary-600 font-medium transition-colors"
+          className="text-primary-800 hover:text-secondary-700 font-medium transition-colors cursor-pointer"
         >
           How It Works
         </button>
         <button 
           onClick={() => handleNavigation('/login?userType=worker')}
-          className="text-gray-600 hover:text-primary-600 font-medium transition-colors"
+          className="text-primary-800 hover:text-secondary-700 font-medium transition-colors cursor-pointer"
         >
           HeyManitas for Workers
         </button>
       </nav>
       
-      <div className="hidden md:flex items-center space-x-4 font-ui">
+      <div className="hidden lg:flex items-center space-x-4 font-ui">
         <button 
           onClick={() => handleNavigation('/login?userType=customer')}
-          className="text-gray-600 hover:text-primary-600 font-medium transition-colors"
+          className="text-primary-800 hover:text-secondary-700 font-medium transition-colors cursor-pointer"
         >
           Sign In
         </button>
@@ -115,7 +115,7 @@ export default function AppHeader({ userType = 'customer', showPublicNav = false
           {showPublicNav && (
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 text-gray-600 hover:text-primary-600 transition-colors order-1"
+              className="lg:hidden p-2 text-gray-600 hover:text-primary-600 transition-colors order-1"
               aria-label="Toggle menu"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -142,13 +142,13 @@ export default function AppHeader({ userType = 'customer', showPublicNav = false
           </button>
           
           {/* Desktop Navigation & Auth (right side) */}
-          <div className="hidden md:flex items-center space-x-8 order-3">
+          <div className="hidden lg:flex items-center space-x-8 order-3">
             {user ? renderAuthenticatedNav() : showPublicNav ? renderPublicNav() : null}
           </div>
 
           {/* Mobile: Spacer to balance hamburger menu */}
           {showPublicNav && (
-            <div className="md:hidden w-10 order-3"></div>
+            <div className="lg:hidden w-10 order-3"></div>
           )}
         </div>
       </div>
@@ -158,7 +158,7 @@ export default function AppHeader({ userType = 'customer', showPublicNav = false
         <>
           {/* Overlay */}
           <div 
-            className={`fixed inset-0 z-40 md:hidden transition-opacity duration-300 ${
+            className={`fixed inset-0 z-40 lg:hidden transition-opacity duration-300 ${
               isMobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
             }`}
             style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
@@ -166,7 +166,7 @@ export default function AppHeader({ userType = 'customer', showPublicNav = false
           />
           
           {/* Slide-in Menu */}
-          <div className={`fixed top-0 left-0 h-full w-80 bg-white shadow-xl z-50 md:hidden transform transition-transform duration-300 ease-in-out ${
+          <div className={`fixed top-0 left-0 h-full w-80 bg-white shadow-xl z-50 lg:hidden transform transition-transform duration-300 ease-in-out ${
             isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
           }`}>
             {/* Menu Header */}
