@@ -30,7 +30,6 @@ export default function StepCard({
             ${isMobile ? 'bg-white border border-primary-700' : 'bg-white border border-primary-700'}
             ${isMobile ? 'w-20 h-20' : 'w-20 h-20 lg:w-24 lg:h-24'}
             rounded-full flex items-center justify-center mx-auto shadow-lg
-            ${!prefersReducedMotion && isDesktop ? 'group-hover:scale-110 transition-all duration-300' : ''}
           `}
         >
           <Icon 

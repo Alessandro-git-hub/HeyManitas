@@ -67,9 +67,7 @@ export default function Carousel({
         {/* Navigation Arrows */}
         <button
           onClick={onPrevious}
-          className={`absolute left-2 top-20 w-10 h-10 bg-primary-700 hover:bg-white rounded-full shadow-lg flex items-center justify-center ${
-            prefersReducedMotion ? '' : 'transition-all duration-300 hover:scale-110'
-          } backdrop-blur-sm`}
+          className={`absolute left-2 top-20 w-10 h-10 bg-primary-700 hover:bg-white rounded-full shadow-lg flex items-center justify-center backdrop-blur-sm`}
           aria-label="Previous item"
           aria-controls="carousel-content"
         >
@@ -78,9 +76,7 @@ export default function Carousel({
         
         <button
           onClick={onNext}
-          className={`absolute right-2 top-20 w-10 h-10 bg-primary-700 hover:bg-white rounded-full shadow-lg flex items-center justify-center ${
-            prefersReducedMotion ? '' : 'transition-all duration-300 hover:scale-110'
-          } backdrop-blur-sm`}
+          className={`absolute right-2 top-20 w-10 h-10 bg-primary-700 hover:bg-white rounded-full shadow-lg flex items-center justify-center backdrop-blur-sm`}
           aria-label="Next item"
           aria-controls="carousel-content"
         >
@@ -94,9 +90,7 @@ export default function Carousel({
           <button
             key={index}
             onClick={() => onGoToIndex(index)}
-            className={`w-2.5 h-2.5 rounded-full ${
-              prefersReducedMotion ? '' : 'transition-all duration-300'
-            } ${
+            className={`w-2.5 h-2.5 rounded-full $${
               index === currentIndex
                 ? 'bg-primary-600 w-6'
                 : 'bg-gray-300 hover:bg-gray-400'
