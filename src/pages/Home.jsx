@@ -1,8 +1,8 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import AppHeader from '../components/layout/AppHeader';
-import ServiceSearch from '../components/common/ServiceSearch';
-import { getAllCategories, getCategoryInfo } from '../utils/serviceCategories';
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import AppHeader from "../components/layout/AppHeader";
+import ServiceSearch from "../components/common/ServiceSearch";
+import { getAllCategories, getCategoryInfo } from "../utils/serviceCategories";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -11,27 +11,53 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       <AppHeader showPublicNav={true} />
-      
+
       {/* Hero Section */}
-     <section className="py-16 relative overflow-hidden" style={{ backgroundColor: '#f4dfb8' }}>
+      <section
+        className="pt-8 md:py-16 relative overflow-hidden"
+        style={{ backgroundColor: "#f4dfb8" }}
+      >
+        {/* Waves: in front of image, behind text */}
+        <div className="absolute bottom-0 left-0 w-full z-20 pointer-events-none">
+          <svg viewBox="0 0 1440 320" className="w-full h-auto">
+            <path
+              d="M0,96L48,122.7C96,149,192,203,288,208C384,213,480,171,576,165.3C672,160,768,192,864,186.7C960,181,1056,139,1152,122.7C1248,107,1344,117,1392,122.7L1440,128L1440,320L0,320Z"
+              fill="#e2c89f"
+              fillOpacity="0.4"
+            />
+          </svg>
+        </div>
+        <div className="absolute bottom-0 left-0 w-full z-20 pointer-events-none">
+          <svg
+            viewBox="0 0 1440 320"
+            className="w-full h-auto"
+            style={{ transform: "translateY(10px)" }}
+          >
+            <path
+              d="M0,192L48,197.3C96,203,192,213,288,192C384,171,480,117,576,112C672,107,768,149,864,165.3C960,181,1056,171,1152,149.3C1248,128,1344,96,1392,80L1440,64L1440,320L0,320Z"
+              fill="#e2c89f"
+              fillOpacity="0.2"
+            />
+          </svg>
+        </div>
 
-        <div className="max-w-6xl mx-auto px-4 relative z-10">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-
-            {/* Title and Search - Top on mobile, Left on desktop */}
-            <div className="order-1 lg:order-1">
+        {/* Grid: no z-index on the container */}
+        <div className="max-w-6xl mx-auto px-4 relative">
+          <div className="grid grid-cols-1 gap-0 md:grid-cols-2 md:gap-12 items-center">
+            {/* Text above waves */}
+            <div className="order-1 lg:order-1 relative z-30">
               <h1 className="text-3xl md:text-5xl font-bold text-primary-700 mb-6">
                 Find trusted professionals for any home service
               </h1>
               <ServiceSearch />
             </div>
-            
-            {/* Image - Bottom on mobile, Right on desktop */}
-            <div className="order-2 lg:order-2">
-              <img 
-                src="/HeroSectionImage.png" 
-                alt="Professional handyman at work" 
-                className="w-200px ml-auto mr-auto"
+
+            {/* Image under waves */}
+            <div className="order-2 lg:order-2 relative z-10 py-8">
+              <img
+                src="/HeroSectionImage.png"
+                alt="Professional handyman at work"
+                className="w-[300px] md:w-auto mx-auto"
               />
             </div>
           </div>
@@ -90,9 +116,12 @@ export default function Home() {
               <div className="bg-primary-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <span className="text-3xl">🔍</span>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">1. Search & Browse</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                1. Search & Browse
+              </h3>
               <p className="text-gray-600">
-                Find the perfect professional for your needs by browsing our verified service providers.
+                Find the perfect professional for your needs by browsing our
+                verified service providers.
               </p>
             </div>
 
@@ -100,9 +129,12 @@ export default function Home() {
               <div className="bg-primary-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <span className="text-3xl">📅</span>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">2. Book & Schedule</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                2. Book & Schedule
+              </h3>
               <p className="text-gray-600">
-                Choose your preferred time and date. Our professionals will confirm your booking instantly.
+                Choose your preferred time and date. Our professionals will
+                confirm your booking instantly.
               </p>
             </div>
 
@@ -110,9 +142,12 @@ export default function Home() {
               <div className="bg-primary-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
                 <span className="text-3xl">✅</span>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">3. Get It Done</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                3. Get It Done
+              </h3>
               <p className="text-gray-600">
-                Sit back and relax while our qualified professionals complete your task to perfection.
+                Sit back and relax while our qualified professionals complete
+                your task to perfection.
               </p>
             </div>
           </div>
@@ -129,14 +164,14 @@ export default function Home() {
             Join thousands of workers earning money on their schedule
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button 
-              onClick={() => navigate('/signup?userType=worker')}
+            <button
+              onClick={() => navigate("/signup?userType=worker")}
               className="bg-white text-primary-600 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-gray-50 transition-colors cursor-pointer"
             >
               Get Started
             </button>
-            <button 
-              onClick={() => navigate('/login?userType=worker')}
+            <button
+              onClick={() => navigate("/login?userType=worker")}
               className="text-white bg-primary px-8 py-3 rounded-lg text-lg font-semibold hover:bg-white hover:text-primary-600 transition-colors cursor-pointer"
             >
               Sign In
