@@ -15,7 +15,7 @@ export default function PopularServices() {
   useScrollAnimation(".service-card", 50);
 
   return (
-    <section className="py-16 relative overflow-hidden bg-gradient-to-br from-gray-50 to-white">
+    <section className="pt-16 pb-0 relative overflow-hidden bg-gradient-to-br from-gray-50 to-white">
       <style jsx>{`
         .service-card {
           opacity: 0;

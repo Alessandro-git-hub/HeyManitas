@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import Icon from '../common/Icon';
 
 export default function AppHeader({ showPublicNav = false }) {
   const navigate = useNavigate();
@@ -67,13 +68,7 @@ export default function AppHeader({ showPublicNav = false }) {
                 className="lg:hidden p-2 text-gray-600 hover:text-primary-600 transition-colors"
                 aria-label="Toggle menu"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  {isMobileMenuOpen ? (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  ) : (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                  )}
-                </svg>
+                <Icon name={isMobileMenuOpen ? "close" : "menu"} size={24} />
               </button>
             )}
           </div>
@@ -181,9 +176,7 @@ export default function AppHeader({ showPublicNav = false }) {
                 className="p-2 text-gray-600 hover:text-primary-600 transition-colors"
                 aria-label="Close menu"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <Icon name="close" size={24} />
               </button>
             </div>
 

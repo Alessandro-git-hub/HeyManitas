@@ -97,13 +97,13 @@ const CustomerCalendar = () => {
     return (
       <div className="min-h-screen bg-gray-50 p-6">
         <div className="max-w-4xl mx-auto">
-          <div className="animate-pulse">
+          
             <div className="h-8 bg-gray-300 rounded w-48 mb-6"></div>
             <div className="space-y-4">
               {[1, 2, 3].map(i => (
                 <div key={i} className="h-32 bg-gray-300 rounded"></div>
               ))}
-            </div>
+            
           </div>
         </div>
       </div>
