@@ -24,7 +24,7 @@ export function DesktopAuthButtons({ onNavigate }) {
 
 export function MobileAuthButtons({ onNavigate }) {
   return (
-    <div className="flex flex-col space-y-4 mt-8 pt-6 border-t border-gray-200 font-ui">
+    <div className="flex flex-col space-y-4 mt-8 pt-6 border-t border-gray-200 font-ui px-4">
       <Button 
         onClick={() => onNavigate('/login?userType=customer')}
         variant="mobile"
