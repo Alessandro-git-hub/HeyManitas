@@ -24,18 +24,18 @@ export default function ServiceSearch() {
   };
 
   return (
-    <div className="bg-gradient-to-r from-primary-50 to-primary-100 rounded-2xl md:pr-8">
-      <div className="max-w-4xl mx-auto">
+    <div className="bg-gradient-to-r from-primary-50 to-primary-100 rounded-2xl max-w-full">
+      <div className="w-full max-w-4xl mx-auto">
 
-        <form onSubmit={handleSearch} className="space-y-4 font-ui">
+        <form onSubmit={handleSearch} className="space-y-4 font-ui w-full">
           {/* Search Bar with Integrated Button */}
-          <div className="relative">
+          <div className="relative w-full">
             <input
               type="text"
               placeholder="What service do you need?"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-white w-full px-6 py-4 pr-16 text-lg border border-gray-300 rounded-full focus:outline-none focus:border-gray-400 font-ui shadow-sm transition-colors"
+              className="bg-white w-full px-6 py-4 pr-16 text-lg border border-gray-300 rounded-full focus:outline-none focus:border-gray-400 font-ui shadow-sm transition-colors max-w-full"
             />
             <button
               type="submit"
