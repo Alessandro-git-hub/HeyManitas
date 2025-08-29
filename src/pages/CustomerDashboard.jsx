@@ -132,7 +132,7 @@ const CustomerDashboard = () => {
       {/* Header */}
       <AppHeader />
       
-      <div className="max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4">
+      <div className="max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4 pt-16 md:pt-20">
         {/* Navigation */}
         <CustomerNavigation />
         

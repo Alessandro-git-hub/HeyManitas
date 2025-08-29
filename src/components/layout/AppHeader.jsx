@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
-export default function AppHeader({ userType = 'customer', showPublicNav = false }) {
+export default function AppHeader({ showPublicNav = false }) {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -43,113 +43,114 @@ export default function AppHeader({ userType = 'customer', showPublicNav = false
   // Get user's display name, fallback to email or 'User'
   const firstName = user?.firstName || user?.email?.split('@')[0] || 'User';
 
-  // Color and text classes based on userType
-  const welcomeTextClass = userType === 'customer'
-    ? 'text-primary-600'
-    : 'text-gray-600';
-  const nameTextClass = userType === 'customer'
-    ? 'text-primary-600 md:hidden'
-    : 'text-gray-600 md:hidden';
-  const logoutBtnClass = userType === 'customer'
-    ? 'text-xs md:text-sm text-primary-600 hover:text-secondary-700 flex-shrink-0 cursor-pointer'
-    : 'text-xs md:text-sm text-gray-500 hover:text-gray-700 flex-shrink-0 cursor-pointer';
-
-  // Render public navigation for unauthenticated users
-  const renderPublicNav = () => (
-    <>
-      <nav className="hidden lg:flex items-center space-x-8 font-accessible">
-        <button 
-          onClick={() => handleNavigation('/services')}
-          className="text-primary-800 hover:text-secondary-700 font-medium transition-colors cursor-pointer"
-        >
-          Browse Services
-        </button>
-        <button 
-          onClick={() => handleNavigation('/how-it-works')}
-          className="text-primary-800 hover:text-secondary-700 font-medium transition-colors cursor-pointer"
-        >
-          How It Works
-        </button>
-        <button 
-          onClick={() => handleNavigation('/login?userType=worker')}
-          className="text-primary-800 hover:text-secondary-700 font-medium transition-colors cursor-pointer"
-        >
-          HeyManitas for Workers
-        </button>
-      </nav>
-      
-      <div className="hidden lg:flex items-center space-x-4 font-ui">
-        <button 
-          onClick={() => handleNavigation('/login?userType=customer')}
-          className="text-primary-800 hover:text-secondary-700 font-medium transition-colors cursor-pointer"
-        >
-          Sign In
-        </button>
-        <button 
-          onClick={() => handleNavigation('/signup?userType=customer')}
-          className="bg-primary-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-primary-700 transition-colors"
-        >
-          Get Started
-        </button>
-      </div>
-    </>
-  );  // Render authenticated user section
-  const renderAuthenticatedNav = () => (
-    <div className="flex items-center space-x-2 md:space-x-4 min-w-0">
-      <span className={`text-xs md:text-sm ${welcomeTextClass} hidden md:inline`}>Welcome back, {firstName}</span>
-      <span className={`text-xs md:text-sm ${nameTextClass}`}>{firstName}</span>
-      <button 
-        onClick={handleLogout}
-        className={logoutBtnClass}
-      >
-        Logout
-      </button>
-    </div>
-  );
-
   return (
-    <header ref={menuRef} className="bg-white shadow-sm border-b sticky top-0 z-50">
+    <header ref={menuRef} className="bg-white/95 backdrop-blur-sm shadow-sm border-b border-primary-700 fixed top-0 left-0 right-0 z-50">
       <div className="max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4">
-        <div className="flex justify-between items-center gap-1 md:gap-4">
-          {/* Mobile: Hamburger Menu (left) */}
-          {showPublicNav && (
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 text-gray-600 hover:text-primary-600 transition-colors order-1"
-              aria-label="Toggle menu"
+        <div className="grid grid-cols-3 items-center">
+          {/* LEFT SECTION */}
+          <div className="flex items-center justify-start">
+            {/* Desktop: Logo */}
+            <button 
+              onClick={() => handleNavigation('/')}
+              className="hidden lg:block text-xl md:text-2xl font-bold cursor-pointer"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                {isMobileMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                )}
-              </svg>
+              <div className="flex items-center">
+                <span className="text-secondary">Hey</span>
+                <span className="text-primary">Manitas</span>
+              </div>
             </button>
-          )}
-
-          {/* Logo - centered on mobile, left on desktop */}
-          <button 
-            onClick={() => handleNavigation('/')}
-            className={`text-xl md:text-2xl font-bold cursor-pointer ${
-              showPublicNav ? 'md:order-1 order-2 absolute md:relative left-1/2 md:left-auto transform md:transform-none -translate-x-1/2 md:translate-x-0' : ''
-            }`}
-          >
-            <div className="flex items-center">
-              <span className="text-secondary">Hey</span>
-              <span className="text-primary">Manitas</span>
-            </div>
-          </button>
-          
-          {/* Desktop Navigation & Auth (right side) */}
-          <div className="hidden lg:flex items-center space-x-8 order-3">
-            {user ? renderAuthenticatedNav() : showPublicNav ? renderPublicNav() : null}
+            
+            {/* Mobile: Hamburger Menu */}
+            {showPublicNav && (
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="lg:hidden p-2 text-gray-600 hover:text-primary-600 transition-colors"
+                aria-label="Toggle menu"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {isMobileMenuOpen ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  )}
+                </svg>
+              </button>
+            )}
           </div>
 
-          {/* Mobile: Spacer to balance hamburger menu */}
-          {showPublicNav && (
-            <div className="lg:hidden w-10 order-3"></div>
-          )}
+          {/* CENTER SECTION */}
+          <div className="flex items-center justify-center">
+            {/* Mobile: Logo */}
+            <button 
+              onClick={() => handleNavigation('/')}
+              className="lg:hidden text-xl font-bold cursor-pointer"
+            >
+              <div className="flex items-center">
+                <span className="text-secondary">Hey</span>
+                <span className="text-primary">Manitas</span>
+              </div>
+            </button>
+
+            {/* Desktop: Navigation */}
+            {showPublicNav && (
+              <nav className="hidden lg:flex items-center space-x-8 font-accessible">
+                <button 
+                  onClick={() => handleNavigation('/services')}
+                  className="text-primary-800 hover:text-secondary-700 font-medium transition-colors cursor-pointer"
+                >
+                  Browse Services
+                </button>
+                <button 
+                  onClick={() => handleNavigation('/how-it-works')}
+                  className="text-primary-800 hover:text-secondary-700 font-medium transition-colors cursor-pointer"
+                >
+                  How It Works
+                </button>
+                <button 
+                  onClick={() => handleNavigation('/login?userType=worker')}
+                  className="text-primary-800 hover:text-secondary-700 font-medium transition-colors cursor-pointer"
+                >
+                  HeyManitas for Workers
+                </button>
+              </nav>
+            )}
+
+            {/* Authenticated users - center welcome message */}
+            {user && !showPublicNav && (
+              <span className="text-sm text-primary-600 hidden md:inline">Welcome back, {firstName}</span>
+            )}
+          </div>
+
+          {/* RIGHT SECTION */}
+          <div className="flex items-center justify-end">
+            {/* Desktop: Auth buttons or logout */}
+            {user ? (
+              <div className="hidden lg:flex items-center space-x-4">
+                <span className="text-sm text-primary-600">{firstName}</span>
+                <button 
+                  onClick={handleLogout}
+                  className="text-sm text-primary-600 hover:text-secondary-700 cursor-pointer"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : showPublicNav ? (
+              <div className="hidden lg:flex items-center space-x-4 font-ui">
+                <button 
+                  onClick={() => handleNavigation('/login?userType=customer')}
+                  className="text-primary-800 hover:text-secondary-700 font-medium transition-colors cursor-pointer"
+                >
+                  Sign In
+                </button>
+                <button 
+                  onClick={() => handleNavigation('/signup?userType=customer')}
+                  className="bg-primary-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-primary-700 transition-colors"
+                >
+                  Get Started
+                </button>
+              </div>
+            ) : null}
+          </div>
         </div>
       </div>
 
