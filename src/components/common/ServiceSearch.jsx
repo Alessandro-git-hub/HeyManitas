@@ -1,14 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAllCategories } from '../../utils/serviceCategories';
 
 export default function ServiceSearch() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [location, setLocation] = useState('');
-
-  const serviceCategories = getAllCategories();
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -16,8 +11,6 @@ export default function ServiceSearch() {
     // Build search parameters
     const searchParams = new URLSearchParams();
     if (searchQuery.trim()) searchParams.set('q', searchQuery.trim());
-    if (selectedCategory) searchParams.set('category', selectedCategory);
-    if (location.trim()) searchParams.set('location', location.trim());
 
     // Navigate to public services page with search parameters
     navigate(`/services?${searchParams.toString()}`);
@@ -47,25 +40,6 @@ export default function ServiceSearch() {
             </button>
           </div>
         </form>
-
-        {/* Quick Category Links */}
-        {/* <div className="mt-6 text-center">
-          <p className="text-sm text-gray-500 mb-3">Popular searches:</p>
-          <div className="flex flex-wrap justify-center gap-2">
-            {serviceCategories.slice(0, 6).map((category) => (
-              <button
-                key={category}
-                onClick={() => {
-                  setSelectedCategory(category);
-                  setSearchQuery(category);
-                }}
-                className="px-3 py-1 bg-white text-gray-600 rounded-full text-sm hover:bg-primary-50 hover:text-primary-600 transition-colors border"
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-        </div> */}
       </div>
     </div>
   );

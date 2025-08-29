@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAllCategories, getCategoryInfo } from '../../utils/serviceCategories';
 import { useScrollAnimation } from '../../hooks/useScrollAnimation';
+import SectionHeader from '../common/SectionHeader';
 
 export default function PopularServices() {
   const navigate = useNavigate();
@@ -26,14 +27,10 @@ export default function PopularServices() {
       `}</style>
       
       <div className="max-w-6xl mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Popular Services
-          </h2>
-          <p className="text-xl text-gray-600">
-            Most requested services in your area
-          </p>
-        </div>
+        <SectionHeader 
+          title="Popular Services"
+          subtitle="Most requested services in your area"
+        />
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
           {serviceCategories.slice(0, 12).map((categoryName) => {

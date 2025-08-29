@@ -1,39 +1,11 @@
 import React from 'react';
 import { FaCalendar, FaClock, FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaCheck, FaTimes, FaEye } from 'react-icons/fa';
+import StatusBadge from './common/StatusBadge';
+import IconText from './common/IconText';
+import ActionButton from './common/ActionButton';
+import { formatDate, formatTime } from '../utils/formatters';
 
 const BookingCard = ({ booking, onStatusUpdate, onViewDetails }) => {
-  const getStatusStyles = (status) => {
-    switch (status) {
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'confirmed':
-        return 'bg-green-100 text-green-800 border-green-200';
-      case 'completed':
-        return 'bg-primary-100 text-primary-800 border-primary-200';
-      case 'cancelled':
-        return 'bg-red-100 text-red-800 border-red-200';
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-  };
-
-  const formatTime = (timeString) => {
-    const [hour, minute] = timeString.split(':');
-    const hourNum = parseInt(hour);
-    const ampm = hourNum >= 12 ? 'PM' : 'AM';
-    const displayHour = hourNum > 12 ? hourNum - 12 : hourNum === 0 ? 12 : hourNum;
-    return `${displayHour}:${minute} ${ampm}`;
-  };
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'short', 
-      month: 'short', 
-      day: 'numeric' 
-    });
-  };
-
   const isUpcoming = () => {
     const bookingDate = new Date(booking.datetime);
     const now = new Date();
@@ -44,15 +16,11 @@ const BookingCard = ({ booking, onStatusUpdate, onViewDetails }) => {
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
       {/* Header */}
       <div className="flex items-center space-x-2">
-          <span className={`px-3 py-1 text-xs mb-3 font-medium rounded-full border ${getStatusStyles(booking.status)}`}>
-            {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-          </span>
-          {isUpcoming() && (
-            <span className="px-2 py-1 text-xs bg-primary-50 text-primary-600 rounded">
-              Upcoming
-            </span>
-          )}
-        </div>
+        <StatusBadge status={booking.status} size="small" />
+        {isUpcoming() && (
+          <StatusBadge status="upcoming" size="small" />
+        )}
+      </div>
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center space-x-3">
           <div className="flex-shrink-0">
@@ -71,14 +39,8 @@ const BookingCard = ({ booking, onStatusUpdate, onViewDetails }) => {
 
       {/* Date and Time */}
       <div className="grid grid-cols-2 gap-4 mb-4">
-        <div className="flex items-center text-sm text-gray-600">
-          <FaCalendar className="mr-2 text-gray-400" />
-          <span>{formatDate(booking.date)}</span>
-        </div>
-        <div className="flex items-center text-sm text-gray-600">
-          <FaClock className="mr-2 text-gray-400" />
-          <span>{formatTime(booking.time)}</span>
-        </div>
+        <IconText icon={FaCalendar}>{formatDate(booking.date)}</IconText>
+        <IconText icon={FaClock}>{formatTime(booking.time)}</IconText>
       </div>
 
       {/* Description */}
@@ -93,16 +55,10 @@ const BookingCard = ({ booking, onStatusUpdate, onViewDetails }) => {
       {/* Contact Info */}
       <div className="space-y-2 mb-4">
         {booking.phone && (
-          <div className="flex items-center text-sm text-gray-600">
-            <FaPhone className="mr-2 text-gray-400" />
-            <span>{booking.phone}</span>
-          </div>
+          <IconText icon={FaPhone}>{booking.phone}</IconText>
         )}
         {booking.address && (
-          <div className="flex items-center text-sm text-gray-600">
-            <FaMapMarkerAlt className="mr-2 text-gray-400" />
-            <span className="truncate">{booking.address}</span>
-          </div>
+          <IconText icon={FaMapMarkerAlt} className="truncate">{booking.address}</IconText>
         )}
       </div>
 
@@ -122,41 +78,45 @@ const BookingCard = ({ booking, onStatusUpdate, onViewDetails }) => {
 
       {/* Actions */}
       <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-        <button
-          onClick={() => onViewDetails(booking)}
-          className="flex items-center text-sm text-gray-600 hover:text-gray-800"
+        <ActionButton
+          variant="outline"
+          size="small"
+          onClick={() => onViewDetails && onViewDetails(booking)}
         >
           <FaEye className="mr-1" />
           View Details
-        </button>
+        </ActionButton>
         
         <div className="flex space-x-2">
           {booking.status === 'pending' && (
             <>
-              <button
+              <ActionButton
+                variant="danger-outline"
+                size="small"
                 onClick={() => onStatusUpdate(booking.id, 'cancelled')}
-                className="px-3 py-1 text-sm text-red-600 hover:text-red-700 border border-red-300 hover:border-red-400 rounded transition-colors"
               >
                 <FaTimes className="mr-1 inline" />
                 Decline
-              </button>
-              <button
+              </ActionButton>
+              <ActionButton
+                variant="success"
+                size="small"
                 onClick={() => onStatusUpdate(booking.id, 'confirmed')}
-                className="px-3 py-1 text-sm text-white bg-green-600 hover:bg-green-700 rounded transition-colors"
               >
                 <FaCheck className="mr-1 inline" />
                 Accept
-              </button>
+              </ActionButton>
             </>
           )}
           
           {booking.status === 'confirmed' && isUpcoming() && (
-            <button
+            <ActionButton
+              variant="primary"
+              size="small"
               onClick={() => onStatusUpdate(booking.id, 'completed')}
-                className="px-3 py-1 text-sm text-white bg-primary-600 hover:bg-primary-700 rounded transition-colors"
             >
               Mark Complete
-            </button>
+            </ActionButton>
           )}
         </div>
       </div>

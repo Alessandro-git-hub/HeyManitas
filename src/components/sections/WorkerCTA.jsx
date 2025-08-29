@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import ActionButton from '../common/ActionButton';
 
 export default function WorkerCTA() {
   return (
@@ -12,17 +13,23 @@ export default function WorkerCTA() {
           Grow your business with a trusted platform that connects you with customers who need your services.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link
-            to="/signup"
-            className="bg-white text-primary-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
-          >
-            Become a Professional
+          <Link to="/signup">
+            <ActionButton
+              variant="secondary"
+              size="large"
+              className="bg-white text-primary-600 hover:bg-gray-100"
+            >
+              Become a Professional
+            </ActionButton>
           </Link>
-          <Link
-            to="/about"
-            className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-primary-600 transition-colors"
-          >
-            Learn More
+          <Link to="/about">
+            <ActionButton
+              variant="outline"
+              size="large"
+              className="border-2 border-white text-white hover:bg-white hover:text-primary-600"
+            >
+              Learn More
+            </ActionButton>
           </Link>
         </div>
       </div>

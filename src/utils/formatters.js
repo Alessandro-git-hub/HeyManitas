@@ -31,6 +31,31 @@ export const formatDate = (date) => {
 };
 
 /**
+ * Format a time for display
+ * @param {string|Date|Timestamp} time - The time to format (could be time string or date object)
+ * @returns {string} Formatted time string
+ */
+export const formatTime = (time) => {
+  if (!time) return '';
+  
+  // If it's a string time (e.g., "14:30"), format it nicely
+  if (typeof time === 'string' && time.includes(':')) {
+    const [hours, minutes] = time.split(':');
+    const hour = parseInt(hours);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const hour12 = hour % 12 || 12;
+    return `${hour12}:${minutes} ${ampm}`;
+  }
+  
+  // If it's a date object, extract time
+  const dateObj = time.toDate ? time.toDate() : new Date(time);
+  return dateObj.toLocaleTimeString('en-US', { 
+    hour: 'numeric', 
+    minute: '2-digit'
+  });
+};
+
+/**
  * Format a date for display (month and day only)
  * @param {Date|Timestamp|string} date - The date to format
  * @returns {string} Formatted date string (e.g., "Jan 15")
