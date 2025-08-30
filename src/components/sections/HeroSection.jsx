@@ -54,6 +54,22 @@ export default function HeroSection() {
             <div className="w-full">
               <ServiceSearch />
             </div>
+            
+            {/* Trust/Safety Message */}
+            <div className="flex items-center justify-start mt-2 gap-2 text-primary-700">
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width="20" 
+                height="20" 
+                viewBox="0 0 24 24"
+                className="text-primary-700 flex-shrink-0"
+              >
+                <path d="M12 2L3 7V12C3 16.97 7.03 21 12 21S21 16.97 21 12V7L12 2ZM19 12C19 15.86 15.86 19 12 19S5 15.86 5 12V8.5L12 4.5L19 8.5V12ZM15.5 9L11 13.5L8.5 11L7 12.5L11 16.5L17 10.5L15.5 9Z"/>
+              </svg>
+              <span className="text-sm text-primary-700">
+                Secure payments, verified professionals, and no hidden fees
+              </span>
+            </div>
           </div>
 
           {/* Image under waves */}

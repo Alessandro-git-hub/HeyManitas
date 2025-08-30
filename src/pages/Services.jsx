@@ -224,48 +224,55 @@ export default function Services() {
 
   const renderContent = (showFeedback) => {
     return (
-      <>
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">My Services</h1>
-          <button
-            onClick={() => setShowForm(true)}
-            className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors font-medium"
-          >
-            Add New Service
-          </button>
-        </div>
-
-        {/* Services Grid */}
-        {services.length > 0 ? (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {services.map((service) => (
-              <ServiceCard
-                key={service.id}
-                service={service}
-                onEdit={handleEditService}
-                onDelete={(serviceId) => handleDeleteService(serviceId, showFeedback)}
-                onToggleStatus={(serviceId, currentStatus) => toggleServiceStatus(serviceId, currentStatus, showFeedback)}
-              />
-            ))}
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <div className="flex justify-between items-center mb-8">
+            <div>
+              <h1 className="text-4xl md:text-5xl font-bold text-primary-700 mb-2">My Services</h1>
+              <p className="text-lg text-primary-700">Manage your service offerings</p>
+            </div>
+            <button
+              onClick={() => setShowForm(true)}
+              className="bg-secondary-600 text-primary-700 px-6 py-3 rounded-3xl hover:bg-secondary-700 transition-all duration-200 font-medium transform hover:scale-105 shadow-lg"
+            >
+              Add New Service
+            </button>
           </div>
-        ) : (
-          <EmptyState
-            icon={
-              <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  strokeWidth={1.5} 
-                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2-2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" 
+
+          {/* Services Grid */}
+          {services.length > 0 ? (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {services.map((service) => (
+                <ServiceCard
+                  key={service.id}
+                  service={service}
+                  onEdit={handleEditService}
+                  onDelete={(serviceId) => handleDeleteService(serviceId, showFeedback)}
+                  onToggleStatus={(serviceId, currentStatus) => toggleServiceStatus(serviceId, currentStatus, showFeedback)}
                 />
-              </svg>
-            }
-            title="No services yet"
-            description="Start by adding your first service offering."
-            buttonText="Add Your First Service"
-            onButtonClick={() => setShowForm(true)}
-          />
-        )}
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16">
+              <EmptyState
+                icon={
+                  <svg className="w-16 h-16 mx-auto text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={1.5} 
+                      d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2-2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" 
+                    />
+                  </svg>
+                }
+                title="No services yet"
+                description="Start by adding your first service offering."
+                buttonText="Add Your First Service"
+                onButtonClick={() => setShowForm(true)}
+              />
+            </div>
+          )}
+        </div>
 
         {/* Service Form Modal */}
         <FormModal
@@ -404,7 +411,7 @@ export default function Services() {
             </label>
           </div>
         </FormModal>
-      </>
+      </div>
     );
   };
 

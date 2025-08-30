@@ -1,15 +1,13 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  getAllCategories,
-  getCategoryInfo,
-} from "../../utils/serviceCategories";
+import { getServiceCategories } from "../service/serviceHelpers";
+import { getCategoryInfo } from "../../utils/serviceCategories";
 import { useScrollAnimation } from "../../hooks/useScrollAnimation";
 import SectionHeader from "../common/SectionHeader";
 
 export default function PopularServices() {
   const navigate = useNavigate();
-  const serviceCategories = getAllCategories();
+  const serviceCategories = getServiceCategories();
 
   // Use the scroll animation hook
   useScrollAnimation(".service-card", 50);
@@ -38,13 +36,13 @@ export default function PopularServices() {
         />
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-          {serviceCategories.slice(0, 12).map((categoryName) => {
-            const categoryInfo = getCategoryInfo(categoryName);
+          {serviceCategories.slice(0, 12).map((category) => {
+            const categoryInfo = getCategoryInfo(category.name);
 
             return (
               <button
-                key={categoryName}
-                onClick={() => navigate(`/services?category=${categoryName}`)}
+                key={category.name}
+                onClick={() => navigate(`/services?category=${category.name}`)}
                 className="service-card bg-primary-700 p-4 rounded-2xl shadow-sm border border-secondary-600 hover:shadow-xl text-left group hover:border-primary-300 relative overflow-hidden transition-all duration-300 flex flex-col cursor-pointer"
               >
                 {/* Subtle accent bar */}
@@ -53,7 +51,7 @@ export default function PopularServices() {
                 {/* Content */}
                 <div className="relative z-10 flex-1 flex flex-col">
                   <h3 className="font-bold text-lg text-secondary-600 mb-2">
-                    {categoryName}
+                    {category.name}
                   </h3>
                   <p className="text-sm text-white">
                     {categoryInfo.description}
