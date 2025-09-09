@@ -128,3 +128,21 @@ export const getTodaysDate = () => {
   const today = new Date();
   return today.toISOString().split('T')[0];
 };
+
+/**
+ * Get status-specific CSS classes for booking statuses
+ * @param {string} status - The booking status
+ * @returns {string} CSS classes for styling
+ */
+export const getBookingStatusStyles = (status) => {
+  switch (status) {
+    case 'pending': 
+      return 'text-yellow-600 bg-yellow-100';
+    case 'confirmed': 
+      return 'text-green-600 bg-green-100';
+    case 'completed': 
+      return 'text-primary-600 bg-primary-100';
+    default: 
+      return 'text-gray-600 bg-gray-100';
+  }
+};

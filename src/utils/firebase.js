@@ -27,14 +27,15 @@ const auth = getAuth(app);
 // Initialize Storage
 const storage = getStorage(app);
 
-// Connect to emulators in development
-if (import.meta.env.DEV) {
+// Connect to emulators in development only if they're available
+if (import.meta.env.DEV && import.meta.env.VITE_USE_EMULATORS === 'true') {
   try {
+    // Only connect if emulators are explicitly enabled
     connectFirestoreEmulator(db, 'localhost', 8080);
     connectAuthEmulator(auth, 'http://localhost:9099');
+    console.log('Connected to Firebase emulators');
   } catch {
-    // Emulators already connected
-    console.log('Emulators already connected or not available');
+    console.log('Emulators not available, using production Firebase');
   }
 }
 

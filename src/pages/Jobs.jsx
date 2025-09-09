@@ -242,7 +242,6 @@ export default function Jobs() {
         <AppHeader />
         <div className="max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4">
           <WorkerNavigation />
-          <h1 className="text-3xl font-bold mb-6 text-gray-900">My Jobs</h1>
           <div className="flex items-center justify-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-800"></div>
           </div>

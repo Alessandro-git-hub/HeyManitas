@@ -1,198 +1,50 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, getDocs, query, where } from 'firebase/firestore';
-import { db } from '../utils/firebase';
-import { useAuth } from '../contexts/AuthContext';
-import { getStatusStyles, formatDateShort, getTodaysDate } from '../utils/formatters';
+import { useWorkerAuth } from '../hooks/useWorkerAuth';
+import { useWorkerDashboard } from '../hooks/useWorkerDashboard';
+import { useFeedback } from '../hooks/useFeedback';
 import JobFormModal from '../components/job/JobFormModal';
 import JobDetailsModal from '../components/job/JobDetailsModal';
 import ActionButton from '../components/common/ActionButton';
+import QuickActionButton from '../components/common/QuickActionButton';
+import StatCard from '../components/common/StatCard';
 import WorkerNavigation from '../components/layout/WorkerNavigation';
 import AppHeader from '../components/layout/AppHeader';
 import BookingsOverview from '../components/BookingsOverview';
+import RecentJobs from '../components/RecentJobs';
+import RecentQuotes from '../components/RecentQuotes';
 
 export default function WorkerDashboard() {
   const navigate = useNavigate();
-  const { user: authUser } = useAuth();
-  
-  // Mock user for testing when not authenticated
-  const user = useMemo(() => authUser || {
-    uid: 'HAvFzlKF2KbO5SplMANPACpAflL2', // Alessandro's user ID for testing
-    email: 'alessandropoggio@gmail.com',
-    displayName: 'Alessandro Poggio'
-  }, [authUser]);
+  const { user } = useWorkerAuth();
+  const { 
+    todaysJobsCount, 
+    recentJobs, 
+    activeClientsCount, 
+    weeklyEarnings, 
+    pendingQuotesCount,
+    refreshData 
+  } = useWorkerDashboard(user);
+  const { feedback, showSuccess, showError, clearFeedback } = useFeedback();
 
-  // Form state for the modal
+  // Form state for modals
   const [showJobForm, setShowJobForm] = useState(false);
-  const [feedback, setFeedback] = useState({ message: '', type: '' });
-  const [todaysJobsCount, setTodaysJobsCount] = useState(0);
-  const [recentJobs, setRecentJobs] = useState([]);
-  const [activeClientsCount, setActiveClientsCount] = useState(0);
-  const [weeklyEarnings, setWeeklyEarnings] = useState(0);
-  const [pendingQuotesCount, setPendingQuotesCount] = useState(0);
-  
-  // Job details modal state
   const [showJobDetails, setShowJobDetails] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
 
-  // Function to get start of current week (Monday)
-  const getStartOfWeek = useCallback(() => {
-    const today = new Date();
-    const dayOfWeek = today.getDay();
-    const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Sunday = 0, so we need 6 days back
-    const monday = new Date(today);
-    monday.setDate(today.getDate() - daysToMonday);
-    monday.setHours(0, 0, 0, 0);
-    return monday;
-  }, []);
-
-  // Function to get end of current week (Sunday)
-  const getEndOfWeek = useCallback(() => {
-    const startOfWeek = getStartOfWeek();
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6);
-    endOfWeek.setHours(23, 59, 59, 999);
-    return endOfWeek;
-  }, [getStartOfWeek]);
-
-  // Function to calculate weekly earnings
-  const calculateWeeklyEarnings = useCallback((jobs) => {
-    const startOfWeek = getStartOfWeek();
-    const endOfWeek = getEndOfWeek();
-    
-    return jobs.reduce((total, job) => {
-      // Check if job has a scheduledDate within this week and is completed
-      if (job.scheduledDate && (job.status === 'Done' || job.status === 'Completed')) {
-        const jobDate = new Date(job.scheduledDate + 'T00:00:00');
-        if (jobDate >= startOfWeek && jobDate <= endOfWeek) {
-          const finalPrice = parseFloat(job.finalPrice) || 0;
-          return total + finalPrice;
-        }
-      }
-      return total;
-    }, 0);
-  }, [getStartOfWeek, getEndOfWeek]);
-
-  // Function to calculate active clients (customers from customers collection who have jobs)
-  const calculateActiveClients = useCallback(async (jobs) => {
-    if (!user) return 0;
-    
-    try {
-      // Get all customers for this user
-      const customersQuery = query(collection(db, 'customers'), where('userId', '==', user.uid));
-      const customersSnapshot = await getDocs(customersQuery);
-      
-      // Get set of client names from non-cancelled jobs
-      const clientNamesWithJobs = new Set();
-      jobs.forEach((job) => {
-        if (job.status !== 'Cancelled') {
-          const clientName = job.client || job.clientName;
-          if (clientName && clientName.trim()) {
-            clientNamesWithJobs.add(clientName.toLowerCase().trim());
-          }
-        }
-      });
-      
-      // Count customers who have jobs
-      let activeCustomersCount = 0;
-      customersSnapshot.forEach((doc) => {
-        const customer = doc.data();
-        const customerName = (customer.name || '').toLowerCase().trim();
-        if (clientNamesWithJobs.has(customerName)) {
-          activeCustomersCount++;
-        }
-      });
-      
-      return activeCustomersCount;
-    } catch (error) {
-      console.error('Error calculating active clients:', error);
-      return 0;
-    }
-  }, [user]);
-
-  // Function to fetch and count pending quote requests
-  const fetchPendingQuotes = useCallback(async () => {
-    if (!user) return 0;
-    
-    try {
-      const bookingsQuery = query(
-        collection(db, 'bookings'), 
-        where('professionalId', '==', user.uid),
-        where('status', '==', 'pending')
-      );
-      const bookingsSnapshot = await getDocs(bookingsQuery);
-      return bookingsSnapshot.size;
-    } catch (error) {
-      console.error('Error fetching pending quotes:', error);
-      return 0;
-    }
-  }, [user]);
-
   const handleJobSuccess = (message) => {
-    setFeedback({ message, type: 'success' });
-    // Refresh today's jobs count, recent jobs, and weekly earnings
-    const refreshData = async () => {
-      if (!user) return; // Don't fetch if no user
-      
-      try {
-        // Fetch jobs from Firestore for the current user
-        const q = query(collection(db, 'jobs'), where('userId', '==', user.uid));
-        const querySnapshot = await getDocs(q);
-        const todaysDate = getTodaysDate();
-        let count = 0;
-        const allJobs = [];
-        
-        querySnapshot.forEach((doc) => {
-          const job = { id: doc.id, ...doc.data() };
-          allJobs.push(job);
-          if (job.scheduledDate === todaysDate) {
-            count++;
-          }
-        });
-        
-        setTodaysJobsCount(count);
-        
-        // Calculate weekly earnings
-        const earnings = calculateWeeklyEarnings(allJobs);
-        setWeeklyEarnings(earnings);
-        
-        // Calculate active clients count
-        const clientsCount = await calculateActiveClients(allJobs);
-        setActiveClientsCount(clientsCount);
-        
-        // Fetch pending quotes count
-        const quotesCount = await fetchPendingQuotes();
-        setPendingQuotesCount(quotesCount);
-        
-        // Sort jobs by creation date (most recent first) and take the first 3
-        const sortedJobs = allJobs.sort((a, b) => {
-          const aDate = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt || 0);
-          const bDate = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt || 0);
-          return bDate - aDate;
-        }).slice(0, 3);
-        
-        setRecentJobs(sortedJobs);
-      } catch (error) {
-        console.error('Error fetching jobs:', error);
-        setTodaysJobsCount(0);
-        setWeeklyEarnings(0);
-        setActiveClientsCount(0);
-        setPendingQuotesCount(0);
-        setRecentJobs([]);
-      }
-    };
-    refreshData();
+    showSuccess(message);
+    refreshData(); // Refresh dashboard data after successful job creation
   };
 
   const handleJobError = (message) => {
-    setFeedback({ message, type: 'error' });
+    showError(message);
   };
 
   const handleCloseModal = () => {
     setShowJobForm(false);
   };
 
-  // Handler for opening job details modal
   const handleViewJobDetails = (job) => {
     setSelectedJob(job);
     setShowJobDetails(true);
@@ -203,7 +55,6 @@ export default function WorkerDashboard() {
     setSelectedJob(null);
   };
 
-  // Handler for navigating to quotes
   const handleViewQuotes = () => {
     navigate('/worker/quotes');
   };
@@ -212,87 +63,36 @@ export default function WorkerDashboard() {
   useEffect(() => {
     if (feedback.message) {
       const timer = setTimeout(() => {
-        setFeedback({ message: '', type: '' });
+        clearFeedback();
       }, 5000);
       return () => clearTimeout(timer);
     }
-  }, [feedback]);
-
-  // Fetch today's jobs count, recent jobs, and weekly earnings when component mounts
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!user) return; // Don't fetch if no user
-      
-      try {
-        // Fetch jobs from Firestore for the current user
-        const q = query(collection(db, 'jobs'), where('userId', '==', user.uid));
-        const querySnapshot = await getDocs(q);
-        const todaysDate = getTodaysDate();
-        let count = 0;
-        const allJobs = [];
-        
-        querySnapshot.forEach((doc) => {
-          const job = { id: doc.id, ...doc.data() };
-          allJobs.push(job);
-          if (job.scheduledDate === todaysDate) {
-            count++;
-          }
-        });
-        
-        setTodaysJobsCount(count);
-        
-        // Calculate weekly earnings
-        const earnings = calculateWeeklyEarnings(allJobs);
-        setWeeklyEarnings(earnings);
-        
-        // Calculate active clients count
-        const clientsCount = await calculateActiveClients(allJobs);
-        setActiveClientsCount(clientsCount);
-        
-        // Fetch pending quotes count
-        const quotesCount = await fetchPendingQuotes();
-        setPendingQuotesCount(quotesCount);
-        
-        // Sort jobs by creation date (most recent first) and take the first 3
-        const sortedJobs = allJobs.sort((a, b) => {
-          const aDate = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt || 0);
-          const bDate = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt || 0);
-          return bDate - aDate;
-        }).slice(0, 3);
-        
-        setRecentJobs(sortedJobs);
-      } catch (error) {
-        console.error('Error fetching jobs:', error);
-        setTodaysJobsCount(0);
-        setWeeklyEarnings(0);
-        setActiveClientsCount(0);
-        setPendingQuotesCount(0);
-        setRecentJobs([]);
-      }
-    };
-
-    fetchData();
-  }, [calculateWeeklyEarnings, calculateActiveClients, fetchPendingQuotes, user]);
+  }, [feedback, clearFeedback]);
 
   return (
-    <div className="min-h-screen bg-light">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white relative overflow-hidden">
+      {/* Subtle dots background pattern */}
+      <div className="absolute inset-0 pointer-events-none
+        bg-[radial-gradient(circle,rgba(205,169,97,0.2)_1px,transparent_1px)]
+        bg-[length:22px_22px]" />
+
       {/* Header/Navigation */}
       <AppHeader />
 
-      <div className="max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4">
+      <div className="max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4 pt-16 md:pt-20 relative z-10">
         {/* Feedback Message */}
         {feedback.message && (
-          <div className={`mb-6 p-4 rounded-lg ${
+          <div className={`mb-6 p-6 rounded-2xl shadow-lg border relative z-1 ${
             feedback.type === 'success' 
-              ? 'bg-green-100 text-green-800 border border-green-200' 
-              : 'bg-red-100 text-red-800 border border-red-200'
+              ? 'bg-green-50 text-green-800 border-green-200' 
+              : 'bg-red-50 text-red-800 border-red-200'
           }`}>
             <div className="flex justify-between items-center">
-              <span>{feedback.message}</span>
+              <span className="font-medium">{feedback.message}</span>
               {feedback.type === 'success' && (
                 <button
                   onClick={() => navigate('/worker/jobs')}
-                  className="text-sm text-green-800 hover:text-green-900 underline ml-4"
+                  className="text-sm text-green-800 hover:text-green-900 underline ml-4 font-medium"
                 >
                   View all jobs →
                 </button>
@@ -320,74 +120,49 @@ export default function WorkerDashboard() {
         <WorkerNavigation />
 
         {/* Dashboard Content */}
-        <div className="space-y-6">
+        <div className="space-y-6 relative z-1">
           {/* Quick Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-white p-3 flex items-center rounded-lg shadow-sm border md:p-6 md:flex-col md:text-center">
-              <div className="bg-primary/10 p-3 rounded-full md:mb-3">
-                <span className="text-2xl">📋</span>
-              </div>
-              <div className="ml-4 md:ml-0">
-                <p className="text-sm text-gray-600">Today's Jobs</p>
-                <p className="text-2xl font-bold text-deep">{todaysJobsCount}</p>
-              </div>
-            </div>
-
-            <div 
+            <StatCard 
+              title="Today's Jobs"
+              value={todaysJobsCount}
+            />
+            
+            <StatCard 
+              title="Pending Quotes"
+              value={pendingQuotesCount}
               onClick={pendingQuotesCount > 0 ? handleViewQuotes : undefined}
-              className={`bg-white p-3 flex items-center rounded-lg shadow-sm border md:p-6 md:flex-col md:text-center ${
-                pendingQuotesCount > 0 ? 'cursor-pointer hover:shadow-md transition-shadow' : ''
-              }`}
-            >
-              <div className="bg-warning/10 p-3 rounded-full md:mb-3">
-                <span className="text-2xl">📄</span>
-              </div>
-              <div className="ml-4 md:ml-0">
-                <p className="text-sm text-gray-600">Pending Quotes</p>
-                <p className="text-2xl font-bold text-deep">{pendingQuotesCount}</p>
-                {pendingQuotesCount > 0 && (
-                  <p className="text-xs text-primary-600 mt-1">Click to view</p>
-                )}
-              </div>
-            </div>
-
-            <div className="bg-white p-3 flex items-center rounded-lg shadow-sm border md:p-6 md:flex-col md:text-center">
-              <div className="bg-success/10 p-3 rounded-full md:mb-3">
-                <span className="text-2xl">💰</span>
-              </div>
-              <div className="ml-4 md:ml-0">
-                <p className="text-sm text-gray-600">This Week</p>
-                <p className="text-2xl font-bold text-deep">€{weeklyEarnings.toFixed(2)}</p>
-              </div>
-            </div>
-
-            <div className="bg-white p-3 flex items-center rounded-lg shadow-sm border md:p-6 md:flex-col md:text-center">
-              <div className="bg-accent/10 p-3 rounded-full md:mb-3">
-                <span className="text-2xl">👥</span>
-              </div>
-              <div className="ml-4 md:ml-0">
-                <p className="text-sm text-gray-600">Active Clients</p>
-                <p className="text-2xl font-bold text-deep">{activeClientsCount}</p>
-              </div>
-            </div>
+              clickable={pendingQuotesCount > 0}
+              subtitle={pendingQuotesCount > 0 ? "Click to view →" : undefined}
+            />
+            
+            <StatCard 
+              title="Earned This Week"
+              value={`€${weeklyEarnings.toFixed(2)}`}
+            />
+            
+            <StatCard 
+              title="Active Clients"
+              value={activeClientsCount}
+            />
           </div>
 
           {/* Quick Actions */}
-          <div className="bg-white p-6 rounded-lg shadow-sm border">
-            <h3 className="text-lg font-semibold text-deep mb-4">Quick Actions</h3>
-            <div className="flex flex-wrap gap-3">
-              <ActionButton onClick={() => setShowJobForm(true)}>
+          <div className="rounded-2xl p-6 shadow-lg relative z-1 border border-[#f4dfb8]" style={{ backgroundColor: '#6F4E37' }}>
+            <h3 className="text-xl font-semibold text-white mb-4 text-center">Quick Actions</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <QuickActionButton onClick={() => setShowJobForm(true)}>
                 Add New Job
-              </ActionButton>
-              <ActionButton variant="warning">
+              </QuickActionButton>
+              <QuickActionButton>
                 Create Quote
-              </ActionButton>
-              <ActionButton variant="success">
+              </QuickActionButton>
+              <QuickActionButton>
                 Add Client
-              </ActionButton>
-              <ActionButton variant="secondary">
+              </QuickActionButton>
+              <QuickActionButton>
                 View Schedule
-              </ActionButton>
+              </QuickActionButton>
             </div>
           </div>
 
@@ -395,39 +170,48 @@ export default function WorkerDashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <BookingsOverview />
             
-            <div className="bg-white p-6 rounded-lg shadow-sm border">
-              <h3 className="text-lg font-semibold text-deep mb-4">Recent Jobs</h3>
+            <div className="rounded-2xl p-6 shadow-lg border border-brown relative z-1" style={{ backgroundColor: '#f4dfb8' }}>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-semibold text-primary-700">Recent Jobs</h3>
+                <button 
+                  onClick={() => navigate('/worker/jobs')}
+                  className="text-secondary-600 hover:text-secondary-700 text-sm font-medium"
+                >
+                  View All →
+                </button>
+              </div>
               <div className="space-y-3">
                 {recentJobs.length > 0 ? (
                   recentJobs.map((job, index) => (
                     <div 
                       key={job.id} 
                       onClick={() => handleViewJobDetails(job)}
-                      className={`flex justify-between items-center py-2 cursor-pointer hover:bg-gray-50 rounded-lg px-2 transition-colors ${
-                        index < recentJobs.length - 1 ? 'border-b border-gray-100' : ''
+                      className={`bg-white p-4 rounded-xl cursor-pointer hover:shadow-md transition-all duration-300 border border-primary-700 hover:border-primary-300 ${
+                        index < recentJobs.length - 1 ? 'mb-3' : ''
                       }`}
                     >
-                      <div>
-                        <p className="font-medium text-deep">{job.client || job.clientName || 'Unknown Client'}</p>
-                        <p className="text-sm text-gray-600">{job.description || 'No description'}</p>
-                        {job.scheduledDate && (
-                          <p className="text-xs text-gray-500">Scheduled: {formatDateShort(job.scheduledDate + 'T00:00:00')}</p>
-                        )}
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <span className={`text-xs px-2 py-1 rounded ${getStatusStyles(job.status)}`}>
-                          {job.status}
-                        </span>
-                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
+                      <div className="flex justify-between items-center">
+                        <div className="flex-1">
+                          <p className="font-semibold text-primary-700">{job.client || job.clientName || 'Unknown Client'}</p>
+                          <p className="text-sm text-gray-600 mt-1">{job.description || 'No description'}</p>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
+                            {job.status}
+                          </span>
+                          <div className="w-6 h-6 rounded-full bg-secondary-600 flex items-center justify-center">
+                            <svg className="w-3 h-3 text-primary-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   ))
                 ) : (
-                  <div className="text-center py-8">
-                    <div className="text-gray-400 mb-3">
-                      <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="text-center py-8 bg-white rounded-xl border border-primary-700">
+                    <div className="text-primary-700 mb-3">
+                      <svg className="w-8 h-8 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path 
                           strokeLinecap="round" 
                           strokeLinejoin="round" 
@@ -436,49 +220,52 @@ export default function WorkerDashboard() {
                         />
                       </svg>
                     </div>
-                    <p className="text-gray-600 font-medium mb-1">No jobs yet</p>
-                    <p className="text-gray-400 text-sm">Add your first job to see it here</p>
+                    <p className="text-primary-700 font-semibold mb-1">No jobs yet</p>
+                    <p className="text-gray-600 text-sm">Add your first job to see it here</p>
                   </div>
                 )}
               </div>
-              {recentJobs.length > 0 && (
-                <button 
-                  onClick={() => navigate('/worker/jobs')}
-                  className="mt-4 text-primary-800 text-sm hover:text-primary-900 cursor-pointer"
-                >
-                  View all jobs →
-                </button>
-              )}
             </div>
 
-            <div className="bg-white p-6 rounded-lg shadow-sm border">
-              <h3 className="text-lg font-semibold text-deep mb-4">Recent Quotes</h3>
+            <div className="rounded-2xl p-6 shadow-lg border border-brown relative z-1" style={{ backgroundColor: '#f4dfb8' }}>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-semibold text-primary-700">Recent Quotes</h3>
+                <button 
+                  onClick={handleViewQuotes}
+                  className="text-secondary-600 hover:text-secondary-700 text-sm font-medium"
+                >
+                  View All →
+                </button>
+              </div>
               <div className="space-y-3">
-                <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                  <div>
-                    <p className="font-medium text-deep">Bathroom Renovation</p>
-                    <p className="text-sm text-gray-600">Luis Martín - €2,400</p>
+                <div className="bg-white p-4 rounded-xl border border-primary-700 transition-all duration-300 hover:shadow-md">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="font-semibold text-primary-700">Bathroom Renovation</p>
+                      <p className="text-sm text-gray-600">Luis Martín - €2,400</p>
+                    </div>
+                    <span className="text-xs bg-secondary-600 text-primary-700 px-3 py-1 rounded-full font-medium">Sent</span>
                   </div>
-                  <span className="text-xs bg-primary-100 text-primary-800 px-2 py-1 rounded">Sent</span>
                 </div>
-                <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                  <div>
-                    <p className="font-medium text-deep">Kitchen Wiring</p>
-                    <p className="text-sm text-gray-600">María González - €850</p>
+                <div className="bg-white p-4 rounded-xl border border-primary-700 transition-all duration-300 hover:shadow-md">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="font-semibold text-primary-700">Kitchen Wiring</p>
+                      <p className="text-sm text-gray-600">María González - €850</p>
+                    </div>
+                    <span className="text-xs bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full font-medium">Draft</span>
                   </div>
-                  <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Draft</span>
                 </div>
-                <div className="flex justify-between items-center py-2">
-                  <div>
-                    <p className="font-medium text-deep">Office Lighting</p>
-                    <p className="text-sm text-gray-600">Tech Solutions - €1,200</p>
+                <div className="bg-white p-4 rounded-xl border border-primary-700 transition-all duration-300 hover:shadow-md">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="font-semibold text-primary-700">Office Lighting</p>
+                      <p className="text-sm text-gray-600">Tech Solutions - €1,200</p>
+                    </div>
+                    <span className="text-xs bg-green-100 text-green-800 px-3 py-1 rounded-full font-medium">Accepted</span>
                   </div>
-                  <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Accepted</span>
                 </div>
               </div>
-              <button className="mt-4 text-primary-800 text-sm hover:text-primary-900 cursor-pointer">
-                View all quotes →
-              </button>
             </div>
           </div>
         </div>

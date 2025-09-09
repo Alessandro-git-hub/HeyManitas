@@ -57,7 +57,7 @@ export default function AppHeader({ showPublicNav = false }) {
 
             {/* Authenticated users - center welcome message */}
             {user && !showPublicNav && (
-              <span className="text-sm text-primary-600 hidden md:inline">
+              <span className="text-sm text-primary-600 hidden lg:inline">
                 Welcome back, {firstName}
               </span>
             )}
