@@ -172,10 +172,10 @@ export default function WorkerDashboard() {
             
             <div className="rounded-2xl p-6 shadow-lg border border-brown relative z-1" style={{ backgroundColor: '#f4dfb8' }}>
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-semibold text-primary-700">Recent Jobs</h3>
+                <h3 className="text-xl font-semibold text-primary-700 cursor-pointer">Recent Jobs</h3>
                 <button 
                   onClick={() => navigate('/worker/jobs')}
-                  className="text-secondary-600 hover:text-secondary-700 text-sm font-medium"
+                  className="text-primary-700 text-sm font-medium cursor-pointer"
                 >
                   View All →
                 </button>
@@ -232,7 +232,7 @@ export default function WorkerDashboard() {
                 <h3 className="text-xl font-semibold text-primary-700">Recent Quotes</h3>
                 <button 
                   onClick={handleViewQuotes}
-                  className="text-secondary-600 hover:text-secondary-700 text-sm font-medium"
+                  className="text-primary-700 text-sm font-medium cursor-pointer"
                 >
                   View All →
                 </button>

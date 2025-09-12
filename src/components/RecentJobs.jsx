@@ -14,7 +14,7 @@ const RecentJobs = ({ jobs = [], onJobClick, showViewAll = true }) => {
   const viewAllButton = showViewAll && (
     <button 
       onClick={() => navigate('/worker/jobs')}
-      className="text-secondary-600 hover:text-secondary-700 text-sm font-medium"
+      className="text-primary-700 text-sm font-medium cursor-pointer"
     >
       View All →
     </button>

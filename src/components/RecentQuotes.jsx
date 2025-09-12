@@ -12,7 +12,7 @@ const RecentQuotes = ({ quotes = [], onViewQuotes, showViewAll = true }) => {
   const viewAllButton = showViewAll && (
     <button 
       onClick={onViewQuotes || (() => navigate('/worker/quotes'))}
-      className="text-secondary-600 hover:text-secondary-700 text-sm font-medium"
+      className="text-primary-700 text-sm font-medium cursor-pointer"
     >
       View All →
     </button>

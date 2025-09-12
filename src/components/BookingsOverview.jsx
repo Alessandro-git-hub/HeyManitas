@@ -38,7 +38,7 @@ const BookingsOverview = () => {
           )}
           <button
             onClick={() => navigate('/worker/bookings')}
-            className="text-secondary-600 hover:text-secondary-700 text-sm font-medium"
+            className="text-primary-700 text-sm font-medium cursor-pointer"
           >
             View All →
           </button>
@@ -56,7 +56,7 @@ const BookingsOverview = () => {
           {recentBookings.map((booking) => (
             <div 
               key={booking.id} 
-              className="bg-white rounded-xl p-4 border border-gray-200 hover:shadow-md transition-shadow"
+              className="bg-white rounded-xl p-4 border border-primary-700hover:shadow-md transition-shadow cursor-pointer"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
