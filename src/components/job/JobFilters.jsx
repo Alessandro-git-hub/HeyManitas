@@ -1,4 +1,6 @@
 import React from 'react';
+import FilterSelect from '../common/FilterSelect';
+import { STATUS_FILTER_OPTIONS, DATE_FILTER_OPTIONS, SORT_OPTIONS } from '../../utils/statusConfig';
 
 export default function JobFilters({
   dateFilter,
@@ -15,96 +17,160 @@ export default function JobFilters({
   showGroupControls = true
 }) {
   return (
-    <div className="bg-white p-4 rounded-lg shadow-sm border mb-6">
-      <div className="flex flex-wrap gap-4 items-center">
-        {/* Date Filter */}
-        <div className="flex items-center gap-2">
-          <label className="text-sm font-medium text-gray-700">Date:</label>
-          <select
+    <>
+      <div className="w-full bg-secondary-600 p-6 rounded-xl mb-4">
+        {/* Mobile Layout - Single Column */}
+        <div className="grid grid-cols-1 gap-6 lg:hidden">
+          
+          <FilterSelect
+            label="Filter by Date"
             value={dateFilter}
-            onChange={(e) => setDateFilter(e.target.value)}
-            className="px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
-          >
-            <option value="all">All Time</option>
-            <option value="today">Today</option>
-            <option value="week">This Week</option>
-            <option value="month">This Month</option>
-          </select>
-        </div>
+            onChange={setDateFilter}
+            options={DATE_FILTER_OPTIONS}
+          />
 
-        {/* Status Filter */}
-        <div className="flex items-center gap-2">
-          <label className="text-sm font-medium text-gray-700">Status:</label>
-          <select
+          <FilterSelect
+            label="Filter by Status"
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
-          >
-            <option value="all">All Status</option>
-            <option value="Pending">Pending</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Done">Done</option>
-            <option value="Cancelled">Cancelled</option>
-          </select>
-        </div>
+            onChange={setStatusFilter}
+            options={STATUS_FILTER_OPTIONS}
+          />
 
-        {/* Sort Options */}
-        <div className="flex items-center gap-2">
-          <label className="text-sm font-medium text-gray-700">Sort by:</label>
-          <select
+          <FilterSelect
+            label="Sort Results"
             value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="px-3 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
-          >
-            <option value="date-newest">Date (Newest)</option>
-            <option value="date-oldest">Date (Oldest)</option>
-            <option value="status">Status</option>
-            <option value="client">Client Name</option>
-          </select>
+            onChange={setSortBy}
+            options={SORT_OPTIONS}
+          />
+
+          {/* Group Controls */}
+          {showGroupControls && (
+            <div className="space-y-3">
+              <label className="block text-sm font-semibold text-primary-700">
+                Display Options
+              </label>
+              
+              {/* Group by Date Toggle */}
+              <div className="flex items-center space-x-3">
+                <input
+                  type="checkbox"
+                  id="groupByDate-mobile"
+                  checked={groupByDate}
+                  onChange={(e) => setGroupByDate(e.target.checked)}
+                  className="w-4 h-4 accent-primary-700"
+                />
+                <label htmlFor="groupByDate-mobile" className="text-sm font-medium text-primary-700 cursor-pointer">
+                  Group by Date
+                </label>
+              </div>
+
+              {/* Collapse/Expand Controls */}
+              {groupByDate && (
+                <div className="flex items-center space-x-2 text-xs">
+                  <button
+                    onClick={() => setCollapsedGroups(new Set())}
+                    className="text-primary-700 hover:text-primary-800 font-medium underline 
+                             underline-offset-2 transition-colors duration-200"
+                  >
+                    Expand All
+                  </button>
+                  <span className="text-primary-500">•</span>
+                  <button
+                    onClick={() => {
+                      const groupedJobs = groupJobsByDate(filteredJobs);
+                      setCollapsedGroups(new Set(Object.keys(groupedJobs)));
+                    }}
+                    className="text-primary-700 hover:text-primary-800 font-medium underline 
+                             underline-offset-2 transition-colors duration-200"
+                  >
+                    Collapse All
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
-        {/* Group by Date Toggle - only show if enabled */}
-        {showGroupControls && (
-          <div className="flex items-center gap-2">
-            <label className="text-sm font-medium text-gray-700">
-              <input
-                type="checkbox"
-                checked={groupByDate}
-                onChange={(e) => setGroupByDate(e.target.checked)}
-                className="mr-2"
-              />
-              Group by Date
-            </label>
-          </div>
-        )}
+        {/* Desktop Layout - Two Rows */}
+        <div className="hidden lg:block space-y-6">
+          
+          {/* First Row: Filter by Date, Status, and Sort Results */}
+          <div className="grid grid-cols-3 gap-6 items-end">
+            <FilterSelect
+              label="Filter by Date"
+              value={dateFilter}
+              onChange={setDateFilter}
+              options={DATE_FILTER_OPTIONS}
+            />
 
-        {/* Collapse/Expand Controls - only show when grouping is enabled */}
-        {showGroupControls && groupByDate && (
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setCollapsedGroups(new Set())}
-              className="text-xs text-primary-600 hover:text-primary-800 underline"
-            >
-              Expand All
-            </button>
-            <span className="text-xs text-gray-400">|</span>
-            <button
-              onClick={() => {
-                const groupedJobs = groupJobsByDate(filteredJobs);
-                setCollapsedGroups(new Set(Object.keys(groupedJobs)));
-              }}
-              className="text-xs text-primary-600 hover:text-primary-800 underline"
-            >
-              Collapse All
-            </button>
-          </div>
-        )}
+            <FilterSelect
+              label="Filter by Status"
+              value={statusFilter}
+              onChange={setStatusFilter}
+              options={STATUS_FILTER_OPTIONS}
+            />
 
-        {/* Results Count */}
-        <div className="ml-auto text-sm text-gray-600">
-          {filteredJobs.length} job{filteredJobs.length !== 1 ? 's' : ''}
+            <FilterSelect
+              label="Sort Results"
+              value={sortBy}
+              onChange={setSortBy}
+              options={SORT_OPTIONS}
+            />
+          </div>
+
+          {/* Second Row: Display Options */}
+          {showGroupControls && (
+            <div className="space-y-3 flex items-center gap-4">              
+              <div className="flex items-center justify-between gap-4">
+                {/* Group by Date Toggle */}
+                <div className="flex items-center space-x-3">
+                  <input
+                    type="checkbox"
+                    id="groupByDate-desktop"
+                    checked={groupByDate}
+                    onChange={(e) => setGroupByDate(e.target.checked)}
+                    className="w-4 h-4 accent-primary-700"
+                  />
+                  <label htmlFor="groupByDate-desktop" className="text-sm font-medium text-primary-700 cursor-pointer">
+                    Group by Date
+                  </label>
+                </div>
+
+                {/* Collapse/Expand Controls */}
+                {groupByDate && (
+                  <div className="flex items-center space-x-2 text-xs">
+                    <button
+                      onClick={() => setCollapsedGroups(new Set())}
+                      className="text-primary-700 hover:text-primary-800 font-medium underline 
+                               underline-offset-2 transition-colors duration-200"
+                    >
+                      Expand All
+                    </button>
+                    <span className="text-primary-500">•</span>
+                    <button
+                      onClick={() => {
+                        const groupedJobs = groupJobsByDate(filteredJobs);
+                        setCollapsedGroups(new Set(Object.keys(groupedJobs)));
+                      }}
+                      className="text-primary-700 hover:text-primary-800 font-medium underline 
+                               underline-offset-2 transition-colors duration-200"
+                    >
+                      Collapse All
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
-    </div>
+
+      {/* Results Count - Now separate below the filter bar */}
+      <div className="flex justify-between items-center mb-6">
+        <div className="text-sm text-primary-700 font-medium">
+          Showing {filteredJobs.length} job{filteredJobs.length !== 1 ? 's' : ''}
+        </div>
+      </div>
+    </>
   );
 }

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { STATUS_ORDER } from '../utils/statusConfig';
 
 export function useJobFilters() {
   // Filter and sort state
@@ -34,15 +35,16 @@ export function useJobFilters() {
     const monthStart = getThisMonthStart();
 
     return jobs.filter(job => {
-      if (!job.scheduledDate) return filter === 'all';
+      const jobDate = job.scheduledDate || job.date;
+      if (!jobDate) return filter === 'all';
       
       switch (filter) {
         case 'today':
-          return job.scheduledDate === today;
+          return jobDate === today;
         case 'week':
-          return job.scheduledDate >= weekStart;
+          return jobDate >= weekStart;
         case 'month':
-          return job.scheduledDate >= monthStart;
+          return jobDate >= monthStart;
         default:
           return true;
       }
@@ -60,20 +62,19 @@ export function useJobFilters() {
     switch (sortOption) {
       case 'date-newest':
         return sortedJobs.sort((a, b) => {
-          const dateA = a.scheduledDate || '0000-00-00';
-          const dateB = b.scheduledDate || '0000-00-00';
+          const dateA = a.scheduledDate || a.date || '0000-00-00';
+          const dateB = b.scheduledDate || b.date || '0000-00-00';
           return dateB.localeCompare(dateA);
         });
       case 'date-oldest':
         return sortedJobs.sort((a, b) => {
-          const dateA = a.scheduledDate || '9999-99-99';
-          const dateB = b.scheduledDate || '9999-99-99';
+          const dateA = a.scheduledDate || a.date || '9999-99-99';
+          const dateB = b.scheduledDate || b.date || '9999-99-99';
           return dateA.localeCompare(dateB);
         });
       case 'status': {
-        const statusOrder = { 'In Progress': 1, 'Pending': 2, 'Done': 3, 'Cancelled': 4 };
         return sortedJobs.sort((a, b) => {
-          const statusDiff = statusOrder[a.status] - statusOrder[b.status];
+          const statusDiff = STATUS_ORDER[a.status] - STATUS_ORDER[b.status];
           if (statusDiff !== 0) return statusDiff;
           const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt || 0);
           const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt || 0);
@@ -81,7 +82,11 @@ export function useJobFilters() {
         });
       }
       case 'client':
-        return sortedJobs.sort((a, b) => a.clientName.localeCompare(b.clientName));
+        return sortedJobs.sort((a, b) => {
+          const clientA = a.clientName || a.client || a.customerName || '';
+          const clientB = b.clientName || b.client || b.customerName || '';
+          return clientA.localeCompare(clientB);
+        });
       default:
         return sortedJobs;
     }
@@ -90,7 +95,7 @@ export function useJobFilters() {
   const groupJobsByDate = (jobs) => {
     const grouped = {};
     jobs.forEach(job => {
-      const date = job.scheduledDate || 'No date';
+      const date = job.scheduledDate || job.date || 'No date';
       if (!grouped[date]) {
         grouped[date] = [];
       }

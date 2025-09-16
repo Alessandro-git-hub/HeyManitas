@@ -179,3 +179,13 @@ p, .text-base {
 .animate-scroll:hover {
   animation-play-state: paused;
 }
+
+/* Checkbox color override - multiple approaches for browser compatibility */
+input[type="checkbox"] {
+  accent-color: #334340;
+}
+
+input[type="checkbox"]:checked {
+  background-color: #334340;
+  border-color: #334340;
+}

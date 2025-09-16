@@ -15,6 +15,8 @@ import JobsList from '../components/job/JobsList';
 import JobDetailsModal from '../components/job/JobDetailsModal';
 import { useJobFilters } from '../hooks/useJobFilters';
 import { updateBookingStatus } from '../utils/updateBookingStatus';
+import { STATUS_ORDER } from '../utils/statusConfig';
+import { normalizeBookingData, normalizeJobData, sortItemsByStatusAndDate } from '../utils/dataHelpers';
 
 export default function Jobs() {
   const { user, loading: authLoading } = useAuth();
@@ -64,11 +66,7 @@ export default function Jobs() {
       const jobsSnapshot = await getDocs(jobsQuery);
       const jobsData = [];
       jobsSnapshot.forEach((doc) => {
-        jobsData.push({
-          id: doc.id,
-          itemType: 'job',
-          ...doc.data()
-        });
+        jobsData.push(normalizeJobData(doc.data(), doc.id));
       });
       
       // Fetch bookings from Firestore
@@ -76,40 +74,16 @@ export default function Jobs() {
       const bookingsSnapshot = await getDocs(bookingsQuery);
       const bookingsData = [];
       bookingsSnapshot.forEach((doc) => {
-        const bookingData = doc.data();
-        bookingsData.push({
-          id: doc.id,
-          itemType: 'booking',
-          // Map booking fields to job-like structure for consistency
-          client: bookingData.customerEmail,
-          description: bookingData.description || `${bookingData.serviceType} service request`,
-          serviceName: bookingData.serviceType,
-          status: mapBookingStatusToJobStatus(bookingData.status),
-          scheduledDate: bookingData.date,
-          finalPrice: bookingData.hourlyRate,
-          createdAt: bookingData.createdAt,
-          // Keep original booking data
-          originalBooking: bookingData,
-          ...bookingData
-        });
+        bookingsData.push(normalizeBookingData(doc.data(), doc.id));
       });
       
       // Combine jobs and bookings
       const allData = [...jobsData, ...bookingsData];
       
-      // Sort combined data: In Progress first, then Pending, then Done, then Cancelled
-      const statusOrder = { 'In Progress': 1, 'Pending': 2, 'Done': 3, 'Cancelled': 4 };
-      allData.sort((a, b) => {
-        if (statusOrder[a.status] !== statusOrder[b.status]) {
-          return statusOrder[a.status] - statusOrder[b.status];
-        }
-        // Sort by creation date (newest first)
-        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt || 0);
-        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt || 0);
-        return dateB - dateA;
-      });
+      // Sort combined data: Pending first, then Quoted, Confirmed, etc.
+      const sortedData = sortItemsByStatusAndDate(allData, STATUS_ORDER);
       
-      setAllItems(allData);
+      setAllItems(sortedData);
     } catch (error) {
       console.error('Error fetching jobs and bookings:', error);
       setFeedback({ message: 'Error loading data. Please try again.', type: 'error' });
@@ -117,17 +91,6 @@ export default function Jobs() {
       setLoading(false);
     }
   }, [user]);
-
-  // Helper function to map booking status to job status
-  const mapBookingStatusToJobStatus = (bookingStatus) => {
-    switch (bookingStatus) {
-      case 'pending': return 'Pending';
-      case 'confirmed': return 'In Progress';
-      case 'completed': return 'Done';
-      case 'cancelled': return 'Cancelled';
-      default: return 'Pending';
-    }
-  };
 
   // Apply filters and sorting to combined data (allItems instead of jobs)
   const applyViewModeFilter = (items) => {
@@ -277,16 +240,19 @@ export default function Jobs() {
           setIsMobileMenuOpen={setIsMobileMenuOpen}
         />
 
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center space-x-4">
-            <h1 className="text-3xl font-bold text-primary-700">
-              {viewMode === 'bookings' ? 'Bookings' : 
-               viewMode === 'jobs' ? 'Jobs' : 
-               'Jobs & Bookings'}
-            </h1>
-            
+        {/* Header Section - Responsive Layout */}
+        <div className="mb-6">
+          {/* Title */}
+          <h1 className="text-3xl font-bold text-primary-700 mb-4 mt-4 md:mt-0">
+            {viewMode === 'bookings' ? 'Bookings' : 
+             viewMode === 'jobs' ? 'Jobs' : 
+             'Jobs & Bookings'}
+          </h1>
+          
+          {/* Controls Row - Mode Toggle and Action Button */}
+          <div className="flex justify-between items-center">
             {/* View Mode Toggle */}
-            <div className="flex bg-gray-100 rounded-lg p-1">
+            <div className="flex bg-gray-100 rounded-lg p-1 w-fit">
               <button
                 onClick={() => setViewMode('all')}
                 className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
@@ -318,14 +284,16 @@ export default function Jobs() {
                 Jobs
               </button>
             </div>
+            
+            {/* Action Button */}
+            <ActionButton
+              className='w-fit' 
+              onClick={() => setShowForm(true)}
+              variant="primary"
+            >
+              Add New Job
+            </ActionButton>
           </div>
-          
-          <ActionButton 
-            onClick={() => setShowForm(true)}
-            variant="primary"
-          >
-            Add New Job
-          </ActionButton>
         </div>
 
         {/* Filter and Sort Controls */}
