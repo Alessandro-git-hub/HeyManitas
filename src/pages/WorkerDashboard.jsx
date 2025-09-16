@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { useWorkerAuth } from '../hooks/useWorkerAuth';
 import { useWorkerDashboard } from '../hooks/useWorkerDashboard';
 import { useFeedback } from '../hooks/useFeedback';
+import { useHeader } from '../hooks/useHeader';
 import JobFormModal from '../components/job/JobFormModal';
 import JobDetailsModal from '../components/job/JobDetailsModal';
 import ActionButton from '../components/common/ActionButton';
 import QuickActionButton from '../components/common/QuickActionButton';
 import StatCard from '../components/common/StatCard';
+import DottedBackground from '../components/common/DottedBackground';
 import WorkerNavigation from '../components/layout/WorkerNavigation';
 import AppHeader from '../components/layout/AppHeader';
 import BookingsOverview from '../components/BookingsOverview';
@@ -17,6 +19,7 @@ import RecentQuotes from '../components/RecentQuotes';
 export default function WorkerDashboard() {
   const navigate = useNavigate();
   const { user } = useWorkerAuth();
+  const { isMobileMenuOpen, setIsMobileMenuOpen } = useHeader();
   const { 
     todaysJobsCount, 
     recentJobs, 
@@ -31,6 +34,10 @@ export default function WorkerDashboard() {
   const [showJobForm, setShowJobForm] = useState(false);
   const [showJobDetails, setShowJobDetails] = useState(false);
   const [selectedJob, setSelectedJob] = useState(null);
+
+  const toggleWorkerMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
 
   const handleJobSuccess = (message) => {
     showSuccess(message);
@@ -70,14 +77,12 @@ export default function WorkerDashboard() {
   }, [feedback, clearFeedback]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white relative overflow-hidden">
-      {/* Subtle dots background pattern */}
-      <div className="absolute inset-0 pointer-events-none
-        bg-[radial-gradient(circle,rgba(205,169,97,0.2)_1px,transparent_1px)]
-        bg-[length:22px_22px]" />
-
+    <DottedBackground>
       {/* Header/Navigation */}
-      <AppHeader />
+      <AppHeader 
+        showWorkerNav={true}
+        toggleWorkerMobileMenu={toggleWorkerMobileMenu}
+      />
 
       <div className="max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4 pt-16 md:pt-20 relative z-10">
         {/* Feedback Message */}
@@ -117,7 +122,10 @@ export default function WorkerDashboard() {
         />
 
         {/* Navigation Tabs */}
-        <WorkerNavigation />
+        <WorkerNavigation 
+          isMobileMenuOpen={isMobileMenuOpen}
+          setIsMobileMenuOpen={setIsMobileMenuOpen}
+        />
 
         {/* Dashboard Content */}
         <div className="space-y-6 relative z-1">
@@ -270,6 +278,6 @@ export default function WorkerDashboard() {
           </div>
         </div>
       </div>
-    </div>
+    </DottedBackground>
   );
 }

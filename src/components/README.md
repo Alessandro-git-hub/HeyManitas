@@ -7,6 +7,7 @@ This directory contains all reusable UI components organized by functionality:
 ### `/common/`
 Reusable UI components used across the application:
 - `ActionButton.jsx` - Configurable button component with multiple variants
+- `DottedBackground.jsx` - Reusable background component with subtle dots pattern
 - `EmptyState.jsx` - Generic empty state component with icons and actions
 - `ProtectedRoute.jsx` - Route wrapper for authentication protection
 

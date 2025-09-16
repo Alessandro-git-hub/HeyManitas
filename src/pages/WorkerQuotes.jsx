@@ -2,11 +2,14 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { collection, getDocs, query, where, updateDoc, doc, Timestamp } from 'firebase/firestore';
 import { db } from '../utils/firebase';
 import { useAuth } from '../contexts/AuthContext';
+import { useHeader } from '../hooks/useHeader';
+import DottedBackground from '../components/common/DottedBackground';
 import WorkerNavigation from '../components/layout/WorkerNavigation';
 import AppHeader from '../components/layout/AppHeader';
 
 export default function WorkerQuotes() {
   const { user, loading: authLoading } = useAuth();
+  const { isMobileMenuOpen, setIsMobileMenuOpen } = useHeader();
   const [bookingRequests, setBookingRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState({ message: '', type: '' });
@@ -16,6 +19,10 @@ export default function WorkerQuotes() {
     message: '',
     validUntil: ''
   });
+
+  const toggleWorkerMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
 
   // Fetch pending booking requests
   const fetchBookingRequests = useCallback(async () => {
@@ -184,19 +191,25 @@ export default function WorkerQuotes() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-light flex items-center justify-center">
+      <DottedBackground className="flex items-center justify-center">
         <div className="animate-spin h-12 w-12 border-4 border-primary-600 border-t-transparent rounded-full"></div>
-      </div>
+      </DottedBackground>
     );
   }
 
   return (
-    <div className="min-h-screen bg-light">
-      <AppHeader />
+    <DottedBackground>
+      <AppHeader 
+        showWorkerNav={true}
+        toggleWorkerMobileMenu={toggleWorkerMobileMenu}
+      />
       
-      <div className="max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4">
+      <div className="max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4 pt-16 md:pt-20">
         {/* Navigation */}
-        <WorkerNavigation />
+        <WorkerNavigation 
+          isMobileMenuOpen={isMobileMenuOpen}
+          setIsMobileMenuOpen={setIsMobileMenuOpen}
+        />
         
         {/* Feedback Message */}
         {feedback.message && (
@@ -365,6 +378,6 @@ export default function WorkerQuotes() {
           </div>
         )}
       </div>
-    </div>
+    </DottedBackground>
   );
 }

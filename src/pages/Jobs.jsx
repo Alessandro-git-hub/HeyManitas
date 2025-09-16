@@ -2,10 +2,12 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { collection, getDocs, deleteDoc, doc, query, where } from 'firebase/firestore';
 import { db } from '../utils/firebase';
 import { useAuth } from '../contexts/AuthContext';
+import { useHeader } from '../hooks/useHeader';
 import JobCard from '../components/job/JobCard';
 import BookingCard from '../components/BookingCard';
 import JobFormModal from '../components/job/JobFormModal';
 import ActionButton from '../components/common/ActionButton';
+import DottedBackground from '../components/common/DottedBackground';
 import WorkerNavigation from '../components/layout/WorkerNavigation';
 import AppHeader from '../components/layout/AppHeader';
 import JobFilters from '../components/job/JobFilters';
@@ -16,6 +18,7 @@ import { updateBookingStatus } from '../utils/updateBookingStatus';
 
 export default function Jobs() {
   const { user, loading: authLoading } = useAuth();
+  const { isMobileMenuOpen, setIsMobileMenuOpen } = useHeader();
   
   const [allItems, setAllItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -193,6 +196,10 @@ export default function Jobs() {
     setEditingJob(null);
   };
 
+  const toggleWorkerMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
   // Clear feedback after 5 seconds
   useEffect(() => {
     if (feedback.message) {
@@ -238,29 +245,41 @@ export default function Jobs() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-light">
-        <AppHeader />
-        <div className="max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4">
-          <WorkerNavigation />
+      <DottedBackground>
+        <AppHeader 
+          showWorkerNav={true}
+          toggleWorkerMobileMenu={toggleWorkerMobileMenu}
+        />
+        <div className="max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4 pt-16 md:pt-20">
+          <WorkerNavigation 
+            isMobileMenuOpen={isMobileMenuOpen}
+            setIsMobileMenuOpen={setIsMobileMenuOpen}
+          />
           <div className="flex items-center justify-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-800"></div>
           </div>
         </div>
-      </div>
+      </DottedBackground>
     );
   }
 
   return (
-    <div className="min-h-screen bg-light">
-      <AppHeader />
+    <DottedBackground>
+      <AppHeader 
+        showWorkerNav={true}
+        toggleWorkerMobileMenu={toggleWorkerMobileMenu}
+      />
       
-      <div className="max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4">
+      <div className="max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4 pt-16 md:pt-20">
         {/* Worker Navigation Tabs */}
-        <WorkerNavigation />
+        <WorkerNavigation 
+          isMobileMenuOpen={isMobileMenuOpen}
+          setIsMobileMenuOpen={setIsMobileMenuOpen}
+        />
 
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center space-x-4">
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-3xl font-bold text-primary-700">
               {viewMode === 'bookings' ? 'Bookings' : 
                viewMode === 'jobs' ? 'Jobs' : 
                'Jobs & Bookings'}
@@ -272,8 +291,8 @@ export default function Jobs() {
                 onClick={() => setViewMode('all')}
                 className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
                   viewMode === 'all' 
-                    ? 'bg-white text-primary-600 shadow-sm' 
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'bg-secondary-600 text-primary-700' 
+                    : 'text-primary-700 cursor-pointer'
                 }`}
               >
                 All
@@ -282,8 +301,8 @@ export default function Jobs() {
                 onClick={() => setViewMode('bookings')}
                 className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
                   viewMode === 'bookings' 
-                    ? 'bg-white text-primary-600 shadow-sm' 
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'bg-secondary-600 text-primary-700' 
+                    : 'text-primary-700 cursor-pointer'
                 }`}
               >
                 Bookings
@@ -292,8 +311,8 @@ export default function Jobs() {
                 onClick={() => setViewMode('jobs')}
                 className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
                   viewMode === 'jobs' 
-                    ? 'bg-white text-primary-600 shadow-sm' 
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'bg-secondary-600 text-primary-700' 
+                    : 'text-primary-700 cursor-pointer'
                 }`}
               >
                 Jobs
@@ -301,7 +320,10 @@ export default function Jobs() {
             </div>
           </div>
           
-          <ActionButton onClick={() => setShowForm(true)}>
+          <ActionButton 
+            onClick={() => setShowForm(true)}
+            variant="primary"
+          >
             Add New Job
           </ActionButton>
         </div>
@@ -383,6 +405,6 @@ export default function Jobs() {
           }}
         />
       </div>
-    </div>
+    </DottedBackground>
   );
 }

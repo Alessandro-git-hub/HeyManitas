@@ -12,16 +12,16 @@ export default function ActionButton({
   ...props
 }) {
   // Base styles that are common to all variants
-  const baseStyles = 'rounded-3xl transition-colors font-medium cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
+  const baseStyles = 'flex items-center justify-between rounded-3xl transition-colors font-medium cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
   
   // Variant styles with consistent color schemes that match the app
   const variantStyles = {
-    primary: 'bg-primary-600 hover:bg-primary-700 text-white',
-    secondary: 'bg-gray-300 hover:bg-gray-400 text-gray-700',
+    primary: 'bg-primary-700 text-white',
+    secondary: 'bg-secondary-600 text-primary-700',
     success: 'bg-green-600 hover:bg-green-700 text-white',
     warning: 'bg-orange-600 hover:bg-orange-700 text-white',
     danger: 'bg-red-600 hover:bg-red-700 text-white',
-    outline: 'text-gray-600  bg-white hover:bg-gray-50',
+    outline: 'text-primary-700 bg-white border border-secondary-600',
     'danger-outline': 'text-red-600 bg-red-50 hover:bg-red-100 border border-red-200',
     'success-outline': 'text-green-600 bg-green-50 hover:bg-green-100 border border-green-200'
   };

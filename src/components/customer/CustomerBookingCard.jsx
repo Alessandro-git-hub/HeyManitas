@@ -152,12 +152,12 @@ const CustomerBookingCard = ({ booking, onPaymentComplete }) => {
 
         {/* Date and Time */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <div className="flex items-center text-sm text-gray-600">
-            <FaCalendar className="mr-2 text-gray-400" />
+          <div className="flex items-center text-sm text-white">
+            <FaCalendar className="mr-2 text-white" />
             <span>{formatDate(booking.date)}</span>
           </div>
-          <div className="flex items-center text-sm text-gray-600">
-            <FaClock className="mr-2 text-gray-400" />
+          <div className="flex items-center text-sm text-white">
+            <FaClock className="mr-2 text-white" />
             <span>{formatTime(booking.time)}</span>
           </div>
         </div>
@@ -166,21 +166,21 @@ const CustomerBookingCard = ({ booking, onPaymentComplete }) => {
         {booking.description && (
           <div className="mb-4">
             <h4 className="text-sm font-medium text-gray-700 mb-1">Service Description:</h4>
-            <p className="text-sm text-gray-600">{booking.description}</p>
+            <p className="text-sm text-white">{booking.description}</p>
           </div>
         )}
 
         {/* Contact Information */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           {booking.customerEmail && (
-            <div className="flex items-center text-sm text-gray-600">
-              <FaEnvelope className="mr-2 text-gray-400" />
+            <div className="flex items-center text-sm text-white">
+              <FaEnvelope className="mr-2 text-white" />
               <span className="truncate">{booking.customerEmail}</span>
             </div>
           )}
           {booking.phone && (
-            <div className="flex items-center text-sm text-gray-600">
-              <FaPhone className="mr-2 text-gray-400" />
+            <div className="flex items-center text-sm text-white">
+              <FaPhone className="mr-2 text-white" />
               <span>{booking.phone}</span>
             </div>
           )}
@@ -189,8 +189,8 @@ const CustomerBookingCard = ({ booking, onPaymentComplete }) => {
         {/* Address */}
         {booking.address && (
           <div className="mb-4">
-            <div className="flex items-center text-sm text-gray-600">
-              <FaMapMarkerAlt className="mr-2 text-gray-400" />
+            <div className="flex items-center text-sm text-white">
+              <FaMapMarkerAlt className="mr-2 text-white" />
               <span>{booking.address}</span>
             </div>
           </div>

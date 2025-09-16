@@ -6,7 +6,11 @@ import { DesktopNavigation } from './Navigation';
 import { DesktopAuthButtons } from './AuthButtons';
 import MobileMenu from './MobileMenu';
 
-export default function AppHeader({ showPublicNav = false }) {
+export default function AppHeader({ 
+  showPublicNav = false,
+  showWorkerNav = false,
+  toggleWorkerMobileMenu
+}) {
   const {
     user,
     firstName,
@@ -16,6 +20,12 @@ export default function AppHeader({ showPublicNav = false }) {
     toggleMobileMenu,
     closeMobileMenu
   } = useHeader();
+
+  // Determine which mobile menu to use - now unified through useHeader hook
+  const mobileMenuOpen = isMobileMenuOpen;
+  const toggleMobileMenuHandler = showWorkerNav 
+    ? toggleWorkerMobileMenu
+    : toggleMobileMenu;
 
   return (
     <header 
@@ -31,14 +41,14 @@ export default function AppHeader({ showPublicNav = false }) {
               <Logo onClick={() => handleNavigation('/')} variant="desktop" />
             </div>
             
-            {/* Mobile: Hamburger Menu */}
-            {showPublicNav && (
+            {/* Mobile: Hamburger Menu (unified for both public and worker nav) */}
+            {(showPublicNav || showWorkerNav) && (
               <button
-                onClick={toggleMobileMenu}
+                onClick={toggleMobileMenuHandler}
                 className="lg:hidden p-2 text-gray-600 hover:text-primary-600 transition-colors"
                 aria-label="Toggle menu"
               >
-                <Icon name={isMobileMenuOpen ? "close" : "menu"} size={24} />
+                <Icon name={mobileMenuOpen ? "close" : "menu"} size={24} />
               </button>
             )}
           </div>

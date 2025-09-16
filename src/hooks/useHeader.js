@@ -55,6 +55,7 @@ export function useHeader() {
     user,
     firstName,
     isMobileMenuOpen,
+    setIsMobileMenuOpen,
     handleLogout,
     handleNavigation,
     toggleMobileMenu,
