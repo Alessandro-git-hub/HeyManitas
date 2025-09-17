@@ -18,6 +18,7 @@ import React, { useEffect } from 'react';
  * @param {boolean} closeOnOverlay - Enable click outside to close (default: true)
  * @param {boolean} preventClose - Prevent closing during operations (default: false)
  * @param {string} className - Additional CSS classes for modal content
+ * @param {boolean} noPadding - Remove default padding from content area (default: false)
  * @param {ReactNode} children - Modal content
  * @param {ReactNode} footer - Optional footer content
  */
@@ -30,6 +31,7 @@ export default function Modal({
   closeOnOverlay = true,
   preventClose = false,
   className = '',
+  noPadding = false,
   children,
   footer
 }) {
@@ -111,7 +113,7 @@ export default function Modal({
                 onClick={handleClose}
                 disabled={preventClose}
                 className={`
-                  text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-md
+                  text-primary-700 cursor-pointer
                   ${preventClose ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'}
                 `}
                 aria-label="Close modal"
@@ -125,7 +127,7 @@ export default function Modal({
 
           {/* Content */}
           <div className="overflow-y-auto max-h-[calc(90vh-8rem)]">
-            <div className="p-4 md:p-6">
+            <div className={noPadding ? "" : "p-4 md:p-6"}>
               {children}
             </div>
           </div>
