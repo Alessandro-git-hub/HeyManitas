@@ -116,12 +116,6 @@ export default function JobDetailsModal({ isOpen, onClose, job }) {
                 label="Appointment Time"
                 value={formatTimeValue(schedulingInfo.scheduledTime)}
               />
-              <ConditionalField condition={isBooking && schedulingInfo.originalDateTime}>
-                <InfoField 
-                  label="Original Booking Time"
-                  value={formatDateTimeDetailed(schedulingInfo.originalDateTime)}
-                />
-              </ConditionalField>
             </InfoGrid>
           </InfoSection>
 
@@ -154,11 +148,11 @@ export default function JobDetailsModal({ isOpen, onClose, job }) {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 bg-secondary-600">
+        <div className="px-6 py-4 bg-white">
           <div className="flex justify-end space-x-3">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-primary-700 bg-white rounded-2xl cursor-pointer"
+              className="px-4 py-2 text-primary-700 bg-white rounded-4xl cursor-pointer border border-secondary-600"
             >
               Close
             </button>

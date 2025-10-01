@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import AppHeader from './AppHeader';
 import WorkerNavigation from './WorkerNavigation';
@@ -28,7 +28,6 @@ import { useFeedback } from '../../hooks/useFeedback';
  */
 export default function WorkerLayout({
   children,
-  title,
   showNavigation = true,
   loading = false,
   loadingText = "Loading...",
@@ -37,6 +36,11 @@ export default function WorkerLayout({
 }) {
   const { user, loading: authLoading } = useAuth();
   const { feedback, showFeedback, clearFeedback } = useFeedback();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const toggleWorkerMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
 
   // Auto-clear feedback messages after 5 seconds
   useEffect(() => {
@@ -74,12 +78,20 @@ export default function WorkerLayout({
   return (
     <div className="min-h-screen bg-light">      
       {/* Header */}
-      <AppHeader />
+      <AppHeader 
+        showWorkerNav={true}
+        toggleWorkerMobileMenu={toggleWorkerMobileMenu}
+      />
       
-      {/* Main Content Container */}
-      <div className={`max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4 ${className}`}>
+      {/* Main Content Container with top margin to account for fixed header */}
+      <div className={`max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4 mt-20 ${className}`}>
         {/* Worker Navigation */}
-        {showNavigation && <WorkerNavigation />}
+        {showNavigation && (
+          <WorkerNavigation 
+            isMobileMenuOpen={isMobileMenuOpen}
+            setIsMobileMenuOpen={setIsMobileMenuOpen}
+          />
+        )}
         
         {/* Header Actions */}
         {headerActions && (

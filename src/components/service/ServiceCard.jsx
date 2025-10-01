@@ -1,5 +1,5 @@
 import React from 'react';
-import { getCategoryInfo } from '../../utils/serviceCategories';
+import ServiceIcon from '../common/ServiceIcon';
 
 export default function ServiceCard({ 
   service, 
@@ -8,7 +8,6 @@ export default function ServiceCard({
   onToggleStatus, 
   showActions = true 
 }) {
-  const categoryInfo = getCategoryInfo(service.category);
 
   return (
     <div className="bg-primary-700 p-6 rounded-2xl shadow-lg border border-secondary-600 hover:shadow-xl group hover:border-primary-300 relative overflow-hidden transition-all duration-300 flex flex-col">
@@ -22,7 +21,7 @@ export default function ServiceCard({
             {service.name}
           </h3>
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-lg">{categoryInfo.icon}</span>
+            <ServiceIcon category={service.category} />
             <span className="text-sm font-medium text-white bg-primary-600 px-2 py-1 rounded-full">
               {service.category}
             </span>
@@ -59,7 +58,7 @@ export default function ServiceCard({
       {showActions && (
         <div className="flex justify-between items-center pt-4 border-t border-primary-600">
           <button
-            onClick={() => onToggleStatus && onToggleStatus(service.id)}
+            onClick={() => onToggleStatus && onToggleStatus(service.id, service.isActive)}
             className={`text-sm px-3 py-1 rounded-full transition-all duration-200 font-medium ${
               service.isActive
                 ? 'text-orange-200 hover:bg-orange-500/20 bg-orange-600/20'

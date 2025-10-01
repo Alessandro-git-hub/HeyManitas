@@ -4,6 +4,7 @@ import { getServiceCategories } from "../service/serviceHelpers";
 import { getCategoryInfo } from "../../utils/serviceCategories";
 import { useScrollAnimation } from "../../hooks/useScrollAnimation";
 import SectionHeader from "../common/SectionHeader";
+import ServiceIcon from "../common/ServiceIcon";
 
 export default function PopularServices() {
   const navigate = useNavigate();
@@ -50,9 +51,12 @@ export default function PopularServices() {
 
                 {/* Content */}
                 <div className="relative z-10 flex-1 flex flex-col">
-                  <h3 className="font-bold text-lg text-secondary-600 mb-2">
-                    {category.name}
-                  </h3>
+                  <div className="flex items-center gap-2 mb-2">
+                    <ServiceIcon category={category.name} />
+                    <h3 className="font-bold text-lg text-secondary-600">
+                      {category.name}
+                    </h3>
+                  </div>
                   <p className="text-sm text-white">
                     {categoryInfo.description}
                   </p>

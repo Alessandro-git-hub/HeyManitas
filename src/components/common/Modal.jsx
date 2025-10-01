@@ -32,6 +32,7 @@ export default function Modal({
   preventClose = false,
   className = '',
   noPadding = false,
+  footerClassName = '',
   children,
   footer
 }) {
@@ -59,14 +60,14 @@ export default function Modal({
   // Don't render if not open
   if (!isOpen) return null;
 
-  // Size configuration
+  // Size configuration - responsive width: full on mobile, fit-content on desktop
   const sizeClasses = {
-    sm: 'max-w-sm',
-    md: 'max-w-md', 
-    lg: 'max-w-lg',
-    xl: 'max-w-2xl',
-    '2xl': 'max-w-4xl',
-    full: 'max-w-full mx-4'
+    sm: 'w-full md:w-fit max-w-sm',
+    md: 'w-full md:w-fit max-w-md', 
+    lg: 'w-full md:w-fit max-w-lg',
+    xl: 'w-full md:w-fit max-w-2xl',
+    '2xl': 'w-full md:w-fit max-w-4xl',
+    full: 'w-full max-w-full mx-4'
   };
 
   // Handle overlay click
@@ -94,7 +95,7 @@ export default function Modal({
         {/* Modal Content */}
         <div 
           className={`
-            bg-white rounded-lg shadow-xl w-full max-h-[90vh] overflow-hidden
+            bg-white rounded-lg shadow-xl max-h-[90vh] overflow-hidden
             transform transition-all duration-200 ease-out
             ${sizeClasses[size]}
             ${className}
@@ -134,7 +135,7 @@ export default function Modal({
 
           {/* Footer */}
           {footer && (
-            <div className="border-t border-gray-200 p-4 md:p-6 bg-gray-50">
+            <div className={`p-4 md:p-6 bg-white`}>
               {footer}
             </div>
           )}

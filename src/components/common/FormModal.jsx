@@ -1,6 +1,7 @@
 import React from 'react';
 import Modal from './Modal';
 import ActionButton from './ActionButton';
+import LoadingSpinner from './LoadingSpinner';
 
 /**
  * Form Modal Component
@@ -22,6 +23,7 @@ import ActionButton from './ActionButton';
  * @param {string} cancelLabel - Text for cancel button (default: 'Cancel')
  * @param {string} submitVariant - Submit button variant (default: 'primary')
  * @param {boolean} submitDisabled - Additional submit button disable condition
+ * @param {boolean} noPadding - Remove default padding from content area (default: false)
  * @param {ReactNode} children - Form content
  * @param {string} className - Additional CSS classes
  */
@@ -36,6 +38,8 @@ export default function FormModal({
   cancelLabel = 'Cancel',
   submitVariant = 'primary',
   submitDisabled = false,
+  noPadding = false,
+  footerClassName = '',
   children,
   className = ''
 }) {
@@ -55,7 +59,7 @@ export default function FormModal({
 
   // Footer with form buttons
   const footer = (
-    <div className="flex flex-col sm:flex-row gap-3 sm:justify-end">
+    <div className={`flex flex-col sm:flex-row gap-3 sm:justify-end bg-white`}>
       <ActionButton
         type="button"
         variant="outline"
@@ -74,22 +78,7 @@ export default function FormModal({
       >
         {isSubmitting ? (
           <span className="flex items-center gap-2">
-            <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-              <circle 
-                className="opacity-25" 
-                cx="12" 
-                cy="12" 
-                r="10" 
-                stroke="currentColor" 
-                strokeWidth="4"
-                fill="none"
-              />
-              <path 
-                className="opacity-75" 
-                fill="currentColor" 
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              />
-            </svg>
+            <LoadingSpinner />
             Loading...
           </span>
         ) : (
@@ -106,17 +95,14 @@ export default function FormModal({
       title={title}
       size={size}
       preventClose={isSubmitting}
+      noPadding={noPadding}
+      footerClassName={footerClassName}
       className={className}
       footer={footer}
     >
       <form id="modal-form" onSubmit={handleSubmit} className="space-y-6">
         {children}
       </form>
-      
-      {/* Helper text */}
-      <div className="mt-4 text-xs text-gray-500 text-center">
-        Press ESC to cancel
-      </div>
     </Modal>
   );
 }

@@ -6,7 +6,9 @@ import { getAllCategories, getCategoryInfo } from '../utils/serviceCategories';
 import WorkerLayout from '../components/layout/WorkerLayout';
 import ServiceCard from '../components/service/ServiceCard';
 import EmptyState from '../components/common/EmptyState';
-import FormModal from '../components/common/FormModal';
+import StyledFormModal from '../components/common/StyledFormModal';
+import FormField from '../components/common/FormField';
+import { useFormValidation, ValidationRules } from '../hooks/useFormValidation';
 
 export default function Services() {
   const { user } = useAuth();
@@ -24,11 +26,21 @@ export default function Services() {
     duration: '',
     isActive: true
   });
-  const [formErrors, setFormErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Service categories
   const serviceCategories = getAllCategories();
+
+  // Form validation
+  const validationRules = {
+    name: ValidationRules.requiredText('Service name'),
+    description: ValidationRules.requiredText('Description'),
+    category: ValidationRules.requiredText('Category'),
+    basePrice: ValidationRules.positiveNumber('Base price'),
+    duration: ValidationRules.requiredText('Duration')
+  };
+
+  const { errors: formErrors, validateForm: validateFormFields, clearFieldError, clearAllErrors } = useFormValidation(validationRules);
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -65,24 +77,7 @@ export default function Services() {
   }, [user]);
 
   const validateForm = () => {
-    const errors = {};
-    if (!formData.name.trim()) {
-      errors.name = 'Service name is required';
-    }
-    if (!formData.description.trim()) {
-      errors.description = 'Description is required'; 
-    }
-    if (!formData.category) {
-      errors.category = 'Category is required';
-    }
-    if (!formData.basePrice || formData.basePrice <= 0) {
-      errors.basePrice = 'Base price must be greater than 0';
-    }
-    if (!formData.duration.trim()) {
-      errors.duration = 'Duration is required';
-    }
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
+    return validateFormFields(formData);
   };
 
   const handleInputChange = (e) => {
@@ -93,7 +88,7 @@ export default function Services() {
     }));
     // Clear error when user starts typing
     if (formErrors[name]) {
-      setFormErrors(prev => ({ ...prev, [name]: '' }));
+      clearFieldError(name);
     }
   };
 
@@ -106,7 +101,7 @@ export default function Services() {
       duration: '',
       isActive: true
     });
-    setFormErrors({});
+    clearAllErrors();
     setEditingService(null);
   };
 
@@ -275,7 +270,7 @@ export default function Services() {
         </div>
 
         {/* Service Form Modal */}
-        <FormModal
+        <StyledFormModal
           isOpen={showForm}
           onClose={handleCloseModal}
           onSubmit={(e) => handleSubmit(e, showFeedback)}
@@ -285,132 +280,87 @@ export default function Services() {
           submitLabel={editingService ? 'Update Service' : 'Add Service'}
           cancelLabel="Cancel"
         >
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Service Name *
-            </label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-              disabled={isSubmitting}
-              className={`w-full p-3 border rounded-lg ${
-                formErrors.name ? 'border-red-500' : 'border-gray-300'
-              } focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50`}
-              placeholder="e.g., Basic Plumbing Repair"
-            />
-            {formErrors.name && (
-              <p className="text-red-500 text-sm mt-1">{formErrors.name}</p>
-            )}
-          </div>
+          <FormField
+            label="Service Name"
+            name="name"
+            value={formData.name}
+            onChange={handleInputChange}
+            error={formErrors.name}
+            disabled={isSubmitting}
+            required={true}
+            placeholder="e.g., Basic Plumbing Repair"
+          />
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Category *
-            </label>
-            <select
-              name="category"
-              value={formData.category}
-              onChange={handleInputChange}
-              disabled={isSubmitting}
-              className={`w-full p-3 border rounded-lg ${
-                formErrors.category ? 'border-red-500' : 'border-gray-300'
-              } focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50`}
-            >
-              <option value="">Select a category</option>
-              {serviceCategories.map(category => {
+          <FormField
+            label="Category"
+            name="category"
+            type="select"
+            value={formData.category}
+            onChange={handleInputChange}
+            error={formErrors.category}
+            disabled={isSubmitting}
+            required={true}
+            options={[
+              { value: '', label: 'Select a category' },
+              ...serviceCategories.map(category => {
                 const categoryInfo = getCategoryInfo(category);
-                return (
-                  <option key={category} value={category}>
-                    {categoryInfo.icon} {category} - {categoryInfo.description}
-                  </option>
-                );
-              })}
-            </select>
-            {formErrors.category && (
-              <p className="text-red-500 text-sm mt-1">{formErrors.category}</p>
-            )}
-          </div>
+                return {
+                  value: category,
+                  label: `${category} - ${categoryInfo.description}`
+                };
+              })
+            ]}
+          />
 
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Base Price (€) *
-              </label>
-              <input
-                type="number"
-                name="basePrice"
-                value={formData.basePrice}
-                onChange={handleInputChange}
-                disabled={isSubmitting}
-                min="0"
-                step="0.01"
-                className={`w-full p-3 border rounded-lg ${
-                  formErrors.basePrice ? 'border-red-500' : 'border-gray-300'
-                } focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50`}
-                placeholder="75"
-              />
-              {formErrors.basePrice && (
-                <p className="text-red-500 text-sm mt-1">{formErrors.basePrice}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Duration *
-              </label>
-              <input
-                type="text"
-                name="duration"
-                value={formData.duration}
-                onChange={handleInputChange}
-                disabled={isSubmitting}
-                className={`w-full p-3 border rounded-lg ${
-                  formErrors.duration ? 'border-red-500' : 'border-gray-300'
-                } focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50`}
-                placeholder="1-2 hours"
-              />
-              {formErrors.duration && (
-                <p className="text-red-500 text-sm mt-1">{formErrors.duration}</p>
-              )}
-            </div>
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Description *
-            </label>
-            <textarea
-              name="description"
-              value={formData.description}
+          <div className="grid grid-cols-2 gap-4">
+            <FormField
+              label="Base Price (€)"
+              name="basePrice"
+              type="number"
+              value={formData.basePrice}
               onChange={handleInputChange}
+              error={formErrors.basePrice}
               disabled={isSubmitting}
-              rows="3"
-              className={`w-full p-3 border rounded-lg ${
-                formErrors.description ? 'border-red-500' : 'border-gray-300'
-              } focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50`}
-              placeholder="Describe what this service includes..."
-            ></textarea>
-            {formErrors.description && (
-              <p className="text-red-500 text-sm mt-1">{formErrors.description}</p>
-            )}
+              required={true}
+              min="0"
+              step="0.01"
+              placeholder="75"
+            />
+
+            <FormField
+              label="Duration"
+              name="duration"
+              value={formData.duration}
+              onChange={handleInputChange}
+              error={formErrors.duration}
+              disabled={isSubmitting}
+              required={true}
+              placeholder="1-2 hours"
+            />
           </div>
 
-          <div className="mb-4">
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                name="isActive"
-                checked={formData.isActive}
-                onChange={handleInputChange}
-                disabled={isSubmitting}
-                className="mr-2"
-              />
-              <span className="text-sm text-gray-700">Service is active</span>
-            </label>
-          </div>
-        </FormModal>
+          <FormField
+            label="Description"
+            name="description"
+            type="textarea"
+            value={formData.description}
+            onChange={handleInputChange}
+            error={formErrors.description}
+            disabled={isSubmitting}
+            required={true}
+            rows="3"
+            placeholder="Describe what this service includes..."
+          />
+
+          <FormField
+            label="Service is active"
+            name="isActive"
+            type="checkbox"
+            value={formData.isActive}
+            onChange={handleInputChange}
+            disabled={isSubmitting}
+          />
+        </StyledFormModal>
       </div>
     );
   };

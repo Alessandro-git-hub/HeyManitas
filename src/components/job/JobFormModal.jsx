@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { collection, addDoc, updateDoc, doc, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../utils/firebase';
 import { useAuth } from '../../contexts/AuthContext';
-import { getCategoryInfo } from '../../utils/serviceCategories';
 import FormModal from '../common/FormModal';
+import { JOB_STATUSES } from '../../utils/statusConfig';
 
 export default function JobFormModal({ 
   isOpen, 
@@ -16,7 +16,7 @@ export default function JobFormModal({
   const [formData, setFormData] = useState({
     client: '',
     description: '',
-    status: 'Pending',
+    status: JOB_STATUSES.PENDING,
     scheduledDate: '',
     serviceId: '',
     serviceName: '',
@@ -266,10 +266,15 @@ export default function JobFormModal({
       isSubmitting={isSubmitting}
       submitLabel={editingJob ? 'Update Job' : 'Add Job'}
       cancelLabel="Cancel"
+      noPadding={true}
+      footerClassName="bg-secondary-600"
     >
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Client Name *
+      {/* Content with custom background styling */}
+      <div className="p-6 bg-secondary-600">
+        <div className="space-y-6">
+          <div className="mb-4">
+                <label className="block text-sm font-medium text-white mb-1">
+          Client *
         </label>
         <input
           type="text"
@@ -278,10 +283,10 @@ export default function JobFormModal({
           onChange={handleInputChange}
           disabled={isSubmitting}
           list="customers-list"
-          className={`w-full p-3 border rounded-lg ${
-            formErrors.client ? 'border-red-500' : 'border-gray-300'
-          } focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50 ${
-            loadingCustomers ? 'bg-gray-50' : ''
+          className={`w-full p-3 border rounded-lg text-primary-700 ${
+            formErrors.client ? 'border-red-500' : 'border-primary-700'
+          } focus:outline-none focus:ring-2 focus:ring-primary-700 focus:border-transparent disabled:opacity-50 ${
+            loadingCustomers ? 'bg-gray-50' : 'bg-transparent'
           }`}
           placeholder="Enter or select client name (new clients will be saved automatically)"
           autoFocus={!editingJob}
@@ -296,20 +301,10 @@ export default function JobFormModal({
         {formErrors.client && (
           <p className="text-red-500 text-sm mt-1">{formErrors.client}</p>
         )}
-        {!loadingCustomers && availableCustomers.length > 0 && (
-          <p className="text-xs text-gray-500 mt-1">
-            Start typing to see existing clients or enter a new name (will be saved automatically)
-          </p>
-        )}
-        {!loadingCustomers && availableCustomers.length === 0 && (
-          <p className="text-xs text-gray-500 mt-1">
-            Enter client name - new customers will be saved automatically
-          </p>
-        )}
       </div>
 
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-white mb-1">
           Service *
         </label>
         <select
@@ -317,28 +312,26 @@ export default function JobFormModal({
           value={formData.serviceId}
           onChange={handleServiceChange}
           disabled={isSubmitting || loadingServices}
-          className={`w-full p-3 border rounded-lg ${
-            formErrors.serviceId ? 'border-red-500' : 'border-gray-300'
-          } focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50`}
+          className={`w-full p-3 border rounded-lg text-white bg-transparent ${
+            formErrors.serviceId ? 'border-red-500' : 'border-primary-700'
+          } focus:outline-none focus:ring-2 focus:ring-primary-700 focus:border-transparent disabled:opacity-50`}
         >
           <option value="">Select a service</option>
-          {availableServices.map(service => {
-            const categoryInfo = getCategoryInfo(service.category);
-            return (
+          {availableServices.map(service => (
               <option key={service.id} value={service.id}>
-                {categoryInfo.icon} {service.name} - €{service.basePrice} ({service.category})
+                {service.name} - €{service.basePrice} ({service.category})
               </option>
-            );
-          })}
+            )
+          )}
         </select>
         {formErrors.serviceId && (
           <p className="text-red-500 text-sm mt-1">{formErrors.serviceId}</p>
         )}
         {loadingServices && (
-          <p className="text-gray-500 text-sm mt-1">Loading services...</p>
+          <p className="text-gray-500 text-sm mt-2">Loading services...</p>
         )}
         {!loadingServices && availableServices.length === 0 && (
-          <p className="text-gray-500 text-sm mt-1">
+          <p className="text-gray-500 text-sm mt-2">
             No services available. <button 
               type="button"
               onClick={() => {
@@ -365,7 +358,7 @@ export default function JobFormModal({
 
       <div className="grid grid-cols-2 gap-4 mb-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-white mb-1">
             Final Price (€) *
           </label>
           <input
@@ -376,18 +369,18 @@ export default function JobFormModal({
             disabled={isSubmitting}
             min="0"
             step="0.01"
-            className={`w-full p-3 border rounded-lg ${
-              formErrors.finalPrice ? 'border-red-500' : 'border-gray-300'
-            } focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50`}
+            className={`w-full p-3 border rounded-lg text-white bg-transparent ${
+              formErrors.finalPrice ? 'border-red-500' : 'border-primary-700'
+            } focus:outline-none focus:ring-2 focus:ring-primary-700 focus:border-transparent disabled:opacity-50`}
             placeholder="Final quoted price"
           />
           {formErrors.finalPrice && (
-            <p className="text-red-500 text-sm mt-1">{formErrors.finalPrice}</p>
+            <p className="text-red-500 text-sm mt-2">{formErrors.finalPrice}</p>
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-white mb-1">
             Status
           </label>
           <select
@@ -395,18 +388,18 @@ export default function JobFormModal({
             value={formData.status}
             onChange={handleInputChange}
             disabled={isSubmitting}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50"
+            className="w-full p-3 border border-primary-700 rounded-lg text-white bg-transparent focus:outline-none focus:ring-2 focus:ring-primary-700 focus:border-transparent disabled:opacity-50"
           >
-            <option value="Pending">Pending</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Done">Done</option>
-            <option value="Cancelled">Cancelled</option>
+            <option value={JOB_STATUSES.PENDING}>{JOB_STATUSES.PENDING}</option>
+            <option value={JOB_STATUSES.CONFIRMED}>{JOB_STATUSES.CONFIRMED}</option>
+            <option value={JOB_STATUSES.COMPLETED}>{JOB_STATUSES.COMPLETED}</option>
+            <option value={JOB_STATUSES.CANCELLED}>{JOB_STATUSES.CANCELLED}</option>
           </select>
         </div>
       </div>
 
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-white mb-1">
           Scheduled Date *
         </label>
         <input
@@ -415,9 +408,9 @@ export default function JobFormModal({
           value={formData.scheduledDate}
           onChange={handleInputChange}
           disabled={isSubmitting}
-          className={`w-full p-3 border rounded-lg ${
-            formErrors.scheduledDate ? 'border-red-500' : 'border-gray-300'
-          } focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50`}
+          className={`w-full p-3 border rounded-lg text-white bg-transparent ${
+            formErrors.scheduledDate ? 'border-red-500' : 'border-primary-700'
+          } focus:outline-none focus:ring-2 focus:ring-primary-700 focus:border-transparent disabled:opacity-50`}
         />
         {formErrors.scheduledDate && (
           <p className="text-red-500 text-sm mt-1">{formErrors.scheduledDate}</p>
@@ -425,7 +418,7 @@ export default function JobFormModal({
       </div>
 
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-white mb-1">
           Job Description *
         </label>
         <textarea
@@ -434,14 +427,16 @@ export default function JobFormModal({
           onChange={handleInputChange}
           disabled={isSubmitting}
           rows="4"
-          className={`w-full p-3 border rounded-lg ${
-            formErrors.description ? 'border-red-500' : 'border-gray-300'
-          } focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50`}
+          className={`w-full p-3 border rounded-lg text-white placeholder-gray-400 bg-transparent ${
+            formErrors.description ? 'border-red-500' : 'border-primary-700'
+          } focus:outline-none focus:ring-2 focus:ring-primary-700 focus:border-transparent disabled:opacity-50`}
           placeholder="Describe the job details, requirements, and any important notes..."
         ></textarea>
         {formErrors.description && (
           <p className="text-red-500 text-sm mt-1">{formErrors.description}</p>
         )}
+        </div>
+      </div>
       </div>
     </FormModal>
   );
