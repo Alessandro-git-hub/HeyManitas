@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { updateDoc, doc, Timestamp } from 'firebase/firestore';
-import { db } from '../../utils/firebase';
+import { db } from '../utils/firebase';
 
 export const useQuoteManagement = (bookingRequests, fetchBookingRequests) => {
   const [activeQuoteId, setActiveQuoteId] = useState(null);

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { collection, getDocs, query, where } from 'firebase/firestore';
-import { db } from '../../utils/firebase';
+import { db } from '../utils/firebase';
 
 export const useBookingRequests = (user) => {
   const [bookingRequests, setBookingRequests] = useState([]);
