@@ -129,6 +129,8 @@ export default function Services() {
         updatedAt: new Date()
       };
 
+      console.log('💾 Saving service with category:', formData.category);
+
       if (editingService) {
         // Update existing service
         await updateDoc(doc(db, 'services', editingService.id), serviceData);

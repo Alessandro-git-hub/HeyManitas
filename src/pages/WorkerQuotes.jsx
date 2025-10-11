@@ -2,27 +2,19 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { collection, getDocs, query, where, updateDoc, doc, Timestamp } from 'firebase/firestore';
 import { db } from '../utils/firebase';
 import { useAuth } from '../contexts/AuthContext';
-import { useHeader } from '../hooks/useHeader';
-import DottedBackground from '../components/common/DottedBackground';
-import WorkerNavigation from '../components/layout/WorkerNavigation';
-import AppHeader from '../components/layout/AppHeader';
+import WorkerLayout from '../components/layout/WorkerLayout';
+import EmptyState from '../components/common/EmptyState';
 
 export default function WorkerQuotes() {
-  const { user, loading: authLoading } = useAuth();
-  const { isMobileMenuOpen, setIsMobileMenuOpen } = useHeader();
+  const { user } = useAuth();
   const [bookingRequests, setBookingRequests] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [feedback, setFeedback] = useState({ message: '', type: '' });
   const [activeQuoteId, setActiveQuoteId] = useState(null);
   const [quoteForm, setQuoteForm] = useState({
     quotedPrice: '',
     message: '',
     validUntil: ''
   });
-
-  const toggleWorkerMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
 
   // Fetch pending booking requests
   const fetchBookingRequests = useCallback(async () => {
@@ -58,66 +50,26 @@ export default function WorkerQuotes() {
       setBookingRequests(requests);
     } catch (error) {
       console.error('Error fetching booking requests:', error);
-      setFeedback({ message: 'Error loading booking requests.', type: 'error' });
     } finally {
       setLoading(false);
     }
   }, [user]);
 
   useEffect(() => {
-    if (!authLoading) {
-      fetchBookingRequests();
-    }
-  }, [fetchBookingRequests, authLoading]);
+    fetchBookingRequests();
+  }, [fetchBookingRequests]);
 
-  // Clear feedback after 5 seconds
-  useEffect(() => {
-    if (feedback.message) {
-      const timer = setTimeout(() => {
-        setFeedback({ message: '', type: '' });
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [feedback]);
-
-  // Show loading state while authentication is being determined
-  if (authLoading) {
-    return (
-      <div className="min-h-screen bg-light flex items-center justify-center">
-        <div className="animate-spin h-12 w-12 border-4 border-primary-600 border-t-transparent rounded-full"></div>
-      </div>
-    );
-  }
-
-  // Show login prompt if user is not authenticated
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-light flex items-center justify-center">
-        <div className="max-w-md mx-auto text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Please Log In</h2>
-          <p className="text-gray-600 mb-6">You need to be logged in to view quote requests.</p>
-          <button
-            onClick={() => window.location.href = '/login'}
-            className="bg-primary-600 hover:bg-primary-700 text-white py-2 px-6 rounded-md font-medium transition-colors"
-          >
-            Go to Login
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  const handleQuoteSubmit = async (bookingId) => {
+  const handleQuoteSubmit = async (bookingId, showFeedback) => {
     try {
       const quotedPrice = parseFloat(quoteForm.quotedPrice);
       
       if (!quotedPrice || quotedPrice <= 0) {
-        setFeedback({ message: 'Please enter a valid quote amount.', type: 'error' });
+        showFeedback('Please enter a valid quote amount.', 'error');
         return;
       }
 
       if (!quoteForm.message.trim()) {
-        setFeedback({ message: 'Please provide a message with your quote.', type: 'error' });
+        showFeedback('Please provide a message with your quote.', 'error');
         return;
       }
 
@@ -141,7 +93,7 @@ export default function WorkerQuotes() {
       
       await updateDoc(doc(db, 'bookings', bookingId), updateData);
 
-      setFeedback({ message: 'Quote sent successfully!', type: 'success' });
+      showFeedback('Quote sent successfully!', 'success');
       setActiveQuoteId(null);
       setQuoteForm({ quotedPrice: '', message: '', validUntil: '' });
       
@@ -150,26 +102,26 @@ export default function WorkerQuotes() {
       
     } catch (error) {
       console.error('Error sending quote:', error);
-      setFeedback({ message: 'Error sending quote. Please try again.', type: 'error' });
+      showFeedback('Error sending quote. Please try again.', 'error');
     }
   };
 
-  const handleDeclineRequest = async (bookingId) => {
+  const handleDeclineRequest = async (bookingId, showFeedback) => {
     try {
       await updateDoc(doc(db, 'bookings', bookingId), {
         status: 'declined',
         declinedAt: Timestamp.now()
       });
-
-      setFeedback({ message: 'Booking request declined.', type: 'success' });
+      
+      showFeedback('Booking request declined.', 'success');
       fetchBookingRequests();
       
     } catch (error) {
       console.error('Error declining request:', error);
-      setFeedback({ message: 'Error declining request. Please try again.', type: 'error' });
+      showFeedback('Error declining request. Please try again.', 'error');
     }
   };
-
+  
   const formatDate = (timestamp) => {
     if (!timestamp) return 'N/A';
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
@@ -189,107 +141,95 @@ export default function WorkerQuotes() {
     });
   };
 
-  if (loading) {
+
+
+  const renderContent = (showFeedback) => {
     return (
-      <DottedBackground className="flex items-center justify-center">
-        <div className="animate-spin h-12 w-12 border-4 border-primary-600 border-t-transparent rounded-full"></div>
-      </DottedBackground>
-    );
-  }
-
-  return (
-    <DottedBackground>
-      <AppHeader 
-        showWorkerNav={true}
-        toggleWorkerMobileMenu={toggleWorkerMobileMenu}
-      />
-      
-      <div className="max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4 pt-16 md:pt-20">
-        {/* Navigation */}
-        <WorkerNavigation 
-          isMobileMenuOpen={isMobileMenuOpen}
-          setIsMobileMenuOpen={setIsMobileMenuOpen}
-        />
-        
-        {/* Feedback Message */}
-        {feedback.message && (
-          <div className={`mb-6 p-4 rounded-md ${
-            feedback.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
-          }`}>
-            {feedback.message}
-          </div>
-        )}
-
+      <>
         {/* Page Title */}
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">Quote Requests</h1>
-          <p className="text-gray-600">Review and respond to booking requests</p>
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-primary-700 mb-2">Quote Requests</h1>
+            <p className="text-lg text-primary-700">Review and respond to booking requests</p>
+          </div>
         </div>
 
         {/* Quote Requests List */}
         {bookingRequests.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-sm border p-12 text-center">
-            <div className="text-gray-400 text-4xl mb-4">📄</div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No pending quote requests</h3>
-            <p className="text-gray-600">
-              When customers request your services, they'll appear here for you to review and quote.
-            </p>
+          <div className="text-center py-16">
+            <EmptyState
+              icon={
+                <svg className="w-16 h-16 mx-auto text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth={1.5} 
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" 
+                  />
+                </svg>
+              }
+              title="No pending quote requests"
+              description="When customers request your services, they'll appear here for you to review and quote."
+            />
           </div>
         ) : (
-          <div className="space-y-6">
-            {bookingRequests.map((request) => (
-              <div key={request.id} className="bg-white rounded-lg shadow-sm border overflow-hidden">
+          <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-1">
+            {bookingRequests.map((request) => {
+              return (
+              <div key={request.id} className="bg-primary-700 p-6 rounded-2xl shadow-lg border border-secondary-600 hover:shadow-xl group hover:border-primary-300 relative overflow-hidden transition-all duration-300 flex flex-col">
+                {/* Subtle accent bar */}
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-400 to-secondary-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                
                 {/* Request Header */}
-                <div className="p-6 border-b border-gray-200">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="text-lg font-medium text-gray-900">
-                        {request.serviceType} Service Request
-                      </h3>
-                      <p className="text-sm text-gray-600 mt-1">
-                        From: {request.customerEmail}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        Requested: {formatDate(request.createdAt)} at {formatTime(request.createdAt)}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                        Pending Quote
+                <div className="flex justify-between items-start mb-4 relative z-10">
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold text-secondary-600 mb-2">
+                      {request.serviceType}
+                    </h3>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-sm font-medium bg-white px-2 py-1 rounded-full" style={{ color: '#6F4E37' }}>
+                        From: {request.customerName || request.contactName || request.customerEmail}
                       </span>
-                      <p className="text-sm text-gray-600 mt-1">
-                        Base Rate: €{request.hourlyRate}/hour
-                      </p>
                     </div>
+                    <p className="text-sm text-secondary-600">
+                      <span className="text-white font-bold">Requested:</span> {formatDate(request.createdAt)} at {formatTime(request.createdAt)}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-xs px-3 py-1 rounded-full font-medium bg-secondary-600 text-primary-700 mb-2 inline-block">
+                      Pending Quote
+                    </span>
+                    <p className="text-sm text-secondary-600">
+                      <span className="text-white font-bold">Base Rate:</span> €{request.hourlyRate}/hour
+                    </p>
                   </div>
                 </div>
 
                 {/* Request Details */}
-                <div className="p-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
                     <div>
-                      <h4 className="font-medium text-gray-900 mb-2">Service Details</h4>
-                      <div className="space-y-2 text-sm">
-                        <p><span className="text-gray-600">Service:</span> {request.serviceType}</p>
-                        <p><span className="text-gray-600">Date:</span> {request.date}</p>
-                        <p><span className="text-gray-600">Time:</span> {request.time}</p>
-                        <p><span className="text-gray-600">Duration:</span> {request.duration} hours</p>
+                      <div className="space-y-2 text-sm text-secondary-600 mb-4">
+                        <p><span className="text-white font-bold">Service:</span> {request.serviceType}</p>
+                        <p><span className="text-white font-bold">Date:</span> {request.date}</p>
+                        <p><span className="text-white font-bold">Time:</span> {request.time}</p>
+                        <p><span className="text-white font-bold">Duration:</span> {request.duration} hours</p>
                       </div>
                     </div>
                     <div>
-                      <h4 className="font-medium text-gray-900 mb-2">Customer Message</h4>
-                      <p className="text-sm text-gray-700 bg-gray-50 p-3 rounded-md">
+                      <h4 className="font-bold text-white mb-2">Customer Message</h4>
+                      <p className="text-sm text-white p-3 rounded-md mb-4 md:mb-0" style={{ background: '#6F4E37' }}>
                         {request.description || request.message || 'No additional message provided.'}
                       </p>
                     </div>
                   </div>
 
-                  {/* Action Buttons */}
-                  <div className="mt-6 flex space-x-4">
-                    {activeQuoteId === request.id ? (
-                      <div className="flex-1">
-                        <div className="bg-primary-50 p-4 rounded-lg">
-                          <h4 className="font-medium text-gray-900 mb-4">Send Quote</h4>
+                {/* Action Buttons */}
+                <div className="pt-4 border-t border-white">
+                  {activeQuoteId === request.id ? (
+                    <div className="flex-1">
+                      <div className="bg-primary-600 p-4 rounded-lg">
+                        <h4 className="font-bold text-white mb-4">Send Quote</h4>
                           
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <div>
@@ -333,51 +273,61 @@ export default function WorkerQuotes() {
                             />
                           </div>
                           
-                          <div className="flex space-x-3">
-                            <button
-                              onClick={() => handleQuoteSubmit(request.id)}
-                              className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
-                            >
-                              Send Quote
-                            </button>
-                            <button
-                              onClick={() => {
-                                setActiveQuoteId(null);
-                                setQuoteForm({ quotedPrice: '', message: '', validUntil: '' });
-                              }}
-                              className="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-md font-medium transition-colors"
-                            >
-                              Cancel
-                            </button>
-                          </div>
+                        <div className="flex space-x-3">
+                          <button
+                            onClick={() => handleQuoteSubmit(request.id, showFeedback)}
+                            className="bg-secondary-600 text-primary-700 px-6 py-3 rounded-3xl hover:bg-secondary-700 transition-all duration-200 font-medium transform hover:scale-105 shadow-lg"
+                          >
+                            Send Quote
+                          </button>
+                          <button
+                            onClick={() => {
+                              setActiveQuoteId(null);
+                              setQuoteForm({ quotedPrice: '', message: '', validUntil: '' });
+                            }}
+                            className="text-white hover:text-secondary-600 px-4 py-2 rounded-md font-medium transition-colors"
+                          >
+                            Cancel
+                          </button>
                         </div>
                       </div>
-                    ) : (
-                      <>
-                        <button
-                          onClick={() => {
-                            setActiveQuoteId(request.id);
-                            setQuoteForm(prev => ({ ...prev, quotedPrice: request.hourlyRate?.toString() || '' }));
-                          }}
-                          className="bg-primary-600 hover:bg-primary-700 text-white px-6 py-2 rounded-md font-medium transition-colors cursor-pointer"
-                        >
-                          Send Quote
-                        </button>
-                        <button
-                          onClick={() => handleDeclineRequest(request.id)}
-                          className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-md font-medium transition-colors cursor-pointer"
-                        >
-                          Decline
-                        </button>
-                      </>
-                    )}
-                  </div>
+                    </div>
+                  ) : (
+                    <div className="flex justify-between items-center">
+                      <button
+                        onClick={() => {
+                          setActiveQuoteId(request.id);
+                          setQuoteForm(prev => ({ ...prev, quotedPrice: request.hourlyRate?.toString() || '' }));
+                        }}
+                        className="bg-secondary-600 text-primary-700 px-6 py-3 rounded-3xl hover:bg-secondary-700 transition-all duration-200 font-medium transform hover:scale-105 shadow-lg"
+                      >
+                        Send Quote
+                      </button>
+                      <button
+                        onClick={() => handleDeclineRequest(request.id, showFeedback)}
+                        className="bg-red-700 text-white transition-colors px-4 py-2 rounded cursor-pointer rounded-3xl"
+                      >
+                        Decline
+                      </button>
+                    </div>
+                  )}
+                </div>
                 </div>
               </div>
-            ))}
+            );
+            })}
           </div>
         )}
-      </div>
-    </DottedBackground>
+      </>
+    );
+  };
+
+  return (
+    <WorkerLayout
+      title="Quote Requests"
+      loading={loading}
+    >
+      {renderContent}
+    </WorkerLayout>
   );
 }

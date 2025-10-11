@@ -90,6 +90,9 @@ const CustomerBooking = () => {
         professionalId: professional.id,
         professionalName: professional.name,
         customerEmail: user.email, // Use auth email directly for consistency
+        customerName: user.displayName || user.name || formData.contactName || 'Customer',
+        customerFirstName: user.displayName?.split(' ')[0] || formData.contactName?.split(' ')[0] || '',
+        customerLastName: user.displayName?.split(' ').slice(1).join(' ') || formData.contactName?.split(' ').slice(1).join(' ') || '',
         date: selectedDateTime.toISOString().split('T')[0], // YYYY-MM-DD
         time: selectedTimeSlot, // HH:MM format
         datetime: selectedDateTime.toISOString(),

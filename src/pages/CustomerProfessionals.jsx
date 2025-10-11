@@ -55,6 +55,7 @@ const CustomerProfessionals = () => {
         }
 
         // Query for services in this category
+        console.log('🔍 Searching for services in category:', categoryKey);
         const servicesQuery = query(
           collection(db, 'services'),
           where('category', '==', categoryKey),
@@ -62,8 +63,10 @@ const CustomerProfessionals = () => {
         );
         
         const servicesSnapshot = await getDocs(servicesQuery);
+        console.log('📊 Found services:', servicesSnapshot.size);
         
         if (servicesSnapshot.empty) {
+          console.log('❌ No services found for category:', categoryKey);
           setProfessionals([]);
           setLoading(false);
           return;
@@ -152,7 +155,6 @@ const CustomerProfessionals = () => {
     navigate('/customer/book', {
       state: {
         professional,
-        category: category,
         categoryName
       }
     });

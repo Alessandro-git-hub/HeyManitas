@@ -45,7 +45,7 @@ export default function AppHeader({
             {(showPublicNav || showWorkerNav) && (
               <button
                 onClick={toggleMobileMenuHandler}
-                className="lg:hidden p-2 text-gray-600 hover:text-primary-600 transition-colors"
+                className="lg:hidden p-2 text-primary-700 cursor-pointer"
                 aria-label="Toggle menu"
               >
                 <Icon name={mobileMenuOpen ? "close" : "menu"} size={24} />
