@@ -219,20 +219,19 @@ export default function Services() {
 
   const renderContent = (showFeedback) => {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
-        <div className="max-w-6xl mx-auto px-4 py-8">
-          <div className="flex justify-between items-center mb-8">
-            <div>
-              <h1 className="text-4xl md:text-5xl font-bold text-primary-700 mb-2">My Services</h1>
-              <p className="text-lg text-primary-700">Manage your service offerings</p>
-            </div>
-            <button
-              onClick={() => setShowForm(true)}
-              className="bg-secondary-600 text-primary-700 px-6 py-3 rounded-3xl hover:bg-secondary-700 transition-all duration-200 font-medium transform hover:scale-105 shadow-lg"
-            >
-              Add New Service
-            </button>
+      <>
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-primary-700 mb-2">My Services</h1>
+            <p className="text-lg text-primary-700">Manage your service offerings</p>
           </div>
+          <button
+            onClick={() => setShowForm(true)}
+            className="bg-secondary-600 text-primary-700 px-6 py-3 rounded-3xl hover:bg-secondary-700 transition-all duration-200 font-medium transform hover:scale-105 shadow-lg"
+          >
+            Add New Service
+          </button>
+        </div>
 
           {/* Services Grid */}
           {services.length > 0 ? (
@@ -267,7 +266,6 @@ export default function Services() {
               />
             </div>
           )}
-        </div>
 
         {/* Service Form Modal */}
         <StyledFormModal
@@ -361,7 +359,7 @@ export default function Services() {
             disabled={isSubmitting}
           />
         </StyledFormModal>
-      </div>
+      </>
     );
   };
 

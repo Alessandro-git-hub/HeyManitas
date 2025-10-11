@@ -4,6 +4,7 @@ import AppHeader from './AppHeader';
 import WorkerNavigation from './WorkerNavigation';
 import { AuthLoadingState, PageLoadingState } from '../common/LoadingState';
 import { useFeedback } from '../../hooks/useFeedback';
+import DottedBackground from '../common/DottedBackground';
 
 /**
  * Worker Layout Component
@@ -60,23 +61,25 @@ export default function WorkerLayout({
   // Show login prompt if user is not authenticated
   if (!user) {
     return (
-      <div className="min-h-screen bg-light flex items-center justify-center">
-        <div className="max-w-md mx-auto text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Please Log In</h2>
-          <p className="text-gray-600 mb-6">You need to be logged in to access this page.</p>
-          <button
-            onClick={() => window.location.href = '/login'}
-            className="bg-primary-600 hover:bg-primary-700 text-white py-2 px-6 rounded-md font-medium transition-colors"
-          >
-            Go to Login
-          </button>
+      <DottedBackground>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="max-w-md mx-auto text-center">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Please Log In</h2>
+            <p className="text-gray-600 mb-6">You need to be logged in to access this page.</p>
+            <button
+              onClick={() => window.location.href = '/login'}
+              className="bg-primary-600 hover:bg-primary-700 text-white py-2 px-6 rounded-md font-medium transition-colors"
+            >
+              Go to Login
+            </button>
+          </div>
         </div>
-      </div>
+      </DottedBackground>
     );
   }
 
   return (
-    <div className="min-h-screen bg-light">      
+    <DottedBackground>      
       {/* Header */}
       <AppHeader 
         showWorkerNav={true}
@@ -84,7 +87,7 @@ export default function WorkerLayout({
       />
       
       {/* Main Content Container with top margin to account for fixed header */}
-      <div className={`max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4 mt-20 ${className}`}>
+      <div className={`max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4 mt-16 ${className}`}>
         {/* Worker Navigation */}
         {showNavigation && (
           <WorkerNavigation 
@@ -129,6 +132,6 @@ export default function WorkerLayout({
           typeof children === 'function' ? children(showFeedback) : children
         )}
       </div>
-    </div>
+    </DottedBackground>
   );
 }
