@@ -173,7 +173,7 @@ export default function WorkerQuotes() {
             />
           </div>
         ) : (
-          <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-1">
+          <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-3">
             {bookingRequests.map((request) => {
               return (
               <div key={request.id} className="bg-primary-700 p-6 rounded-2xl shadow-lg border border-secondary-600 hover:shadow-xl group hover:border-primary-300 relative overflow-hidden transition-all duration-300 flex flex-col">
@@ -188,7 +188,7 @@ export default function WorkerQuotes() {
                     </h3>
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-sm font-medium bg-white px-2 py-1 rounded-full" style={{ color: '#6F4E37' }}>
-                        From: {request.customerName || request.contactName || request.customerEmail}
+                        From: {request.customerName}
                       </span>
                     </div>
                     <p className="text-sm text-secondary-600">
@@ -216,9 +216,9 @@ export default function WorkerQuotes() {
                         <p><span className="text-white font-bold">Duration:</span> {request.duration} hours</p>
                       </div>
                     </div>
-                    <div>
+                    <div className="flex flex-col">
                       <h4 className="font-bold text-white mb-2">Customer Message</h4>
-                      <p className="text-sm text-white p-3 rounded-md mb-4 md:mb-0" style={{ background: '#6F4E37' }}>
+                      <p className="text-sm text-white p-3 rounded-md mb-4 md:mb-4 flex-1" style={{ background: '#6F4E37' }}>
                         {request.description || request.message || 'No additional message provided.'}
                       </p>
                     </div>
@@ -276,7 +276,7 @@ export default function WorkerQuotes() {
                         <div className="flex space-x-3">
                           <button
                             onClick={() => handleQuoteSubmit(request.id, showFeedback)}
-                            className="bg-secondary-600 text-primary-700 px-6 py-3 rounded-3xl hover:bg-secondary-700 transition-all duration-200 font-medium transform hover:scale-105 shadow-lg"
+                            className="bg-secondary-600 text-primary-700 px-6 py-3 rounded-3xl font-medium cursor-pointer"
                           >
                             Send Quote
                           </button>
@@ -299,7 +299,7 @@ export default function WorkerQuotes() {
                           setActiveQuoteId(request.id);
                           setQuoteForm(prev => ({ ...prev, quotedPrice: request.hourlyRate?.toString() || '' }));
                         }}
-                        className="bg-secondary-600 text-primary-700 px-6 py-3 rounded-3xl hover:bg-secondary-700 transition-all duration-200 font-medium transform hover:scale-105 shadow-lg"
+                        className="bg-secondary-600 text-primary-700 px-6 py-3 rounded-3xl font-medium cursor-pointer"
                       >
                         Send Quote
                       </button>
