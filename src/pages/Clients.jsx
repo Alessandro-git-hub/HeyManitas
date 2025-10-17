@@ -178,7 +178,10 @@ export default function Clients() {
     <div className="min-h-screen bg-light">
       <AppHeader />
       
-      <div className="max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4">
+      <div className="max-w-6xl mx-auto px-3 md:px-4 py-3 md:py-4 mt-16">
+        {/* Navigation */}
+        <WorkerNavigation />
+
         {/* Feedback Message */}
         {feedback.message && (
           <div className={`mb-6 p-4 rounded-lg ${
@@ -189,9 +192,6 @@ export default function Clients() {
             {feedback.message}
           </div>
         )}
-
-        {/* Navigation */}
-        <WorkerNavigation />
 
         {/* Page Header */}
         <div className="flex justify-between items-center mb-6">

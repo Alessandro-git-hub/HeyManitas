@@ -33,6 +33,7 @@ export const useQuoteManagement = (bookingRequests, fetchBookingRequests) => {
   }, []);
 
   const toggleQuote = useCallback((quoteId, hourlyRate) => {
+    console.log('Toggle quote called with:', { quoteId, hourlyRate });
     setActiveQuoteId(quoteId);
     updateQuoteForm(quoteId, { 
       quotedPrice: hourlyRate?.toString() || '', 
@@ -46,19 +47,17 @@ export const useQuoteManagement = (bookingRequests, fetchBookingRequests) => {
     clearQuoteForm(quoteId);
   }, [clearQuoteForm]);
 
-  const submitQuote = useCallback(async (bookingId, showFeedback) => {
+  const submitQuote = useCallback(async (bookingId) => {
     try {
       const quoteForm = getQuoteForm(bookingId);
       const quotedPrice = parseFloat(quoteForm.quotedPrice);
       
       if (!quotedPrice || quotedPrice <= 0) {
-        showFeedback('Please enter a valid quote amount.', 'error');
-        return;
+        return { success: false, error: 'Please enter a valid quote amount.' };
       }
 
       if (!quoteForm.message.trim()) {
-        showFeedback('Please provide a message with your quote.', 'error');
-        return;
+        return { success: false, error: 'Please provide a message with your quote.' };
       }
 
       // Calculate default expiry (7 days from now)
@@ -81,32 +80,33 @@ export const useQuoteManagement = (bookingRequests, fetchBookingRequests) => {
       
       await updateDoc(doc(db, 'bookings', bookingId), updateData);
 
-      showFeedback('Quote sent successfully!', 'success');
       setActiveQuoteId(null);
       clearQuoteForm(bookingId);
       
       // Refresh the list
       fetchBookingRequests();
       
+      return { success: true };
+      
     } catch (error) {
       console.error('Error sending quote:', error);
-      showFeedback('Error sending quote. Please try again.', 'error');
+      return { success: false, error: 'Error sending quote. Please try again.' };
     }
   }, [getQuoteForm, bookingRequests, clearQuoteForm, fetchBookingRequests]);
 
-  const declineRequest = useCallback(async (bookingId, showFeedback) => {
+  const declineRequest = useCallback(async (bookingId) => {
     try {
       await updateDoc(doc(db, 'bookings', bookingId), {
         status: 'declined',
         declinedAt: Timestamp.now()
       });
       
-      showFeedback('Booking request declined.', 'success');
       fetchBookingRequests();
+      return { success: true };
       
     } catch (error) {
       console.error('Error declining request:', error);
-      showFeedback('Error declining request. Please try again.', 'error');
+      return { success: false, error: 'Error declining request. Please try again.' };
     }
   }, [fetchBookingRequests]);
 

@@ -1,39 +1,26 @@
 import React, { useState } from 'react';
-import { doc, updateDoc, Timestamp } from 'firebase/firestore';
-import { db } from '../../utils/firebase';
 import { FaCalendar, FaClock, FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaCreditCard, FaCheckCircle, FaTimes, FaCheck } from 'react-icons/fa';
 import PaymentModal from '../payment/PaymentModal';
+import { useQuoteResponse } from '../../hooks/useQuoteResponse';
 
 const CustomerBookingCard = ({ booking, onPaymentComplete }) => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
+  const { isUpdating, acceptQuote, declineQuote } = useQuoteResponse();
 
   const handleQuoteResponse = async (action) => {
-    setIsUpdating(true);
-    try {
-      const newStatus = action === 'accept' ? 'quote_accepted' : 'quote_declined';
-      const bookingRef = doc(db, 'bookings', booking.id);
-      
-      await updateDoc(bookingRef, {
-        status: newStatus,
-        customerResponse: action === 'accept' 
-          ? 'Quote accepted by customer' 
-          : 'Quote declined by customer',
-        respondedAt: Timestamp.now(),
-        ...(action === 'accept' && { 
-          finalPrice: booking.quotedPrice,
-          paymentStatus: 'pending'
-        })
-      });
-
-      // Trigger a refresh of the booking data
+    const onSuccess = () => {
       window.location.reload();
-      
-    } catch (error) {
+    };
+
+    const onError = (error) => {
       console.error('Error responding to quote:', error);
       alert('Error updating quote response. Please try again.');
-    } finally {
-      setIsUpdating(false);
+    };
+
+    if (action === 'accept') {
+      await acceptQuote(booking.id, booking, onSuccess, onError);
+    } else {
+      await declineQuote(booking.id, booking, onSuccess, onError);
     }
   };
 

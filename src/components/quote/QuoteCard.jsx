@@ -92,7 +92,10 @@ export default function QuoteCard({
           ) : (
             <div className="flex justify-between items-center">
               <button
-                onClick={() => onToggleQuote(request.id, request.hourlyRate)}
+                onClick={() => {
+                  console.log('Send Quote button clicked for:', request.id);
+                  onToggleQuote(request.id, request.hourlyRate);
+                }}
                 className="bg-secondary-600 text-primary-700 px-6 py-3 rounded-3xl font-medium cursor-pointer"
               >
                 Send Quote

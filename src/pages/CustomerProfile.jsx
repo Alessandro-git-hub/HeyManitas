@@ -1,17 +1,19 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { collection, query, getDocs, where, doc, updateDoc, Timestamp } from 'firebase/firestore';
+import { collection, query, getDocs, where, Timestamp } from 'firebase/firestore';
 import { updateProfile } from 'firebase/auth';
 import { db } from '../utils/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaEdit, FaSave, FaTimes, FaCheck, FaArrowLeft, FaQuoteLeft } from 'react-icons/fa';
 import AppHeader from '../components/layout/AppHeader';
 import CustomerNavigation from '../components/layout/CustomerNavigation';
+import { useQuoteResponse } from '../hooks/useQuoteResponse';
 
 const CustomerProfile = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { user, loading: authLoading } = useAuth();
+  const { acceptQuote, declineQuote } = useQuoteResponse();
   const [activeTab, setActiveTab] = useState('profile');
   const [quotes, setQuotes] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -143,33 +145,28 @@ const CustomerProfile = () => {
   };
 
   const handleQuoteResponse = async (quoteId, action) => {
-    try {
-      const newStatus = action === 'accept' ? 'quote_accepted' : 'quote_declined';
-      const bookingRef = doc(db, 'bookings', quoteId);
-      
-      await updateDoc(bookingRef, {
-        status: newStatus,
-        customerResponse: action === 'accept' 
-          ? 'Quote accepted by customer' 
-          : 'Quote declined by customer',
-        respondedAt: Timestamp.now(),
-        ...(action === 'accept' && { 
-          finalPrice: quotes.find(q => q.id === quoteId)?.quotedPrice,
-          paymentStatus: 'pending'
-        })
-      });
+    const booking = quotes.find(q => q.id === quoteId);
+    if (!booking) {
+      setFeedback({ message: 'Quote not found', type: 'error' });
+      return;
+    }
 
+    const onSuccess = () => {
       setFeedback({ 
         message: action === 'accept' ? 'Quote accepted! You can now proceed with payment.' : 'Quote declined.',
         type: 'success' 
       });
-      
-      // Refresh quotes
       fetchQuotes();
-      
-    } catch (error) {
-      console.error('Error responding to quote:', error);
+    };
+
+    const onError = () => {
       setFeedback({ message: 'Error updating quote response. Please try again.', type: 'error' });
+    };
+
+    if (action === 'accept') {
+      await acceptQuote(quoteId, booking, onSuccess, onError);
+    } else {
+      await declineQuote(quoteId, booking, onSuccess, onError);
     }
   };
 

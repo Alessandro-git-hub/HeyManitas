@@ -4,6 +4,7 @@ import LoadingState from '../common/LoadingState';
 import PaymentForm from './PaymentForm';
 import { updateDoc, doc, collection, addDoc, query, where, getDocs } from 'firebase/firestore';
 import { auth, db } from '../../utils/firebase';
+import { createCustomerFromBooking } from '../../utils/customerAutomation';
 
 const PaymentModal = ({ 
   isOpen, 
@@ -38,6 +39,9 @@ const PaymentModal = ({
       };
       
       await updateDoc(bookingRef, updateData);
+
+      // Create customer entry for the worker (backup in case quote acceptance didn't trigger it)
+      await createCustomerFromBooking(booking, booking.professionalId, 'payment_completed');
 
       // Create corresponding job for the worker (if not already exists)
       const jobsQuery = query(

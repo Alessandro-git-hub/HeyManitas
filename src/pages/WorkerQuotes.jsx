@@ -19,7 +19,23 @@ export default function WorkerQuotes() {
     declineRequest
   } = useQuoteManagement(bookingRequests, fetchBookingRequests);
 
+  const handleSubmitQuote = async (quoteId, showFeedback) => {
+    const result = await submitQuote(quoteId);
+    if (result.success) {
+      showFeedback('Quote sent successfully!', 'success');
+    } else {
+      showFeedback(result.error || 'Error sending quote. Please try again.', 'error');
+    }
+  };
 
+  const handleDeclineRequest = async (quoteId, showFeedback) => {
+    const result = await declineRequest(quoteId);
+    if (result.success) {
+      showFeedback('Booking request declined.', 'success');
+    } else {
+      showFeedback(result.error || 'Error declining request. Please try again.', 'error');
+    }
+  };
 
   const renderContent = (showFeedback) => {
     return (
@@ -64,8 +80,8 @@ export default function WorkerQuotes() {
                   quoteForm={quoteForm}
                   onToggleQuote={toggleQuote}
                   onUpdateForm={(updates) => updateQuoteForm(request.id, updates)}
-                  onSubmitQuote={(quoteId) => submitQuote(quoteId, showFeedback)}
-                  onDeclineRequest={(quoteId) => declineRequest(quoteId, showFeedback)}
+                  onSubmitQuote={(quoteId) => handleSubmitQuote(quoteId, showFeedback)}
+                  onDeclineRequest={(quoteId) => handleDeclineRequest(quoteId, showFeedback)}
                   onCancelQuote={() => cancelQuote(request.id)}
                 />
               );
