@@ -195,7 +195,7 @@ export default function Clients() {
 
         {/* Page Header */}
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-deep">Clients</h1>
+          <h1 className="text-3xl font-bold">Clients</h1>
           <ActionButton onClick={() => setShowCustomerForm(true)}>
             Add New Client
           </ActionButton>

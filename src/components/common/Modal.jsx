@@ -95,7 +95,7 @@ export default function Modal({
         {/* Modal Content */}
         <div 
           className={`
-            bg-white rounded-lg shadow-xl max-h-[90vh] overflow-hidden
+            bg-white rounded-lg shadow-xl max-h-[90vh] md:min-w-[800px] overflow-hidden
             transform transition-all duration-200 ease-out
             ${sizeClasses[size]}
             ${className}
@@ -106,16 +106,16 @@ export default function Modal({
         >
           {/* Header */}
           {title && (
-            <div className="flex items-center justify-between p-4 md:p-6 border-b border-gray-200">
-              <h2 id="modal-title" className="text-lg md:text-xl font-semibold text-gray-900">
+            <div className="flex items-center justify-between p-4 md:p-6 border-b border-primary-700 bg-white">
+              <h2 id="modal-title" className="text-lg md:text-xl font-semibold text-deep">
                 {title}
               </h2>
               <button
                 onClick={handleClose}
                 disabled={preventClose}
                 className={`
-                  text-primary-700 cursor-pointer
-                  ${preventClose ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100'}
+                  text-primary-700 cursor-pointer transition-colors
+                  ${preventClose ? 'opacity-50 cursor-not-allowed' : 'hover:bg-secondary-600'}
                 `}
                 aria-label="Close modal"
               >
@@ -127,7 +127,7 @@ export default function Modal({
           )}
 
           {/* Content */}
-          <div className="overflow-y-auto max-h-[calc(90vh-8rem)]">
+          <div className="bg-secondary-600 overflow-y-auto max-h-[calc(90vh-8rem)]">
             <div className={noPadding ? "" : "p-4 md:p-6"}>
               {children}
             </div>
@@ -135,7 +135,7 @@ export default function Modal({
 
           {/* Footer */}
           {footer && (
-            <div className={`p-4 md:p-6 bg-white`}>
+            <div className={`p-4 md:p-6 border-t border-primary-700 ${footerClassName || 'bg-white'}`}>
               {footer}
             </div>
           )}

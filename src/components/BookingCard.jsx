@@ -6,20 +6,11 @@ import ActionButton from './common/ActionButton';
 import { formatDate, formatTime } from '../utils/formatters';
 
 const BookingCard = ({ booking, onStatusUpdate, onViewDetails }) => {
-  const isUpcoming = () => {
-    const bookingDate = new Date(booking.datetime);
-    const now = new Date();
-    return bookingDate > now;
-  };
-
   return (
     <div className="bg-primary-700 rounded-lg shadow-sm border border-secondary-600 p-6 hover:shadow-md transition-shadow">
       {/* Header */}
-      <div className="flex items-center space-x-2">
+      <div className="flex items-right space-x-2">
         <StatusBadge status={booking.status} size="small" className="ml-auto"/>
-        {isUpcoming() && (
-          <StatusBadge status="upcoming" size="small" className="ml-auto"/>
-        )}
       </div>
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center space-x-3">
